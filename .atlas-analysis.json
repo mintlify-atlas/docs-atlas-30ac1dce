@@ -1,0 +1,122 @@
+{
+  "projectType": "saas",
+  "projectName": "sunnypilot",
+  "projectDescription": "Open source driver assistance system supporting 350+ car makes and models with modified driving behaviors and enhanced features",
+  "theme": "aspen",
+  "primaryColor": "#FDB813",
+  "lightColor": "#FFE99A",
+  "darkColor": "#C28E00",
+  "navigation": {
+    "tabs": [
+      {
+        "tab": "Documentation",
+        "groups": [
+          {
+            "group": "Get Started",
+            "pages": [
+              "introduction",
+              "quick-start",
+              "installation"
+            ]
+          },
+          {
+            "group": "Core Features",
+            "pages": [
+              "features/mads",
+              "features/sunnylink",
+              "features/custom-ui",
+              "features/osm-integration",
+              "features/custom-models"
+            ]
+          },
+          {
+            "group": "Supported Vehicles",
+            "pages": [
+              "vehicles/supported-cars",
+              "vehicles/compatibility",
+              "vehicles/hardware-requirements"
+            ]
+          },
+          {
+            "group": "User Guides",
+            "pages": [
+              "guides/first-drive",
+              "guides/settings",
+              "guides/troubleshooting",
+              "guides/safety"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Advanced",
+        "groups": [
+          {
+            "group": "Configuration",
+            "pages": [
+              "advanced/parameters",
+              "advanced/lateral-control",
+              "advanced/longitudinal-control",
+              "advanced/visual-customization"
+            ]
+          },
+          {
+            "group": "Development",
+            "pages": [
+              "development/architecture",
+              "development/contributing",
+              "development/building",
+              "development/testing"
+            ]
+          },
+          {
+            "group": "Car Porting",
+            "pages": [
+              "car-porting/overview",
+              "car-porting/brand-port",
+              "car-porting/model-port"
+            ]
+          }
+        ]
+      },
+      {
+        "tab": "Community",
+        "groups": [
+          {
+            "group": "Resources",
+            "pages": [
+              "community/forum",
+              "community/sponsors",
+              "community/changelog",
+              "community/faq"
+            ]
+          }
+        ]
+      }
+    ]
+  },
+  "keyFeatures": [
+    "MADS (Modular Assistive Driving System) - Enhanced engagement control",
+    "sunnylink - Remote vehicle management and parameter control",
+    "Custom Raylib Python UI with enhanced visuals",
+    "OSM (OpenStreetMap) integration for map data",
+    "Support for 350+ car makes and models",
+    "Custom driving models (modeld_v2, planplus)",
+    "Configurable lateral and longitudinal control",
+    "Enhanced UI features (rainbow path, steering metrics, turn signals)",
+    "Vehicle-specific tuning and customization",
+    "Live delay monitoring and compensation"
+  ],
+  "publicApiSurface": [
+    "MADS engagement system",
+    "sunnylink remote API",
+    "Custom parameter management",
+    "OSM map data integration",
+    "Custom UI components (Raylib)",
+    "Vehicle control interfaces",
+    "Model inference (modeld_v2)",
+    "Camera and sensor processing",
+    "Lateral/longitudinal planners",
+    "Hardware interfaces (comma four)"
+  ]
+}
