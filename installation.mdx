@@ -1,0 +1,508 @@
+---
+title: Installation
+description: Detailed installation guide for sunnypilot on comma devices
+---
+
+# Installation Guide
+
+This comprehensive guide covers everything you need to know about installing sunnypilot on your comma device.
+
+## Hardware Requirements
+
+### Supported Devices
+
+sunnypilot supports the following comma devices:
+
+<CardGroup cols={2}>
+  <Card title="comma four" icon="microchip">
+    Latest generation device with:
+    - Improved thermal management
+    - 77% reduced standby power (52 mW as of v0.10.4)
+    - Enhanced performance
+    - **Recommended for new installations**
+  </Card>
+  <Card title="comma 3/3X" icon="microchip">
+    Previous generation with:
+    - Full sunnypilot support
+    - Proven reliability
+    - Wide availability
+  </Card>
+</CardGroup>
+
+<Warning>
+  Older devices like comma two, EON, and grey/white panda are **not supported** by recent versions. Upgrade to comma four or comma 3/3X.
+</Warning>
+
+### Vehicle-Specific Hardware
+
+Each vehicle requires specific hardware components:
+
+- **Wiring Harness**: Vehicle-specific connector (Honda Nidec, Honda Bosch, Toyota, Ford Q3/Q4, GM, etc.)
+- **OBD-C Cable**: Connects to your vehicle's OBD-II port (typically 2 ft, some vehicles need 9.5 ft)
+- **comma power v3**: Provides clean power to the device (recommended for most vehicles)
+- **Harness Box**: Houses the wiring connections safely
+- **Mount**: Secures the comma device behind your rearview mirror
+
+<Tip>
+  When ordering from [comma.ai/shop](https://comma.ai/shop), select your exact vehicle make, model, and year to receive the correct harness and cables.
+</Tip>
+
+## Pre-Installation Checklist
+
+Before installing sunnypilot, verify:
+
+<Steps>
+  <Step title="Vehicle Compatibility">
+    Confirm your vehicle is on the [supported vehicles list](https://community.sunnypilot.ai/t/getting-started-using-sunnypilot-in-your-supported-car/251). Check that your specific year and trim level are supported.
+    
+    Your vehicle must have:
+    - Factory adaptive cruise control (ACC)
+    - Lane keeping assist or lane centering
+    - Typically model year 2016 or newer (varies by manufacturer)
+  </Step>
+  
+  <Step title="Hardware Acquisition">
+    Ensure you have all required hardware:
+    - comma device (four, 3, or 3X)
+    - Correct vehicle-specific harness
+    - OBD-C cable (correct length for your vehicle)
+    - comma power v3 (if recommended for your vehicle)
+    - Mounting hardware
+  </Step>
+  
+  <Step title="Internet Connection">
+    You'll need WiFi access for:
+    - Initial device setup
+    - Downloading sunnypilot software
+    - Software updates
+    
+    Consider using a mobile hotspot if your vehicle doesn't have WiFi.
+  </Step>
+</Steps>
+
+## Physical Installation
+
+### Mounting the Device
+
+<Steps>
+  <Step title="Choose Mounting Location">
+    Position the comma device behind your rearview mirror:
+    - Camera should have a clear, unobstructed view of the road
+    - Device should not interfere with driver's view
+    - Keep driver-facing camera aimed at driver's seat
+    - Ensure mount is secure and won't move while driving
+  </Step>
+  
+  <Step title="Connect Wiring Harness">
+    1. Locate your vehicle's forward-facing camera connector (typically behind rearview mirror)
+    2. Disconnect the factory camera connector
+    3. Connect your vehicle-specific harness inline:
+       - Factory camera → Harness input
+       - Harness output → comma device
+    4. Secure connections to prevent disconnection from vibration
+    
+    <Warning>
+      Different vehicles have different connector types (Nidec, Bosch, TSS2, etc.). Ensure you're using the correct harness for your specific vehicle.
+    </Warning>
+  </Step>
+  
+  <Step title="Connect OBD-II Cable">
+    1. Locate your vehicle's OBD-II port (usually under dashboard near driver's knee)
+    2. Firmly plug in the OBD-C cable
+    3. Route the cable cleanly to the comma device
+    4. Ensure cable doesn't interfere with pedals or steering
+  </Step>
+  
+  <Step title="Connect comma power v3 (if applicable)">
+    For vehicles that require comma power v3:
+    1. Connect between OBD-II port and OBD-C cable
+    2. Provides clean, regulated power to prevent device issues
+  </Step>
+  
+  <Step title="Cable Management">
+    - Route all cables neatly along headliner and A-pillar
+    - Use cable clips if needed to secure cables
+    - Ensure no cables obstruct airbags or interfere with driving controls
+    - Leave some slack for rearview mirror adjustment
+  </Step>
+</Steps>
+
+## Software Installation
+
+### Initial Device Setup
+
+When you first power on your comma device:
+
+<Steps>
+  <Step title="First Boot">
+    1. Turn on your vehicle's ignition (device powers on automatically)
+    2. Wait for the device to boot (first boot takes 2-5 minutes)
+    3. The setup wizard will appear on screen
+  </Step>
+  
+  <Step title="WiFi Connection">
+    1. Select your WiFi network from the list
+    2. Enter the WiFi password
+    3. Device will connect and verify internet access
+    
+    <Tip>
+      If using a mobile hotspot, set it up before starting the installation process.
+    </Tip>
+  </Step>
+  
+  <Step title="comma Account">
+    1. Create a new comma account or log in to existing account
+    2. This enables access to comma connect for viewing your drives
+    3. Your device will be registered to your account
+  </Step>
+  
+  <Step title="Accept Terms">
+    1. Read and accept comma.ai terms of service
+    2. Accept sunnypilot terms of service (after installing sunnypilot)
+    3. Configure data collection preferences
+  </Step>
+</Steps>
+
+### Installing sunnypilot
+
+<Steps>
+  <Step title="Access Software Settings">
+    1. From the device home screen, tap the settings icon
+    2. Navigate to **Software** settings
+    3. Select **Uninstall openpilot**
+    4. Confirm uninstallation and wait for it to complete
+  </Step>
+  
+  <Step title="Enter Custom URL">
+    After uninstallation, you'll see the setup screen:
+    
+    1. Look for the option to enter a custom software URL
+    2. Enter the sunnypilot installer URL:
+    
+    ```bash
+    https://smiskol.com/fork/sunnyhaibin
+    ```
+    
+    3. Tap continue or confirm
+  </Step>
+  
+  <Step title="Select Branch">
+    Choose your preferred sunnypilot branch (see [Branch Selection](#branch-selection) below):
+    
+    - **Stable branches** (e.g., `honda_c_stable`) - Recommended for daily use
+    - **RC** (Release Candidate) - Latest tested features before stable release
+    - **dev** - Development branch with cutting-edge features (may be unstable)
+    
+    <Note>
+      The installer may show branch options specific to your vehicle or region. Select the appropriate stable branch for your vehicle type.
+    </Note>
+  </Step>
+  
+  <Step title="Download & Install">
+    1. The device will download sunnypilot (this may take 5-15 minutes)
+    2. Progress bar shows download status
+    3. Device will automatically reboot after installation
+    4. sunnypilot will start on next boot
+  </Step>
+</Steps>
+
+## Branch Selection
+
+Choosing the right branch is important for your sunnypilot experience:
+
+### Recommended Branches
+
+<Tabs>
+  <Tab title="Stable">
+    **Stable Branches** (e.g., `honda_c_stable`, `toyota_stable`)
+    
+    - **Who it's for**: Most users, daily drivers
+    - **Update frequency**: Monthly or quarterly
+    - **Stability**: Highest - thoroughly tested
+    - **Features**: Well-established, proven features
+    - **Support**: Full community and official support
+    
+    Examples:
+    - `honda_c_stable` - For Honda/Acura vehicles with comma four
+    - `toyota_stable` - For Toyota/Lexus vehicles
+    - `hyundai_stable` - For Hyundai/Kia/Genesis vehicles
+    
+    <Tip>
+      Choose stable if you want a reliable, predictable experience.
+    </Tip>
+  </Tab>
+  
+  <Tab title="Release Candidate (RC)">
+    **RC Branch**
+    
+    - **Who it's for**: Enthusiasts who want new features early
+    - **Update frequency**: Weekly or bi-weekly
+    - **Stability**: High - tested but may have minor issues
+    - **Features**: Latest tested features before stable release
+    - **Support**: Community support, active testing
+    
+    <Note>
+      RC branch gives you early access to new features while maintaining good stability. Report any issues to help improve the stable release.
+    </Note>
+  </Tab>
+  
+  <Tab title="Development (dev)">
+    **dev Branch**
+    
+    - **Who it's for**: Testers, developers, advanced users
+    - **Update frequency**: Daily or multiple times per week
+    - **Stability**: Variable - may have bugs or breaking changes
+    - **Features**: Cutting-edge, experimental features
+    - **Support**: Limited - community only
+    
+    <Warning>
+      Only use dev branch if you're comfortable with potential instability and want to help test new features. Not recommended for daily commuting.
+    </Warning>
+  </Tab>
+</Tabs>
+
+### Branch Naming Convention
+
+Branches may include vehicle-specific identifiers:
+
+- `honda_c_` - For comma four on Honda vehicles
+- `toyota_` - For Toyota/Lexus vehicles
+- `hyundai_` - For Hyundai/Kia/Genesis vehicles
+- Regional variations may exist (e.g., `_eu` for European models)
+
+For the most current branch recommendations, see the [community forum post on branch installations](https://community.sunnypilot.ai/t/recommended-branch-installations/235).
+
+## Post-Installation Setup
+
+### Device Calibration
+
+After installing sunnypilot, the device must calibrate:
+
+<Steps>
+  <Step title="Start Driving">
+    - Begin driving normally with the device powered on
+    - Calibration happens automatically in the background
+  </Step>
+  
+  <Step title="Optimal Calibration Conditions">
+    For fastest calibration:
+    - Drive on straight roads or highways
+    - Ensure clear lane markings are visible
+    - Maintain steady speed
+    - Avoid frequent turns or lane changes
+  </Step>
+  
+  <Step title="Calibration Progress">
+    - Device displays calibration status on screen
+    - Typically completes within 1-2 miles (2-3 km)
+    - Green checkmark indicates calibration complete
+  </Step>
+</Steps>
+
+<Warning>
+  Do not attempt to engage sunnypilot until calibration is complete. The system will not engage until this step is finished.
+</Warning>
+
+### sunnypilot Configuration
+
+After calibration, configure sunnypilot settings:
+
+1. **Driver Monitoring**: Configure monitoring sensitivity (keep default for safety)
+2. **Visual Preferences**: Customize UI elements (rainbow path, metrics display, etc.)
+3. **Lateral Control**: Choose control method (keep default initially)
+4. **Longitudinal Tuning**: Adjust following distance if needed
+5. **sunnylink**: Optionally set up cloud configuration
+
+<Tip>
+  Start with default settings and make gradual adjustments as you become familiar with sunnypilot's behavior.
+</Tip>
+
+## Flashing comma four
+
+If you need to reflash your comma four device:
+
+### When to Reflash
+
+- Device is stuck in a boot loop
+- Severe software corruption
+- Switching between major versions
+- Factory reset needed
+
+### Reflashing Process
+
+<Steps>
+  <Step title="Download Flash Tool">
+    Download the official comma flash tool from [comma.ai](https://comma.ai/)
+  </Step>
+  
+  <Step title="Prepare Device">
+    1. Power off the comma four
+    2. Connect to your computer via USB-C
+  </Step>
+  
+  <Step title="Enter Flash Mode">
+    1. Hold the power button while connecting USB
+    2. Device enters bootloader mode
+    3. Computer should recognize the device
+  </Step>
+  
+  <Step title="Run Flash Tool">
+    1. Execute the flash tool on your computer
+    2. Select your device when prompted
+    3. Choose the firmware version to flash
+    4. Wait for flashing to complete (10-20 minutes)
+  </Step>
+  
+  <Step title="Reinstall sunnypilot">
+    After flashing completes:
+    1. Device will reboot with stock software
+    2. Follow the [Installing sunnypilot](#installing-sunnypilot) steps above to reinstall
+  </Step>
+</Steps>
+
+<Warning>
+  Only reflash as a last resort. Most issues can be resolved by reinstalling sunnypilot through the device settings.
+</Warning>
+
+## Troubleshooting
+
+### Common Installation Issues
+
+<AccordionGroup>
+  <Accordion title="Device won't power on">
+    **Possible causes:**
+    - OBD-II connection not secure
+    - Vehicle not in accessory or run mode
+    - Faulty OBD-C cable
+    - Dead vehicle battery
+    
+    **Solutions:**
+    - Verify OBD-II connector is firmly seated
+    - Turn vehicle to accessory or start engine
+    - Try a different OBD-C cable
+    - Check vehicle battery voltage (should be >12V)
+  </Accordion>
+  
+  <Accordion title="Can't download sunnypilot">
+    **Possible causes:**
+    - WiFi connection lost
+    - Weak WiFi signal
+    - Incorrect URL entered
+    - Server temporarily unavailable
+    
+    **Solutions:**
+    - Verify WiFi is connected and has internet access
+    - Move closer to WiFi router or use mobile hotspot
+    - Double-check the installer URL: `https://smiskol.com/fork/sunnyhaibin`
+    - Wait and retry later if server is down
+  </Accordion>
+  
+  <Accordion title="Installation fails or errors out">
+    **Possible causes:**
+    - Insufficient storage space
+    - Corrupted download
+    - Software conflict
+    
+    **Solutions:**
+    - Free up storage space on the device
+    - Delete previous installation completely
+    - Try a different branch
+    - Factory reset device if necessary
+  </Accordion>
+  
+  <Accordion title="Calibration takes too long">
+    **Possible causes:**
+    - Not enough straight road driving
+    - Poor lighting conditions
+    - Dirty camera lens
+    - Incorrect mounting angle
+    
+    **Solutions:**
+    - Drive on highways with clear lane markings
+    - Calibrate during daytime with good visibility
+    - Clean the camera lens
+    - Verify device mounting position and angle
+  </Accordion>
+  
+  <Accordion title="sunnypilot won't engage">
+    **Possible causes:**
+    - Calibration incomplete
+    - Vehicle speed too low
+    - No lane lines detected
+    - Driver monitoring alert active
+    - Wrong harness for vehicle
+    
+    **Solutions:**
+    - Complete calibration process
+    - Accelerate to minimum speed (varies by vehicle)
+    - Drive on roads with visible lane markings
+    - Keep eyes on road to clear monitoring alerts
+    - Verify correct harness for your specific vehicle
+  </Accordion>
+  
+  <Accordion title="Device keeps rebooting">
+    **Possible causes:**
+    - Unstable power supply
+    - Overheating
+    - Hardware failure
+    - Software crash
+    
+    **Solutions:**
+    - Install comma power v3 if not already using
+    - Ensure proper airflow around device
+    - Check for loose cable connections
+    - Reinstall sunnypilot software
+    - Check for device firmware updates
+  </Accordion>
+</AccordionGroup>
+
+### Getting Help
+
+If you continue to experience issues:
+
+<CardGroup cols={2}>
+  <Card title="Community Forum" icon="comments" href="https://community.sunnypilot.ai/">
+    Search existing topics or post your issue for community support
+  </Card>
+  <Card title="Installation Guide" icon="book" href="https://community.sunnypilot.ai/t/read-before-installing-sunnypilot/254">
+    Detailed community-maintained installation instructions
+  </Card>
+  <Card title="GitHub Issues" icon="github" href="https://github.com/sunnyhaibin/sunnypilot/issues">
+    Report bugs or search for known issues
+  </Card>
+  <Card title="comma.ai Support" icon="life-ring" href="https://comma.ai/support">
+    For hardware-related issues with your comma device
+  </Card>
+</CardGroup>
+
+## Updating sunnypilot
+
+sunnypilot can be updated through the device:
+
+1. Connect to WiFi
+2. Go to **Settings** → **Software**
+3. Tap **Check for Updates**
+4. If an update is available, tap **Update**
+5. Device will download and install automatically
+6. Device reboots after update completes
+
+<Note>
+  Updates typically preserve your settings and calibration. However, major version updates may require recalibration.
+</Note>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Quick Start Guide" icon="rocket" href="/quick-start">
+    Learn the basics of using sunnypilot for your first drive
+  </Card>
+  <Card title="Features Overview" icon="star">
+    Explore sunnypilot's unique features and capabilities
+  </Card>
+  <Card title="Community Forum" icon="users" href="https://community.sunnypilot.ai/">
+    Join the community and share your experience
+  </Card>
+  <Card title="Support Development" icon="heart" href="https://github.com/sponsors/sunnyhaibin">
+    Help support future sunnypilot development
+  </Card>
+</CardGroup>

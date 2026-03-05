@@ -1,0 +1,372 @@
+---
+title: Brand Port Guide
+description: Adding support for a new car brand to sunnypilot
+---
+
+## What is a Brand Port?
+
+A brand port is a port of openpilot to a substantially new car brand or platform within a brand. Brand ports are more complex than model ports because you need to reverse engineer the car's CAN bus protocols and implement all the necessary interfaces from scratch.
+
+<Info>
+Example brand port: [Honda Clarity Port PR #23331](https://github.com/commaai/openpilot/pull/23331)
+</Info>
+
+## Prerequisites
+
+Before starting a brand port, ensure you have:
+
+<CardGroup cols={2}>
+  <Card title="Hardware" icon="microchip">
+    - comma 3X or comma 3 device
+    - Target vehicle with ACC and LKAS
+    - comma power (for continuous testing)
+  </Card>
+  <Card title="Skills" icon="code">
+    - CAN bus reverse engineering
+    - Python and C programming
+    - Understanding of automotive systems
+  </Card>
+</CardGroup>
+
+## Brand Port Workflow
+
+<Steps>
+  <Step title="Reverse Engineer CAN Messages">
+    Identify all required CAN messages and signals through systematic testing
+  </Step>
+  <Step title="Create Brand Directory">
+    Set up the standard interface structure in `opendbc/car/[brand]`
+  </Step>
+  <Step title="Implement Core Interfaces">
+    Build out the required Python interface files
+  </Step>
+  <Step title="Develop Safety Code">
+    Implement and test brand-specific safety logic in C
+  </Step>
+  <Step title="Test and Validate">
+    Perform comprehensive testing and validation
+  </Step>
+</Steps>
+
+## Step 1: Reverse Engineering
+
+### Systematic Testing Protocol
+
+Follow the stimulus-response test protocol to identify CAN bus signals. Each test should be done in a separate route (ignition cycle).
+
+<Warning>
+Constant power to the comma device is highly recommended using comma power. If constant power isn't available, keep the ignition on for at least one minute after your test to prevent data loss.
+</Warning>
+
+### Stationary Ignition Tests - Part 1
+
+<Accordion title="Door and Seatbelt Signals">
+1. Ignition on, but don't start engine, remain in Park
+2. Open and close each door in order: driver, passenger, rear left, rear right
+3. Re-enter the vehicle, close the driver's door, and fasten the driver's seatbelt
+4. Slowly press and release the accelerator pedal 3 times
+5. Slowly press and release the brake pedal 3 times
+6. Hold the brake and move the gearshift: reverse → neutral → drive → sport/eco (if applicable)
+7. Return to Park, ignition off
+
+**What to look for:**
+- Brake-pressed information (may appear in multiple messages)
+- All four door states (some cars only expose driver's door on ADAS bus)
+- Seatbelt status
+- Gear shifter positions
+</Accordion>
+
+### Stationary Ignition Tests - Part 2
+
+<Accordion title="ACC Buttons and Blinkers">
+1. Ignition on, but don't start engine, remain in Park
+2. Press each ACC button in order: main on/off, set, resume, cancel, accel, decel, gap adjust
+3. Set the left turn signal for about five seconds
+4. Operate the left turn signal in touch-to-pass mode
+5. Set the right turn signal for about five seconds
+6. Operate the right turn signal in touch-to-pass mode
+7. Set the hazard/emergency indicator for about five seconds
+8. Ignition off
+
+**What to look for:**
+- ACC button press signals
+- Turn signal and hazard states
+</Accordion>
+
+### Steering Tests
+
+<Accordion title="Steering Angle and Torque">
+Power steering should be available. On ICE cars, engine RPM may be present.
+
+1. Ignition on, start engine if applicable, remain in Park
+2. Rotate the steering wheel with pauses between each step:
+   - Start at exact center
+   - Turn to 45° right and hold
+   - Turn to 90° right and hold
+   - Turn to 180° right and hold
+   - Turn to full lock right and hold with firm pressure
+   - Release the wheel and allow it to bounce back slightly
+   - Turn to 180° left and hold
+   - Return to center and release
+3. Ignition off
+
+**What to look for:**
+- Steering wheel angle signals
+- Driver input torque signals
+- Signal scale and sign/direction confirmation
+</Accordion>
+
+### Low Speed Driving Tests
+
+<Accordion title="Parking Lot Maneuvers">
+Drive to an empty parking lot where you can safely drive in curves.
+
+1. Ignition on, start engine, prepare to drive
+2. Slowly (10-20mph max) drive a figure-8, or at least one sharp left and one sharp right
+3. Come to a complete stop
+4. When safe, drive in reverse for a short distance (10-15 feet)
+5. Park the car safely, ignition off
+
+**What to look for:**
+- Wheel speed signals
+- Vehicle speed
+- Reverse gear detection
+- Standstill detection
+</Accordion>
+
+### High Speed Driving Tests
+
+<Accordion title="Highway Testing">
+Select a safe location where you can test cruise control and lane guidance at highway speeds.
+
+1. Ignition on, start engine, prepare to drive
+2. When safe, engage adaptive cruise control below 50 mph
+3. Use ACC buttons to accelerate: 50mph → 55mph → 60mph
+4. Disengage adaptive cruise
+5. When safe, allow factory lane guidance to prevent lane departures 2-3 times on both left and right
+
+**What to look for:**
+- ACC cruise setpoint signals
+- ACC HUD signals and scaling
+- Lane keep assist steering commands
+- Confirmation of wheel speed scaling
+</Accordion>
+
+## Step 2: Create Brand Directory Structure
+
+Create the following files in `opendbc/car/[brand]`:
+
+```bash
+opendbc/car/[brand]/
+├── __init__.py
+├── interface.py          # CarInterface class
+├── carstate.py          # CAN message parsing
+├── carcontroller.py     # Control logic
+├── [brand]can.py        # CAN message composition
+├── values.py            # Constants and car documentation
+└── radar_interface.py   # (Optional) Radar parsing
+```
+
+## Step 3: Implement Core Interfaces
+
+### Required CarState Signals
+
+<AccordionGroup>
+  <Accordion title="Basic Lateral Control Signals (Required)">
+    - `brakePressed`
+    - `cruiseState`
+    - `doorOpen`
+    - `espDisabled`
+    - `gasPressed`
+    - `gearShifter`
+    - `leftBlinker` / `rightBlinker`
+    - `seatbeltUnlatched`
+    - `standstill`
+    - `steeringAngleDeg`
+    - `steeringPressed`
+    - `steeringTorque`
+    - `steerFaultPermanent`
+    - `steerFaultTemporary`
+    - `vCruise`
+    - `wheelSpeeds.[fl|fr|rl|rr]`: Speed of each wheel in m/s
+  </Accordion>
+
+  <Accordion title="Longitudinal Control Signals (Required for openpilot longitudinal)">
+    - `accFaulted`
+    - `espActive`
+    - `parkingBrake`
+  </Accordion>
+
+  <Accordion title="Automatically Populated Signals">
+    These are populated automatically by `parse_wheel_speeds`:
+    - `aEgo`: Acceleration (Kalman filtered derivative of vEgo)
+    - `vEgo`: Vehicle speed (Kalman filtered from vEgoRaw)
+    - `vEgoRaw`: Unfiltered speed from average of four wheels
+    - `buttonEvents`: Button events
+  </Accordion>
+
+  <Accordion title="Optional Signals">
+    - `brake`
+    - `charging`
+    - `fuelGauge`
+    - `leftBlindspot` / `rightBlindspot`
+    - `steeringRateDeg`
+    - `stockAeb`
+    - `stockFcw`
+    - `yawRate`
+  </Accordion>
+</AccordionGroup>
+
+### interface.py Template
+
+<CodeGroup>
+```python interface.py
+from opendbc.car import CarInterfaceBase
+from opendbc.car.interfaces import RadarInterfaceBase
+
+class CarInterface(CarInterfaceBase):
+  @staticmethod
+  def get_params(candidate, fingerprint=None, car_fw=None):
+    # Define car parameters, limits, and capabilities
+    ret = CarInterfaceBase.get_std_params(candidate)
+    
+    # Set steering limits
+    ret.steerLimitAlert = True
+    ret.steerActuatorDelay = 0.1  # seconds
+    
+    # Set safety model
+    ret.safetyModel = car.CarParams.SafetyModel.[brand]
+    
+    return ret
+
+  def update(self, c, can_strings):
+    # Update vehicle state from CAN messages
+    return self.CS.update(self.cp, self.cp_cam)
+
+  def apply(self, c):
+    # Apply controls to vehicle
+    return self.CC.update(c.enabled, self.CS, c.actuators)
+```
+
+```python carstate.py
+from opendbc.can.parser import CANParser
+
+class CarState:
+  def update(self, cp, cp_cam):
+    ret = car.CarState.new_message()
+    
+    # Parse CAN signals
+    ret.vEgo = cp.vl["WHEEL_SPEEDS"]["FL"] * CV.KPH_TO_MS
+    ret.steeringAngleDeg = cp.vl["STEERING_ANGLE"]["ANGLE"]
+    ret.brakePressed = cp.vl["BRAKE_STATUS"]["PRESSED"] == 1
+    
+    # ... parse other signals
+    
+    return ret
+```
+
+```python carcontroller.py
+from opendbc.car.[brand].[brand]can import create_steer_command
+
+class CarController:
+  def update(self, enabled, CS, actuators):
+    can_sends = []
+    
+    # Apply steering
+    if enabled:
+      steer_cmd = create_steer_command(
+        actuators.steer,
+        CS.steeringAngleDeg
+      )
+      can_sends.append(steer_cmd)
+    
+    return can_sends
+```
+</CodeGroup>
+
+## Step 4: Implement Safety Code
+
+Create safety logic in `opendbc_repo/opendbc/safety/modes/[brand].h`:
+
+<Accordion title="Safety Code Requirements">
+
+**Critical Safety Checks:**
+
+1. **Steering Rate Limits**: Prevent sudden steering changes
+2. **Torque Limits**: Constrain maximum steering torque
+3. **Driver Override**: Allow immediate driver takeover
+4. **Speed-Dependent Limits**: Adjust limits based on vehicle speed
+5. **Fault Detection**: Detect and handle system faults
+
+**Safety Test Suite:**
+
+Create comprehensive tests in `opendbc_repo/opendbc/safety/tests/test_[brand].py`:
+
+- Test all safety limits
+- Test driver override scenarios
+- Test fault conditions
+- Ensure 100% code coverage
+
+<Warning>
+**All safety tests must pass.** Forks with failing safety tests will be banned from comma.ai servers.
+</Warning>
+</Accordion>
+
+## Step 5: Testing and Validation
+
+<Steps>
+  <Step title="Software-in-the-Loop Testing">
+    Test the implementation with simulated CAN data
+  </Step>
+  <Step title="Hardware-in-the-Loop Testing">
+    Test with actual comma device and CAN logs
+  </Step>
+  <Step title="In-Vehicle Testing">
+    Perform controlled testing in the actual vehicle
+  </Step>
+  <Step title="Safety Validation">
+    Verify all safety requirements are met
+  </Step>
+</Steps>
+
+## Contribution Guidelines
+
+A good brand port pull request includes:
+
+<Checklist>
+  - [ ] Clearly stated purpose and scope
+  - [ ] All required CarState signals implemented
+  - [ ] Safety code with passing tests
+  - [ ] Verification details (how was it tested?)
+  - [ ] DBC file with all CAN message definitions
+  - [ ] Documentation of actuation limits
+  - [ ] Video or log evidence of successful operation
+  - [ ] CI tests passing
+</Checklist>
+
+<Info>
+Reference example: [Honda Clarity Port PR #23331](https://github.com/commaai/openpilot/pull/23331)
+</Info>
+
+## Common Pitfalls
+
+<Warning>
+- **Incomplete signal mapping**: Missing critical CarState signals
+- **Incorrect scaling**: Wrong units for speed, angle, or torque
+- **Safety limits too aggressive**: Actuation changes too fast for safe driver reaction
+- **Insufficient testing**: Not validating all scenarios
+- **Missing edge cases**: Not handling fault conditions
+</Warning>
+
+## Next Steps
+
+Once your brand port is complete:
+
+1. **Submit a Pull Request**: Follow the [contribution guidelines](https://github.com/commaai/openpilot/blob/master/docs/CONTRIBUTING.md)
+2. **Respond to Feedback**: Address reviewer comments promptly
+3. **Add to Documentation**: Update supported cars list
+4. **Share with Community**: Post in Discord #car-ports channel
+
+<Card title="Need Help?" icon="discord" href="https://discord.comma.ai">
+  Join the comma.ai Discord community for support with your car port
+</Card>

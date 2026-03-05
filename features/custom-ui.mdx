@@ -1,0 +1,629 @@
+---
+title: 'Custom UI'
+description: 'Complete user interface redesign with extensive customization options and visual enhancements'
+icon: 'paint-brush'
+---
+
+## Overview
+
+Sunnypilot features a completely redesigned user interface, rewritten from the ground up using Raylib Python, replacing the original Qt C++ implementation. This modernization brings extensive customization options, improved performance, and a more intuitive user experience both on-road and off-road.
+
+<Info>
+The UI overhaul represents one of the largest changes in sunnypilot 2025+, touching every aspect of the visual experience from settings panels to onroad displays.
+</Info>
+
+## Complete UI Redesign
+
+### From Qt C++ to Raylib Python
+
+The 2026.001.000 release introduced a complete rewrite:
+
+<CardGroup cols={2}>
+  <Card title="Previous UI" icon="code">
+    - Built with Qt C++
+    - Limited customization
+    - Fixed layout designs
+    - Complex to modify
+  </Card>
+  
+  <Card title="New UI" icon="sparkles">
+    - Built with Raylib Python
+    - Highly customizable
+    - Modern, flexible design
+    - Easy to extend
+  </Card>
+</CardGroup>
+
+### Key Improvements
+
+- **Performance:** Smoother rendering and faster response times
+- **Maintainability:** Python codebase easier to develop and debug
+- **Flexibility:** More customization options and visual effects
+- **Consistency:** Unified design language across all screens
+
+## Offroad UI (Settings)
+
+### Reorganized Settings Panels
+
+Settings are now organized into intuitive, dedicated panels:
+
+<Tabs>
+  <Tab title="Steering">
+    **Lateral Control Settings:**
+    - Torque lateral control tuning
+    - Neural Network Lateral Control (NNLC)
+    - Pause lateral on blinker
+    - Lane change settings
+    - Dynamic Lane Profile (DLP)
+    - Custom steering rate cost
+  </Tab>
+  
+  <Tab title="Cruise">
+    **Longitudinal Control Settings:**
+    - Dynamic Experimental Control (DEC)
+    - Speed Limit Assist (SLA)
+    - Intelligent Cruise Button Management (ICBM)
+    - Smart Cruise Control (SCC-M/SCC-V)
+    - Acceleration profiles
+    - Custom cruise increments
+  </Tab>
+  
+  <Tab title="Vehicle">
+    **Vehicle-Specific Settings:**
+    - Vehicle selector (for non-fingerprinted cars)
+    - Platform-specific options
+    - Tire stiffness adjustments
+    - Brand-specific features
+  </Tab>
+  
+  <Tab title="Models">
+    **Driving Model Management:**
+    - Download manager with progress tracking
+    - Model folders and organization
+    - Favorites system
+    - Fuzzy search for finding models
+    - Cache refresh
+    - Currently supports ~86+ models
+  </Tab>
+  
+  <Tab title="Visuals">
+    **Visual Customization:**
+    - Path colors and styles
+    - Lead indicators
+    - Turn signals on screen
+    - Blind spot indicators
+    - Road name display
+    - Speed limit styling
+    - Rainbow road path 🌈
+    - Chevron metrics display
+  </Tab>
+  
+  <Tab title="Display">
+    **Screen Settings:**
+    - Brightness controls
+    - Interactive timeout
+    - Screen off while driving
+    - Wake behavior
+    - Developer UI toggle
+  </Tab>
+  
+  <Tab title="Trips">
+    **Trip Tracking:**
+    - View driving statistics
+    - Trip history
+    - Mileage tracking
+    - Session data
+  </Tab>
+  
+  <Tab title="sunnylink">
+    **Cloud Integration:**
+    - Device registration
+    - Settings backup/restore
+    - GitHub account pairing
+    - Sponsor tier display
+  </Tab>
+</Tabs>
+
+### Advanced Controls Toggle
+
+<Note>
+New users see a simplified set of settings by default. Enable **Advanced Controls** to unlock additional expert-level options.
+</Note>
+
+**Benefits:**
+- Lower barrier to entry for new users
+- Expert users get full control when needed
+- Reduces overwhelming option overload
+- Progressive disclosure of complexity
+
+### Models Panel Features
+
+The dedicated Models panel revolutionizes driving model management:
+
+<Steps>
+  <Step title="Browse Models">
+    View all available driving models from Night Strike (Oct 2023) through The Cool People's Models (Oct 2025)
+  </Step>
+  
+  <Step title="Search & Filter">
+    Use fuzzy search to quickly find models by name or date. Filter by favorites or folders.
+  </Step>
+  
+  <Step title="Download">
+    Download models with real-time progress tracking. Models are cached for offline switching.
+  </Step>
+  
+  <Step title="Switch Models">
+    Change driving models instantly without reinstalling branches
+  </Step>
+</Steps>
+
+## Onroad UI (Driving Screen)
+
+### Visual Elements
+
+<CardGroup cols={2}>
+  <Card title="Path Display" icon="route">
+    **Dynamic path visualization:**
+    - Green: Engaged and controlling
+    - Light Orange: Driver override
+    - Blue borders: Laneline mode
+    - Rainbow: Special visual effect 🌈
+  </Card>
+  
+  <Card title="Status Indicators" icon="gauge">
+    **Real-time information:**
+    - Speed (true speed or GPS)
+    - Set speed
+    - MADS state
+    - Lead distance/speed
+    - Feature status (DLP, DEC, SLC)
+  </Card>
+  
+  <Card title="Lead Vehicle" icon="car">
+    **Lead car information:**
+    - Distance to lead
+    - Lead speed
+    - Chevron metrics
+    - Departure alerts
+  </Card>
+  
+  <Card title="Navigation" icon="map">
+    **Map integration:**
+    - Road name display
+    - Speed limit signs
+    - Turn-by-turn directions
+    - Full-screen map option
+  </Card>
+</CardGroup>
+
+### Customizable Elements
+
+<AccordionGroup>
+  <Accordion title="Turn Signals & Blind Spot">
+    **MICI-style indicators:**
+    
+    - Turn signals display on screen when blinker is used
+    - Green: Blinker active, path clear
+    - Red: Blinker active, vehicle detected in blind spot
+    - MICI-style positioning and animation
+    
+    **Configuration:**
+    - Toggle on/off in Visuals panel
+    - Supports blind spot monitoring (BSM) integration
+    - Works on comma three/3X/four
+  </Accordion>
+  
+  <Accordion title="Speed Display Options">
+    **Multiple speed configurations:**
+    
+    - Display true speed (from wheel sensors)
+    - Display GPS speed (v_ego)
+    - Hide speedometer entirely
+    - Customizable units (MPH/km/h)
+    
+    **Speed Limit Display:**
+    - MUTCD style (US standard)
+    - Vienna Convention style
+    - Custom offset display
+    - Distance to next limit
+    - Color changes when speeding
+  </Accordion>
+  
+  <Accordion title="Lead Chevron Info">
+    **Detailed lead vehicle metrics:**
+    
+    Display below chevron:
+    - Distance (meters/feet)
+    - Relative speed
+    - Time-to-collision
+    - Lead acceleration
+    
+    **Multiple display modes:**
+    - Distance only
+    - Speed only
+    - Both simultaneously
+    - Off (hidden)
+  </Accordion>
+  
+  <Accordion title="Road Name Display">
+    **Current street information:**
+    
+    Shows the name of the road you're driving on using OpenStreetMap data
+    
+    **Features:**
+    - Large, readable font
+    - Updates automatically
+    - Works with offline OSM database
+    - Displays at top of screen
+  </Accordion>
+  
+  <Accordion title="Standstill Timer">
+    **Time tracking at stops:**
+    
+    - Shows how long you've been stopped
+    - Useful for traffic light timing
+    - Auto-hides when moving
+    - Configurable position
+  </Accordion>
+  
+  <Accordion title="Green Light & Lead Departure">
+    **Traffic awareness features:**
+    
+    **Green Light Indicator:**
+    - Chime when light turns green
+    - Only triggers if no lead vehicle
+    - Visual indicator on screen
+    
+    **Lead Departure Alert:**
+    - Notifies when car ahead moves
+    - Helpful in traffic jams
+    - Prevents delayed starts
+  </Accordion>
+</AccordionGroup>
+
+### Smart Cruise Control Elements
+
+For vehicles with openpilot longitudinal or ICBM:
+
+<CardGroup cols={2}>
+  <Card title="SCC Status" icon="gauge-high">
+    Display current cruise mode:
+    - Chill (ACC)
+    - Experimental (E2E)
+    - ICBM status
+  </Card>
+  
+  <Card title="Set Speed" icon="tachometer-alt">
+    Show and adjust:
+    - Current set speed
+    - Speed limit offset
+    - SLA adjustments
+  </Card>
+</CardGroup>
+
+## Display Customization
+
+### Brightness Controls
+
+<Tabs>
+  <Tab title="Global Override">
+    **Force specific brightness level:**
+    
+    - Override auto-brightness
+    - Set custom day/night levels
+    - Useful for very bright/dark conditions
+    - Independent of ambient sensor
+    
+    **Configuration:**
+    Settings → Display → Global Brightness Override
+  </Tab>
+  
+  <Tab title="Onroad Brightness">
+    **Driving-specific brightness:**
+    
+    - Set brightness while driving
+    - Different from offroad brightness
+    - Auto-adjust based on time of day
+    - Override ambient sensor when needed
+    
+    **Configuration:**
+    Settings → Display → Customizable Onroad Brightness
+  </Tab>
+</Tabs>
+
+### Interactive Timeout
+
+Control how long the screen responds to touches:
+
+- **Standard:** 30 seconds (default)
+- **Extended:** 60 seconds
+- **Always Active:** Never timeout
+- **Quick:** 10 seconds
+
+<Warning>
+Extended "Always Active" may impact battery life on cordless installations.
+</Warning>
+
+### Screen Off While Driving
+
+<AccordionGroup>
+  <Accordion title="Enable Screen Off">
+    **Power saving and distraction reduction:**
+    
+    Turn off the display while driving after a configurable timeout:
+    - Saves power on cordless setups
+    - Reduces visual distraction
+    - Screen wakes for alerts
+    
+    **Timer options:**
+    - 10 seconds
+    - 30 seconds
+    - 1 minute
+    - 3 minutes
+    - Always On (never turn off)
+  </Accordion>
+  
+  <Accordion title="Wake Behavior">
+    **Control when screen wakes up:**
+    
+    **Wake with All Events:**
+    - Screen wakes for any alert
+    - Includes non-critical notifications
+    - Good for staying informed
+    
+    **Wake with Critical Events Only:**
+    - Screen only wakes for important alerts
+    - Disengagements, warnings, errors
+    - Minimizes distractions
+    
+    **Manual Wake:**
+    - Tap screen to wake
+    - Press steering wheel button
+  </Accordion>
+</AccordionGroup>
+
+## Developer UI
+
+### Enhanced Developer Metrics
+
+Toggle Developer UI to see real-time system data:
+
+**Single Column + Row Design:**
+
+<CardGroup cols={3}>
+  <Card title="Controls" icon="gamepad">
+    - Steering angle
+    - Torque values
+    - Lateral acceleration
+    - Friction
+  </Card>
+  
+  <Card title="Vehicle" icon="car-side">
+    - Acceleration
+    - Lead speed
+    - EPS torque
+    - Bearing degree
+  </Card>
+  
+  <Card title="System" icon="microchip">
+    - Model execution time
+    - CPU/GPU temperature
+    - Memory usage
+    - Frame drops
+  </Card>
+</CardGroup>
+
+**Bottom Row Metrics:**
+- ACC. = Acceleration
+- L.S. = Lead Speed  
+- E.T. = EPS Torque
+- B.D. = Bearing Degree
+- FRI. = Friction
+- L.A. = Lateral Acceleration
+- ALT. = Altitude (with OSM)
+
+### Error Log Viewer
+
+Integrated error log viewer in Developer UI:
+
+- View recent errors without SSH
+- Filter by severity
+- Copy error details
+- Share for debugging
+
+## Software Management UI
+
+### Branch Selector
+
+**Searchable branch selection:**
+
+<Steps>
+  <Step title="Access Branch Selector">
+    Settings → Software → Change Branch
+  </Step>
+  
+  <Step title="Search or Browse">
+    Use search to find specific branches or browse the full list
+  </Step>
+  
+  <Step title="View Details">
+    See branch information, current version, and update status
+  </Step>
+  
+  <Step title="Switch & Update">
+    Select new branch and check for updates
+  </Step>
+</Steps>
+
+### Platform Selector
+
+**Manual vehicle fingerprint selection:**
+
+If your vehicle isn't automatically detected:
+
+1. Navigate to Settings → Vehicle → Platform Selector
+2. Search for your vehicle make/model/year
+3. Select the correct fingerprint
+4. Confirm and reboot
+
+**Displays:**
+- Current detected platform
+- Available fingerprints
+- Safety model information
+
+## Visual Effects
+
+### Rainbow Road Path 🌈
+
+<Note>
+Comma three/3X/four exclusive feature
+</Note>
+
+**Enable a colorful, rainbow-colored driving path:**
+
+- Toggle in Settings → Visuals → Rainbow Path
+- Smooth color gradient animation
+- Updates in real-time
+- Pure visual enhancement (doesn't affect control)
+
+### Rocket Fuel (Coming Soon)
+
+Visual effect showing engagement intensity - may return in future releases.
+
+## Convenience Features
+
+<CardGroup cols={2}>
+  <Card title="Exit Offroad Button" icon="power-off">
+    Blue button to quickly exit "Always Offroad" mode and return to normal operation
+  </Card>
+  
+  <Card title="Always Offroad Mode" icon="pause">
+    Force device to stay in offroad mode, allowing setting changes while car is on
+  </Card>
+  
+  <Card title="Quiet Mode" icon="volume-mute">
+    Silence non-critical sounds and chimes for a quieter driving experience
+  </Card>
+  
+  <Card title="Max Time Offroad" icon="clock">
+    Customize how long device stays awake after turning off the car
+  </Card>
+</CardGroup>
+
+## Network UI
+
+### NetworkUISP
+
+Enhanced network management interface:
+
+- WiFi network scanning and connection
+- Tethering controls
+- Network status indicators
+- Connection quality metrics
+- Data usage tracking (with sunnylink)
+
+## Sponsor Tier Visual Integration
+
+### Color Mapping
+
+sunnylink sponsor tiers are visually represented:
+
+<CardGroup cols={3}>
+  <Card title="Novice" icon="circle" color="#00FF00">
+    Green theme accents
+  </Card>
+  
+  <Card title="Intermediate" icon="circle" color="#0080FF">
+    Blue theme accents
+  </Card>
+  
+  <Card title="Expert" icon="circle" color="#FFD700">
+    Gold theme accents
+  </Card>
+</CardGroup>
+
+**Where it appears:**
+- sunnylink panel borders
+- Status indicators  
+- UI accent colors
+- Panel highlights
+
+## UI Fonts & Branding
+
+### Custom sunnypilot Font
+
+- Proprietary font designed for readability
+- Optimized for automotive displays
+- Consistent sizing across resolutions
+- Supports multiple languages
+
+### sunnypilot Branding
+
+Reimplemented with Raylib:
+- Updated logo rendering
+- Brand colors and theme
+- Consistent visual identity
+- Modern, clean aesthetic
+
+## Configuration Tips
+
+<AccordionGroup>
+  <Accordion title="Optimize for Highway Driving">
+    **Recommended settings:**
+    
+    - Enable Road Name display
+    - Show Speed Limit with offset
+    - Enable Lead Departure Alert
+    - Display both distance and speed on chevron
+    - Keep screen always on
+  </Accordion>
+  
+  <Accordion title="Optimize for City Driving">
+    **Recommended settings:**
+    
+    - Enable Turn Signals on screen
+    - Show Standstill Timer
+    - Enable Green Light Indicator
+    - Show true speed (wheel sensors)
+    - Use shorter interactive timeout
+  </Accordion>
+  
+  <Accordion title="Minimize Distractions">
+    **Clean UI setup:**
+    
+    - Disable non-essential visual elements
+    - Use Screen Off While Driving
+    - Enable Quiet Mode
+    - Wake with critical events only
+    - Hide speedometer if desired
+  </Accordion>
+  
+  <Accordion title="Maximum Information">
+    **Power user setup:**
+    
+    - Enable Developer UI
+    - Show all metrics on chevron
+    - Display road name
+    - Show speed limit with offset
+    - Enable all visual indicators
+    - Use always-on screen
+  </Accordion>
+</AccordionGroup>
+
+## Related Features
+
+- [MADS](/features/mads) - Visual indicators reflect MADS states
+- [OSM Integration](/features/osm-integration) - Road names and speed limits
+- [sunnylink](/features/sunnylink) - UI preferences backed up to cloud
+- [Custom Models](/features/custom-models) - Model management UI
+
+## Source Code
+
+UI implementation can be found in:
+
+- `selfdrive/ui/` - Main UI components (Raylib Python)
+- `sunnypilot/selfdrive/ui/` - sunnypilot-specific UI enhancements
+- UI panels and widgets throughout the codebase
+
+Note: The complete rewrite to Raylib Python is one of the largest changesets in sunnypilot history, touching nearly every visual component.

@@ -1,0 +1,383 @@
+---
+title: Frequently Asked Questions
+description: Common questions about sunnypilot installation, compatibility, features, and safety
+icon: circle-question
+---
+
+## General Questions
+
+<AccordionGroup>
+  <Accordion title="What is sunnypilot?">
+    sunnypilot is a fork of comma.ai's openpilot, an open source driver assistance system. It offers a unique driving experience for over 300+ supported car makes and models with modified behaviors of driving assist engagements. sunnypilot complies with comma.ai's safety rules as accurately as possible.
+  </Accordion>
+
+  <Accordion title="How is sunnypilot different from stock openpilot?">
+    sunnypilot extends openpilot with additional features including:
+    - **MADS (Modular Assistive Driving System)**: Enhanced engagement modes
+    - **Custom driving models**: Choose from 86+ models via Model Manager
+    - **NNLC (Neural Network Lateral Control)**: Advanced steering control
+    - **Speed Limit Assist**: Automatic speed adjustment based on map data
+    - **sunnylink**: Cloud settings backup and remote management
+    - **Enhanced UI**: Customizable visuals and information displays
+    - Many more features while maintaining comma.ai's safety standards
+  </Accordion>
+
+  <Accordion title="Is sunnypilot safe?">
+    sunnypilot complies with comma.ai's safety rules and maintains the same safety checks as upstream openpilot. The project:
+    - Preserves driver monitoring requirements
+    - Maintains actuation safety checks
+    - Runs comma.ai's safety test suite
+    - Implements regression testing for stability
+    
+    **IMPORTANT**: This is alpha quality software for research purposes. You are responsible for complying with local laws and regulations. Always pay attention and be ready to take control.
+  </Accordion>
+
+  <Accordion title="What devices are supported?">
+    sunnypilot supports:
+    - **comma four** (latest generation)
+    - **comma 3X**
+    - **comma three**
+    - **comma two**
+    
+    Older devices (EON, NEO) are no longer supported.
+  </Accordion>
+</AccordionGroup>
+
+## Compatibility
+
+<AccordionGroup>
+  <Accordion title="Is my car supported?">
+    sunnypilot supports over 300+ car makes and models. To check if your car is supported:
+    
+    1. Visit the [Community Forum](https://community.sunnypilot.ai/)
+    2. Search for your car's make, model, and year
+    3. Check the compatibility discussions for your specific vehicle
+    
+    If your car isn't fingerprinted automatically, you can use the **Vehicle Selector** feature to manually select your vehicle.
+  </Accordion>
+
+  <Accordion title="What if my car isn't automatically detected?">
+    sunnypilot includes a **Vehicle Selector** feature that allows manual vehicle selection when automatic fingerprinting fails. This helps you get sunnypilot working even if your specific trim or configuration isn't in the database.
+  </Accordion>
+
+  <Accordion title="Does sunnypilot work with stock longitudinal control?">
+    Yes! sunnypilot includes **Custom Stock Longitudinal Control** for many platforms:
+    - Chrysler/Jeep/Ram
+    - Mazda
+    - Volkswagen PQ
+    - Select Hyundai/Kia/Genesis (some CAN-FD platforms may be limited)
+    
+    This allows sunnypilot to provide lateral control while using your car's stock adaptive cruise control.
+  </Accordion>
+
+  <Accordion title="What about Honda with comma pedal?">
+    sunnypilot continues to support the comma pedal for Honda vehicles, even though upstream openpilot has deprecated it. If you have a comma pedal installed, sunnypilot will maintain software support.
+  </Accordion>
+</AccordionGroup>
+
+## Installation
+
+<AccordionGroup>
+  <Accordion title="How do I install sunnypilot?">
+    <Steps>
+      <Step title="Check Requirements">
+        Visit [Getting Started](https://community.sunnypilot.ai/t/getting-started-using-sunnypilot-in-your-supported-car/251) to see what you need
+      </Step>
+      <Step title="Read Installation Guide">
+        Follow the [installation instructions](https://community.sunnypilot.ai/t/read-before-installing-sunnypilot/254) carefully
+      </Step>
+      <Step title="Choose Branch">
+        Review [Recommended Branch Installations](https://community.sunnypilot.ai/t/recommended-branch-installations/235) for your setup
+      </Step>
+      <Step title="Install">
+        Follow the branch-specific installation process
+      </Step>
+    </Steps>
+  </Accordion>
+
+  <Accordion title="Which branch should I use?">
+    Branch recommendations vary by device and use case. Visit the [Recommended Branch Installations](https://community.sunnypilot.ai/t/recommended-branch-installations/235) forum thread for current recommendations.
+    
+    Generally:
+    - **release branches**: Most stable, recommended for daily use
+    - **staging branches**: Testing new features before release
+    - **dev branches**: Cutting-edge development, may be unstable
+  </Accordion>
+
+  <Accordion title="Can I switch branches after installation?">
+    Yes! Use the **Branch Selector** in the Software panel:
+    1. Go to Settings → Software
+    2. Select your desired branch
+    3. Check for update
+    
+    The Branch Selector includes search functionality to help you find the right branch.
+  </Accordion>
+
+  <Accordion title="Do I need comma Prime?">
+    No, comma Prime is not required to use sunnypilot. However, comma Prime provides:
+    - Remote access via [connect.comma.ai](https://connect.comma.ai/)
+    - 1 year of driving footage storage
+    - Live streaming capability
+    - Premium navigation features
+    
+    By default, sunnypilot uploads driving data to comma servers (you can disable this in settings).
+  </Accordion>
+</AccordionGroup>
+
+## Features
+
+<AccordionGroup>
+  <Accordion title="What is MADS?">
+    **Modular Assistive Driving System (MADS)** is sunnypilot's enhanced engagement framework that provides:
+    - More flexible engagement modes
+    - Better integration with stock safety systems
+    - Platform-specific customization
+    - Enhanced user control over engagement behavior
+  </Accordion>
+
+  <Accordion title="How do I change driving models?">
+    Use the **Driving Model Manager**:
+    1. Go to Settings → Models
+    2. Browse available models (~86 models from Oct 2023 to Oct 2025)
+    3. Download your preferred model (requires internet)
+    4. Select the model to activate it
+    
+    Features:
+    - Model folders and organization
+    - Favorites system
+    - Fuzzy search
+    - Cache management
+  </Accordion>
+
+  <Accordion title="What is sunnylink?">
+    **sunnylink** is sunnypilot's cloud connectivity service that provides:
+    - **Settings Backup**: Encrypted backup and restore of your configuration
+    - **GitHub Integration**: Pair your account via QR code
+    - **Sponsor Benefits**: Inheritance of sponsorship status for extra features
+    - **Remote Management**: Infrastructure ready for future remote settings control
+    
+    Security: Settings are encrypted on-device with AES encryption, transmitted via HTTPS, and stored encrypted on sunnylink servers.
+  </Accordion>
+
+  <Accordion title="What is Speed Limit Assist (SLA)?">
+    **Speed Limit Assist** provides:
+    - Integration with @pfeiferj's mapd for offline map downloads
+    - Speed Limit Resolver (sources: car, map, combined)
+    - On-screen speed limit display and warnings
+    - Automatic cruise speed adjustment based on speed limits
+    
+    Note: Currently disabled for some Tesla and Rivian configurations.
+  </Accordion>
+
+  <Accordion title="What is NNLC?">
+    **Neural Network Lateral Control (NNLC)** - formerly NNFF - replaces the standard lateral torque controller with a neural network trained on each car's specific EPS firmware. This provides:
+    - More accurate steering control
+    - Better adaptation to your specific vehicle
+    - Reduced steering oscillations
+    - Car-specific tuning
+  </Accordion>
+
+  <Accordion title="Can I use Navigate on openpilot?">
+    Navigate on openpilot (NoO) was removed in version 2025.001.000 as upstream comma.ai is prioritizing driving model improvements. The feature may return in a future release once upstream model improvements make it more reliable.
+  </Accordion>
+</AccordionGroup>
+
+## Usage & Operation
+
+<AccordionGroup>
+  <Accordion title="How do I engage sunnypilot?">
+    Engagement varies by car platform. Generally:
+    - Activate your car's adaptive cruise control
+    - Enable lane keep assist (if applicable)
+    - sunnypilot will engage when conditions are met
+    
+    MADS provides additional engagement options depending on your vehicle.
+  </Accordion>
+
+  <Accordion title="How do I switch between Chill and Experimental Mode?">
+    Press and hold the **DISTANCE button** on your steering wheel for over 0.5 seconds to switch between:
+    - **Chill Mode**: Standard openpilot ACC
+    - **Experimental Mode**: End-to-end longitudinal control
+    
+    Available on all openpilot longitudinal capable cars.
+  </Accordion>
+
+  <Accordion title="What is Dynamic Experimental Control (DEC)?">
+    **DEC** automatically switches between openpilot ACC and End-to-end longitudinal based on driving conditions for a more natural experience. It:
+    - Only activates in Experimental Mode
+    - Intelligently selects the best control mode
+    - Sets initial cruise speed to current vehicle speed
+  </Accordion>
+
+  <Accordion title="Can I customize the driving personality?">
+    Yes! Use the **Driving Personality** setting (formerly Gap Adjust Cruise):
+    - **Stock**: Recommended default
+    - **Aggressive**: Shorter follow distance, quicker response
+    - **Maniac**: Most aggressive settings
+    
+    Press the DISTANCE/FOLLOW DISTANCE/GAP DISTANCE button on your steering wheel to cycle through personalities.
+  </Accordion>
+
+  <Accordion title="Does sunnypilot work at night?">
+    Yes, sunnypilot includes improved models trained on nighttime data. The driving model handles:
+    - Low light conditions
+    - Heavy rain
+    - Various weather conditions
+    
+    Driver monitoring also works in various lighting conditions.
+  </Accordion>
+</AccordionGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Why won't sunnypilot engage?">
+    Common reasons:
+    - **Calibration needed**: Wait for device to calibrate (visible on screen)
+    - **Speed requirements**: Some cars require minimum speed
+    - **Safety checks**: Ensure seatbelt fastened, door closed, etc.
+    - **Driver monitoring**: Face must be visible to camera
+    - **Platform limits**: Check platform-specific requirements
+  </Accordion>
+
+  <Accordion title="Why does the device get hot?">
+    Processing driving models is computationally intensive. Version 2025.001.000 includes:
+    - 20% CPU utilization reduction
+    - Better thermal management
+    - Improved fan control for comma three
+    - Reduced power consumption
+    
+    Ensure:
+    - Device has proper airflow
+    - Not in direct sunlight
+    - Mounting position allows heat dissipation
+  </Accordion>
+
+  <Accordion title="My settings were lost after reset. What now?">
+    If you're a sponsor with sunnylink access:
+    1. Enable sunnylink in settings
+    2. Pair your GitHub account
+    3. Restore from your encrypted backup
+    
+    sunnylink prevents settings loss through secure cloud backup.
+  </Accordion>
+
+  <Accordion title="Where can I get help?">
+    Support resources:
+    1. **Search the [Community Forum](https://community.sunnypilot.ai/)** - Most questions already answered
+    2. **Check [docs.sunnypilot.ai](https://docs.sunnypilot.ai/)** - Comprehensive documentation
+    3. **Post in the forum** - Include car model, sunnypilot version, branch, and error logs
+    4. **GitHub Issues** - For confirmed bugs and feature requests
+  </Accordion>
+</AccordionGroup>
+
+## Data & Privacy
+
+<AccordionGroup>
+  <Accordion title="What data does sunnypilot collect?">
+    By default, sunnypilot uploads:
+    - Road-facing camera footage
+    - CAN bus data
+    - GPS, IMU, magnetometer data
+    - Thermal sensors
+    - Crashes and system logs
+    
+    **Driver-facing camera and microphone** are only logged if you explicitly opt-in.
+    
+    You can disable data collection in settings if desired.
+  </Accordion>
+
+  <Accordion title="Can I use sunnypilot offline?">
+    Yes, sunnypilot works offline for normal driving. Internet is needed for:
+    - Downloading driving models
+    - sunnylink features
+    - Software updates
+    - OpenStreetMap database downloads
+    - Uploading driving data (optional)
+  </Accordion>
+
+  <Accordion title="Where does my driving data go?">
+    By default, driving data is uploaded to comma servers. You can:
+    - Access it via [connect.comma.ai](https://connect.comma.ai/)
+    - Disable cellular uploads (Settings → Device)
+    - Disable all uploads (you'll need to manage storage manually)
+    
+    See the Data Policy in README for full details on data usage rights.
+  </Accordion>
+</AccordionGroup>
+
+## Contributing
+
+<AccordionGroup>
+  <Accordion title="How can I contribute to sunnypilot?">
+    Several ways to contribute:
+    - **Code**: Submit pull requests for bug fixes (encouraged!)
+    - **Testing**: Test features on different car models
+    - **Documentation**: Improve guides and docs
+    - **Community**: Help others in the forum
+    - **Sponsorship**: Support development financially
+    
+    Pull requests should be against the most current `master` branch.
+  </Accordion>
+
+  <Accordion title="Can I request features?">
+    Yes! Share your ideas in the Community Forum. As a sponsor, you gain:
+    - Direct influence over development priorities
+    - Early access to new features
+    - Opportunity to shape the roadmap
+  </Accordion>
+
+  <Accordion title="How do I report bugs?">
+    To report bugs:
+    1. Check if already reported in GitHub Issues or Forum
+    2. Gather information:
+       - Car make/model/year
+       - sunnypilot version and branch
+       - Error logs from the device
+       - Steps to reproduce
+    3. Post in the Community Forum or create a GitHub Issue
+    4. Be responsive to questions from developers
+  </Accordion>
+</AccordionGroup>
+
+## Licensing & Legal
+
+<AccordionGroup>
+  <Accordion title="What license does sunnypilot use?">
+    sunnypilot is released under the **MIT License**. It includes:
+    - Original sunnypilot work
+    - Code derived from comma.ai's openpilot (also MIT licensed)
+    - Additional disclaimers from openpilot regarding safety and liability
+    
+    See the [LICENSE](https://github.com/sunnypilot/sunnypilot/blob/master/LICENSE) file for full terms.
+  </Accordion>
+
+  <Accordion title="Am I liable for using sunnypilot?">
+    Yes. As stated in the license:
+    
+    > **THIS IS ALPHA QUALITY SOFTWARE FOR RESEARCH PURPOSES ONLY. THIS IS NOT A PRODUCT. YOU ARE RESPONSIBLE FOR COMPLYING WITH LOCAL LAWS AND REGULATIONS. NO WARRANTY EXPRESSED OR IMPLIED.**
+    
+    Users indemnify comma.ai and sunnypilot contributors from liability. You are responsible for safe operation of your vehicle at all times.
+  </Accordion>
+
+  <Accordion title="Is sunnypilot legal in my area?">
+    **You are responsible for complying with local laws and regulations.** Driver assistance system laws vary by location. Research your local requirements before using sunnypilot.
+  </Accordion>
+</AccordionGroup>
+
+## Still Have Questions?
+
+<CardGroup cols={2}>
+  <Card title="Community Forum" icon="comments" href="https://community.sunnypilot.ai/">
+    Ask the community and get help from experienced users
+  </Card>
+  <Card title="Documentation" icon="book" href="https://docs.sunnypilot.ai/">
+    Explore comprehensive documentation
+  </Card>
+  <Card title="GitHub Issues" icon="github" href="https://github.com/sunnypilot/sunnypilot/issues">
+    Report bugs or request features
+  </Card>
+  <Card title="GitHub Discussions" icon="message" href="https://github.com/sunnypilot/sunnypilot/discussions">
+    Join discussions about development
+  </Card>
+</CardGroup>

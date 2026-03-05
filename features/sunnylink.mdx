@@ -1,0 +1,444 @@
+---
+title: 'sunnylink'
+description: 'Cloud connectivity platform for settings backup, remote management, and device registration'
+icon: 'cloud'
+---
+
+## Overview
+
+sunnylink is sunnypilot's cloud connectivity platform that provides secure device registration, encrypted settings backup and restore, and future remote management capabilities. Think of it as your sunnypilot account in the cloud, ensuring your configuration is never lost and enabling advanced features.
+
+<Info>
+sunnylink uses end-to-end encryption to protect your settings data. All encryption happens on-device before transmission, and only your device can decrypt the backups.
+</Info>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Device Registration" icon="fingerprint">
+    Secure device pairing with your GitHub account using QR code scanning
+  </Card>
+  
+  <Card title="Settings Backup" icon="cloud-arrow-up">
+    Automatically or manually backup your sunnypilot configuration to the cloud
+  </Card>
+  
+  <Card title="Settings Restore" icon="cloud-arrow-down">
+    Restore your settings after a device reset or when setting up a new device
+  </Card>
+  
+  <Card title="Encryption" icon="lock">
+    AES-256 encryption derived from your device's RSA private key
+  </Card>
+</CardGroup>
+
+## How It Works
+
+### Registration Process
+
+<Steps>
+  <Step title="Enable sunnylink">
+    Navigate to **Settings → Device → sunnylink** and toggle it on. Your device will automatically register on next boot.
+  </Step>
+  
+  <Step title="Pair GitHub Account">
+    Scan the QR code displayed in settings to pair your GitHub account. This enables sponsor tier features and API access.
+  </Step>
+  
+  <Step title="Automatic Setup">
+    sunnylink automatically generates a unique device ID and cryptographic keys for secure communication.
+  </Step>
+</Steps>
+
+### Security Architecture
+
+<Accordion title="Encryption Details">
+  **Key Generation:**
+  - RSA key pair generated on-device
+  - AES-256 encryption key derived from RSA private key
+  - Elliptic curve keys supported for enhanced security
+  
+  **Data Protection:**
+  - Settings encrypted on-device before upload
+  - Transmitted over HTTPS
+  - Stored encrypted on sunnylink servers
+  - Only your device can decrypt backups
+  
+  **Implementation:**
+  ```python
+  # Settings are compressed and encrypted before upload
+  config_json = json.dumps(config_data)
+  encrypted_config = encrypt_compressed_data(config_json, use_aes_256=True)
+  ```
+</Accordion>
+
+## Settings Backup & Restore
+
+### Creating Backups
+
+<Tabs>
+  <Tab title="Manual Backup">
+    **From Device Settings:**
+    
+    1. Go to **Settings → Device → sunnylink**
+    2. Tap **Create Backup**
+    3. Wait for upload to complete (progress shown)
+    4. Confirmation displayed when successful
+    
+    **What's Backed Up:**
+    - All parameters marked with `BACKUP` flag
+    - Feature toggles and configurations
+    - Tuning values and offsets
+    - UI preferences and customizations
+  </Tab>
+  
+  <Tab title="Automatic Backup">
+    **Coming Soon:**
+    
+    Future releases will support:
+    - Scheduled automatic backups
+    - Backup on setting changes
+    - Incremental backup updates
+    - Backup history management
+  </Tab>
+</Tabs>
+
+### Restoring Settings
+
+<Warning>
+Restoring settings will overwrite your current configuration. Make sure you want to proceed before confirming.
+</Warning>
+
+<Steps>
+  <Step title="Access Restore">
+    Navigate to **Settings → Device → sunnylink → Restore Backup**
+  </Step>
+  
+  <Step title="Select Version">
+    Choose which backup version to restore (latest is selected by default)
+  </Step>
+  
+  <Step title="Confirm Restore">
+    Review the backup details and confirm the restore operation
+  </Step>
+  
+  <Step title="Reboot">
+    Device will apply settings and may require a reboot for some changes to take effect
+  </Step>
+</Steps>
+
+## API Integration
+
+sunnylink provides API access for advanced users and future integrations:
+
+### Authentication
+
+```python
+from openpilot.sunnypilot.sunnylink.api import SunnylinkApi
+
+# Initialize API client
+api = SunnylinkApi(device_id)
+
+# Get authentication token
+token = api.get_token()
+
+# Make authenticated requests
+result = api.api_get(
+    endpoint="backup/device_id",
+    access_token=token
+)
+```
+
+### Available Endpoints
+
+<AccordionGroup>
+  <Accordion title="Device Registration">
+    **Endpoint:** `POST /register`
+    
+    **Purpose:** Register a new device with sunnylink
+    
+    **Authentication:** Public key exchange
+    
+    **Response:** Returns unique sunnylink device ID
+  </Accordion>
+  
+  <Accordion title="Backup Management">
+    **Create Backup:** `PUT /backup/{device_id}`
+    
+    **Get Backup:** `GET /backup/{device_id}/{version?}`
+    
+    **List Backups:** `GET /backups/{device_id}`
+    
+    **Authentication:** JWT token required
+  </Accordion>
+  
+  <Accordion title="Parameter Sync (Future)">
+    **Coming Soon:**
+    - Remote parameter reading
+    - Remote parameter updates
+    - Parameter change notifications
+    - Bulk parameter operations
+  </Accordion>
+</AccordionGroup>
+
+## Sponsor Integration
+
+### GitHub Sponsors Benefits
+
+Pairing your GitHub account enables automatic sponsor tier detection:
+
+<CardGroup cols={3}>
+  <Card title="Novice Tier" icon="seedling">
+    - Basic sunnylink features
+    - Settings backup/restore
+    - Standard support
+  </Card>
+  
+  <Card title="Intermediate Tier" icon="tree">
+    - All Novice features
+    - Early access to features
+    - Priority support
+    - Extended backup history
+  </Card>
+  
+  <Card title="Expert Tier" icon="crown">
+    - All Intermediate features
+    - Beta feature access
+    - Custom color schemes
+    - Direct development influence
+  </Card>
+</CardGroup>
+
+### Tier Detection
+
+Your sponsor status is automatically detected when you:
+
+1. Pair your GitHub account via QR code
+2. Device validates sponsorship via API
+3. Features unlock based on tier level
+4. UI reflects sponsor tier with color coding
+
+## Remote Features (Pending)
+
+<Note>
+The infrastructure for remote management is ready but not yet fully activated. An announcement will be made when these features go live.
+</Note>
+
+### Planned Capabilities
+
+<AccordionGroup>
+  <Accordion title="Remote Settings Management">
+    **Manage device settings from anywhere:**
+    - View current configuration
+    - Update parameters remotely
+    - Push setting changes to device
+    - Sync settings across multiple devices
+  </Accordion>
+  
+  <Accordion title="Driving Model Switching">
+    **Remote model management:**
+    - Switch driving models without physical access
+    - Download new models remotely
+    - Manage model cache
+    - Schedule model updates
+  </Accordion>
+  
+  <Accordion title="Fleet Management">
+    **For multiple devices:**
+    - Centralized configuration management
+    - Bulk setting deployment
+    - Device health monitoring
+    - Usage statistics and analytics
+  </Accordion>
+</AccordionGroup>
+
+## Configuration
+
+### Enable sunnylink
+
+<Steps>
+  <Step title="Navigate to Settings">
+    Go to **Settings → Device → sunnylink**
+  </Step>
+  
+  <Step title="Accept Terms">
+    Review and accept the sunnylink Terms of Service
+  </Step>
+  
+  <Step title="Enable Service">
+    Toggle **Enable sunnylink** to on
+  </Step>
+  
+  <Step title="Confirm Registration">
+    Device will register automatically on next boot. Check for "sunnylink registered" confirmation.
+  </Step>
+</Steps>
+
+### Optional Settings
+
+<CardGroup cols={2}>
+  <Card title="Enable Uploader" icon="upload">
+    Allow upload of driving logs to sunnylink servers for analysis (requires non-metered connection)
+  </Card>
+  
+  <Card title="GitHub Pairing" icon="github">
+    Scan QR code to pair your GitHub account and unlock sponsor features
+  </Card>
+</CardGroup>
+
+## Data Upload
+
+### Swaglog Integration
+
+When uploader is enabled, sunnylink can collect and analyze:
+
+- Driving logs for performance analysis
+- Error reports for debugging
+- Usage statistics (anonymous)
+- Performance metrics
+
+<Warning>
+**Data Usage Considerations:**
+
+- Uploads only occur on non-metered connections (WiFi)
+- Can consume significant bandwidth for full driving logs
+- Disable uploader if you have data caps or slow internet
+</Warning>
+
+### Privacy Controls
+
+You maintain full control over data collection:
+
+1. **Disable sunnylink entirely** - No cloud communication
+2. **Disable uploader** - Registration only, no log uploads  
+3. **Selective uploads** - Choose what data to share
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Registration fails">
+    **Symptoms:**
+    - "SunnylinkTempFault" error
+    - Device shows unregistered after enabling
+    - QR code won't display
+    
+    **Solutions:**
+    
+    1. Check internet connectivity (WiFi or mobile data)
+    2. Verify device has network access during boot
+    3. Check for firewall/proxy blocking sunnylink API
+    4. Try disabling and re-enabling sunnylink
+    5. Reboot device and wait for automatic registration
+    
+    **Logs to check:**
+    ```bash
+    # Check registration logs
+    cat /data/community/crashes/registration_manager.log
+    ```
+  </Accordion>
+  
+  <Accordion title="Backup fails to create">
+    **Possible causes:**
+    
+    - No internet connection
+    - sunnylink not registered
+    - API server timeout
+    - Encryption error
+    
+    **Debugging steps:**
+    
+    1. Verify sunnylink shows as registered
+    2. Check internet connectivity
+    3. Review backup progress indicator
+    4. Try again after waiting a few minutes
+    5. Check device logs for specific errors
+  </Accordion>
+  
+  <Accordion title="Restore doesn't apply settings">
+    **Check these:**
+    
+    - Settings were successfully downloaded
+    - Restore completed to 100%
+    - No error messages during restore
+    - Device rebooted after restore
+    
+    **Note:** Some settings only take effect after reboot. If restore completed successfully but settings seem unchanged, try rebooting your device.
+    
+    **Version compatibility:** Settings from much newer or older versions may not fully restore if parameter definitions have changed.
+  </Accordion>
+  
+  <Accordion title="GitHub pairing not working">
+    **Requirements:**
+    
+    - sunnylink must be registered first
+    - QR code must be scanned with camera app
+    - GitHub account must be accessible
+    
+    **Steps:**
+    
+    1. Ensure sunnylink is enabled and registered
+    2. Navigate to sunnylink panel
+    3. Use phone camera to scan QR code
+    4. Complete GitHub OAuth flow
+    5. Return to device to confirm pairing
+  </Accordion>
+</AccordionGroup>
+
+## Technical Details
+
+### Backup Manager
+
+The backup system is implemented in `sunnypilot/sunnylink/backups/manager.py`:
+
+```python
+class BackupManagerSP:
+    """Manages device configuration backups to/from sunnylink"""
+    
+    # Status tracking
+    - backup_status: idle | inProgress | completed | failed
+    - restore_status: idle | inProgress | completed | failed
+    - progress: 0.0 to 100.0
+    
+    # Operations
+    - create_backup(): Collect, encrypt, upload settings
+    - restore_backup(version): Download, decrypt, apply settings
+```
+
+### Parameter Filtering
+
+Only parameters marked with `ParamKeyFlag.BACKUP` are included:
+
+- Feature configuration toggles
+- Tuning values and offsets
+- UI preferences
+- Custom settings
+
+**Excluded from backups:**
+- Secrets and tokens
+- Device-specific identifiers
+- Temporary runtime state
+- Cache and debug data
+
+### Network Requirements
+
+- **Registration:** One-time HTTPS connection to sunnylink API
+- **Backups:** HTTPS upload on demand
+- **Restore:** HTTPS download on demand
+- **No persistent connection required**
+
+## Source Code
+
+Key implementation files:
+
+- `sunnypilot/sunnylink/registration_manager.py` - Device registration
+- `sunnypilot/sunnylink/backups/manager.py` - Backup/restore logic
+- `sunnypilot/sunnylink/backups/AESCipher.py` - Encryption implementation
+- `sunnypilot/sunnylink/api.py` - API client
+- `sunnypilot/sunnylink/utils.py` - Helper functions
+- `sunnypilot/sunnylink/athena/sunnylinkd.py` - Background service
+
+## Related Features
+
+- [Custom Models](/features/custom-models) - Remote model management (coming soon)
+- [Custom UI](/features/custom-ui) - UI preferences backed up by sunnylink
+- [Settings Guide](/guides/settings) - Configure sunnylink options

@@ -1,0 +1,570 @@
+---
+title: Testing Guide
+description: Running and writing tests for sunnypilot
+icon: vial
+---
+
+## Overview
+
+sunnypilot uses **pytest** as its testing framework. The test suite includes unit tests, integration tests, and process replay tests to ensure code quality and catch regressions.
+
+## Running Tests
+
+### Quick Start
+
+```bash
+# Run all tests (parallel execution)
+pytest
+
+# Run with verbose output
+pytest -v
+
+# Run specific test file
+pytest selfdrive/car/tests/test_models.py
+
+# Run specific test function
+pytest selfdrive/car/tests/test_models.py::test_car_models
+```
+
+<Tip>
+  Tests run in parallel by default using `pytest-xdist` for faster execution.
+</Tip>
+
+### Test Organization
+
+Tests are located alongside source code:
+
+```
+selfdrive/
+├── car/
+│   ├── interfaces.py
+│   └── tests/
+│       ├── test_car_interfaces.py
+│       └── test_models.py
+├── controls/
+│   ├── controlsd.py
+│   └── tests/
+│       └── test_following_distance.py
+system/
+└── tests/
+    └── test_manager.py
+sunnypilot/
+└── selfdrive/
+    └── tests/
+        └── test_sunnypilot_features.py
+```
+
+## Test Configuration
+
+Test configuration is in `pyproject.toml`:
+
+```toml
+[tool.pytest.ini_options]
+minversion = "6.0"
+addopts = "
+  --ignore=openpilot/ 
+  --ignore=opendbc/ 
+  --ignore=panda/ 
+  -Werror 
+  --strict-config 
+  --strict-markers 
+  --durations=10 
+  -n auto 
+  --dist=loadgroup
+"
+testpaths = [
+  "common",
+  "selfdrive",
+  "system",
+  "tools",
+  "cereal",
+  "sunnypilot",
+]
+```
+
+<Info>
+  Tests automatically ignore submodules (panda, opendbc, etc.) and run in parallel across CPU cores.
+</Info>
+
+## Test Markers
+
+Tests can be marked with special attributes:
+
+### Available Markers
+
+<ParamField path="slow" type="marker">
+  Tests that take a long time to run
+  
+  ```python
+  @pytest.mark.slow
+  def test_long_running_simulation():
+      # Long test
+      pass
+  ```
+  
+  Skip slow tests:
+  ```bash
+  pytest -m "not slow"
+  ```
+</ParamField>
+
+<ParamField path="tici" type="marker">
+  Tests that only run on comma 3/3X device
+  
+  ```python
+  @pytest.mark.tici
+  def test_device_specific_feature():
+      # Only runs on device
+      pass
+  ```
+</ParamField>
+
+<ParamField path="skip_tici_setup" type="marker">
+  Skip automatic device setup for tici tests
+  
+  ```python
+  @pytest.mark.tici
+  @pytest.mark.skip_tici_setup
+  def test_without_setup():
+      pass
+  ```
+</ParamField>
+
+## Test Fixtures
+
+### Automatic Fixtures
+
+All tests automatically use these fixtures (from `conftest.py`):
+
+<AccordionGroup>
+  <Accordion title="openpilot_function_fixture">
+    Sets up a clean environment for each test function:
+    - Creates isolated `OPENPILOT_PREFIX`
+    - Clears environment variables
+    - Cleans up processes after test
+    - Re-enables garbage collection
+    
+    ```python
+    def test_my_feature():
+        # Automatically has clean environment
+        from openpilot.common.params import Params
+        params = Params()  # Uses test prefix
+    ```
+  </Accordion>
+  
+  <Accordion title="openpilot_class_fixture">
+    Provides clean environment for test classes:
+    
+    ```python
+    class TestCarInterface:
+        def test_initialization(self):
+            # Clean environment per class
+            pass
+    ```
+  </Accordion>
+  
+  <Accordion title="tici_setup_fixture">
+    Automatically applied to tests marked with `@pytest.mark.tici`:
+    - Initializes hardware
+    - Disables power save
+    - Kills background processes
+    
+    ```python
+    @pytest.mark.tici
+    def test_on_device():
+        # Hardware already initialized
+        pass
+    ```
+  </Accordion>
+</AccordionGroup>
+
+### Custom Fixtures
+
+Create your own fixtures:
+
+```python
+import pytest
+from openpilot.selfdrive.car import interfaces
+
+@pytest.fixture
+def car_interface():
+    """Fixture providing a test car interface."""
+    ci = interfaces.CarInterface()
+    yield ci
+    # Cleanup if needed
+    ci.cleanup()
+
+def test_steering(car_interface):
+    """Test uses the car_interface fixture."""
+    assert car_interface.apply_steer(0.5) is not None
+```
+
+## Writing Tests
+
+### Unit Test Example
+
+```python
+import pytest
+from openpilot.selfdrive.controls.lib.pid import PIDController
+
+def test_pid_controller():
+    """Test PID controller basic functionality."""
+    pid = PIDController(k_p=0.5, k_i=0.1, k_d=0.05)
+    
+    # Test setpoint
+    output = pid.update(setpoint=10.0, measurement=8.0)
+    assert output > 0, "Should provide positive correction"
+    
+    # Test saturation
+    pid.pos_limit = 1.0
+    pid.neg_limit = -1.0
+    output = pid.update(setpoint=100.0, measurement=0.0)
+    assert output <= 1.0, "Should respect positive limit"
+
+def test_pid_reset():
+    """Test PID controller reset."""
+    pid = PIDController(k_p=0.5, k_i=0.1, k_d=0.05)
+    pid.update(setpoint=10.0, measurement=5.0)
+    
+    pid.reset()
+    assert pid.i == 0.0, "Integral should be reset"
+```
+
+### Parametrized Tests
+
+Test multiple scenarios:
+
+```python
+import pytest
+
+@pytest.mark.parametrize("speed,expected_accel", [
+    (0.0, 2.0),    # From standstill
+    (10.0, 1.5),   # Low speed
+    (30.0, 0.5),   # High speed
+])
+def test_acceleration_limits(speed, expected_accel):
+    """Test acceleration limits at different speeds."""
+    from openpilot.selfdrive.controls.lib.drive_helpers import get_max_accel
+    accel = get_max_accel(speed)
+    assert abs(accel - expected_accel) < 0.1
+```
+
+### Testing Exceptions
+
+```python
+import pytest
+from openpilot.selfdrive.car import interfaces
+
+def test_invalid_car():
+    """Test that invalid car raises exception."""
+    with pytest.raises(ValueError, match="Unknown car model"):
+        interfaces.get_car_interface("INVALID_CAR")
+```
+
+### Subtests
+
+Test multiple conditions without stopping on first failure:
+
+```python
+import pytest
+
+def test_all_car_models(subtests):
+    """Test all supported car models."""
+    from openpilot.selfdrive.car import interfaces
+    
+    models = interfaces.get_all_car_models()
+    for model in models:
+        with subtests.test(model=model):
+            ci = interfaces.get_car_interface(model)
+            assert ci is not None
+            assert ci.CP.carFingerprint == model
+```
+
+## Testing C++ Code
+
+sunnypilot supports C++ tests via `pytest-cpp`:
+
+```cpp
+// selfdrive/controls/tests/test_pid.cc
+#include "catch2/catch.hpp"
+#include "selfdrive/controls/lib/pid.h"
+
+TEST_CASE("PID controller") {
+  PID pid(0.5, 0.1, 0.05);
+  
+  SECTION("basic update") {
+    float output = pid.update(10.0, 8.0, 1.0);
+    REQUIRE(output > 0);
+  }
+  
+  SECTION("reset") {
+    pid.update(10.0, 5.0, 1.0);
+    pid.reset();
+    REQUIRE(pid.get_integral() == 0.0);
+  }
+}
+```
+
+Run C++ tests with pytest:
+
+```bash
+# Runs both Python and C++ tests
+pytest selfdrive/controls/tests/
+```
+
+## Mock Objects
+
+Use `pytest-mock` for mocking:
+
+```python
+import pytest
+
+def test_with_mock(mocker):
+    """Test using mocked dependencies."""
+    # Mock a function
+    mock_get_speed = mocker.patch(
+        'openpilot.selfdrive.car.interfaces.get_speed',
+        return_value=25.0
+    )
+    
+    from openpilot.selfdrive.controls import controlsd
+    speed = controlsd.get_current_speed()
+    
+    assert speed == 25.0
+    mock_get_speed.assert_called_once()
+```
+
+## Async Tests
+
+Test asynchronous code:
+
+```python
+import pytest
+
+@pytest.mark.asyncio
+async def test_async_function():
+    """Test async functionality."""
+    from openpilot.system.athena import athenad
+    
+    result = await athenad.fetch_data()
+    assert result is not None
+```
+
+## Coverage
+
+Generate code coverage reports:
+
+```bash
+# Install coverage
+pip install coverage
+
+# Run tests with coverage
+pytest --cov=openpilot --cov-report=html
+
+# View report
+open htmlcov/index.html
+```
+
+<Info>
+  Coverage shows which lines of code are executed during tests, helping identify untested code paths.
+</Info>
+
+## Test Utilities
+
+### Helper Functions
+
+Common test utilities in `selfdrive/test/helpers.py`:
+
+```python
+from openpilot.selfdrive.test.helpers import (
+    with_processes,
+    phone_only,
+    set_params_enabled,
+)
+
+@with_processes(['controlsd', 'plannerd'])
+def test_with_processes():
+    """Test with specific processes running."""
+    # Processes started automatically
+    pass
+
+@phone_only
+def test_phone_only():
+    """Test that only runs on PC, not device."""
+    pass
+```
+
+## Common Test Patterns
+
+### Testing Parameters
+
+```python
+from openpilot.common.params import Params
+
+def test_params():
+    """Test parameter storage."""
+    params = Params()  # Uses test prefix automatically
+    
+    # Write and read
+    params.put("TestKey", "test_value")
+    assert params.get("TestKey") == b"test_value"
+    
+    # Boolean params
+    params.put_bool("EnableFeature", True)
+    assert params.get_bool("EnableFeature") is True
+```
+
+### Testing Messages
+
+```python
+import cereal.messaging as messaging
+
+def test_messaging():
+    """Test message publishing and subscribing."""
+    pm = messaging.PubMaster(['testModel'])
+    sm = messaging.SubMaster(['testModel'])
+    
+    # Publish message
+    msg = messaging.new_message('testModel')
+    msg.testModel.value = 42
+    pm.send('testModel', msg)
+    
+    # Receive message
+    sm.update(timeout=1000)
+    assert sm['testModel'].value == 42
+```
+
+## Continuous Integration
+
+Tests run automatically on GitHub Actions:
+
+- **Linting**: `ruff check`
+- **Type checking**: `ty check`  
+- **Spell checking**: `codespell`
+- **Tests**: `pytest`
+
+<Warning>
+  All CI checks must pass before a PR can be merged.
+</Warning>
+
+## Debugging Tests
+
+### Print Debug Output
+
+```python
+def test_with_debug():
+    """Test with debug output."""
+    value = calculate_something()
+    print(f"Debug: value = {value}")  # Shown on failure
+    assert value > 0
+```
+
+Run with output:
+
+```bash
+pytest -s  # Show print statements
+pytest -v -s  # Verbose + output
+```
+
+### Interactive Debugging
+
+```python
+import pytest
+
+def test_debug():
+    """Test with debugger."""
+    value = calculate_something()
+    pytest.set_trace()  # Drop into debugger
+    assert value > 0
+```
+
+Or use pytest's built-in debugger:
+
+```bash
+pytest --pdb  # Drop into pdb on failure
+```
+
+### Inspect Slow Tests
+
+```bash
+# Show 10 slowest tests
+pytest --durations=10
+
+# Show all durations
+pytest --durations=0
+```
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Test One Thing" icon="bullseye">
+    Each test should verify a single behavior
+  </Card>
+  <Card title="Clear Names" icon="tag">
+    Use descriptive test function names: `test_steering_angle_clipping`
+  </Card>
+  <Card title="Arrange-Act-Assert" icon="list">
+    Structure tests: setup, execute, verify
+  </Card>
+  <Card title="Fast Tests" icon="bolt">
+    Keep tests fast; mark slow tests with `@pytest.mark.slow`
+  </Card>
+  <Card title="Independent" icon="arrows-split">
+    Tests shouldn't depend on each other's state
+  </Card>
+  <Card title="Deterministic" icon="equals">
+    Tests should produce consistent results
+  </Card>
+</CardGroup>
+
+## Common Issues
+
+<AccordionGroup>
+  <Accordion title="Test Hangs">
+    **Issue**: Test appears to hang indefinitely
+    
+    **Solution**: 
+    - Check for blocking calls without timeouts
+    - Use `pytest -v` to see which test is running
+    - Add timeout: `pytest --timeout=30`
+  </Accordion>
+  
+  <Accordion title="Flaky Tests">
+    **Issue**: Test passes sometimes, fails other times
+    
+    **Solution**:
+    - Check for race conditions
+    - Avoid time-based waits; use proper synchronization
+    - Seed random number generators
+  </Accordion>
+  
+  <Accordion title="Import Errors">
+    **Issue**: `ModuleNotFoundError` in tests
+    
+    **Solution**:
+    ```bash
+    # Ensure package installed in editable mode
+    pip install -e .
+    
+    # Check PYTHONPATH includes project root
+    export PYTHONPATH="$PWD:$PYTHONPATH"
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Contributing" icon="code-pull-request" href="/development/contributing">
+    Submit your tested changes
+  </Card>
+  <Card title="Building" icon="hammer" href="/development/building">
+    Learn about the build system
+  </Card>
+  <Card title="Architecture" icon="sitemap" href="/development/architecture">
+    Understand what you're testing
+  </Card>
+  <Card title="pytest Docs" icon="book" href="https://docs.pytest.org/">
+    Official pytest documentation
+  </Card>
+</CardGroup>

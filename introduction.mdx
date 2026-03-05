@@ -1,0 +1,122 @@
+---
+title: Introduction
+description: Welcome to sunnypilot - an advanced driver assistance system for over 350+ supported vehicles
+---
+
+# What is sunnypilot?
+
+sunnypilot is a fork of [comma.ai's openpilot](https://github.com/commaai/openpilot), an open source driver assistance system. sunnypilot offers users a unique driving experience for over **350+ supported car makes and models** with modified behaviors of driving assist engagements.
+
+<img
+  src="https://user-images.githubusercontent.com/47793918/233812617-beab2e71-57b9-479e-8bff-c3931347ca40.png"
+  alt="sunnypilot Banner"
+/>
+
+## Key Differences from openpilot
+
+sunnypilot builds upon openpilot's foundation while adding unique features and customizations:
+
+<CardGroup cols={2}>
+  <Card title="Enhanced UI" icon="paintbrush">
+    Complete rewrite of the user interface from Qt C++ to Raylib Python with sunnypilot branding and customizable visual options
+  </Card>
+  <Card title="sunnylink Integration" icon="link">
+    Cloud-based configuration and remote management capabilities for your sunnypilot device
+  </Card>
+  <Card title="Advanced Tuning" icon="sliders">
+    Custom lateral and longitudinal control tuning options, including Torque Lateral Control v0 support
+  </Card>
+  <Card title="Extended Features" icon="star">
+    Additional visual elements, driving metrics, and customization options not available in stock openpilot
+  </Card>
+</CardGroup>
+
+## Supported Vehicles
+
+sunnypilot supports **over 350+ vehicle makes and models** including:
+
+- **Honda/Acura**: Civic, Accord, CR-V, Pilot, ILX, RDX, and more
+- **Toyota/Lexus**: Camry, Corolla, RAV4, Prius, ES, IS, and more  
+- **Hyundai/Kia/Genesis**: Sonata, Elantra, Santa Fe, Optima, Sorento, and more
+- **Ford**: F-150, Escape, Explorer, Bronco Sport, and more
+- **GM**: Bolt, Silverado, Equinox, and more
+- **Volkswagen/Audi**: Golf, Jetta, Passat, A3, Q3, and more
+- **Many others**: Chrysler, Dodge, Jeep, Subaru, Nissan, Mazda, Tesla, and more
+
+For the complete list of supported vehicles, check out the [compatibility documentation](https://community.sunnypilot.ai/t/getting-started-using-sunnypilot-in-your-supported-car/251).
+
+## Hardware Requirements
+
+<Note>
+  sunnypilot requires a comma device to run in your vehicle.
+</Note>
+
+Supported comma devices:
+- **comma four** - Latest device with improved performance and reduced power consumption (as of v0.10.4, standby power reduced by 77% to 52 mW)
+- **comma 3/3X** - Previous generation devices with full support
+
+## Open Source & Licensing
+
+sunnypilot is released under a **Custom MIT License**. The software includes original work as well as significant portions of code derived from openpilot by comma.ai.
+
+<Warning>
+  **Important Safety Disclaimer**
+  
+  This is alpha quality software for research purposes only. This is not a product. You are responsible for complying with local laws and regulations. No warranty expressed or implied.
+  
+  Any user of this software shall indemnify and hold harmless comma.ai, Inc. and its directors, officers, employees, agents, stockholders, affiliates, subcontractors and customers from and against all allegations, claims, actions, suits, demands, damages, liabilities, obligations, losses, settlements, judgments, costs and expenses.
+</Warning>
+
+## Safety & Compliance
+
+sunnypilot complies with comma.ai's safety rules as accurately as possible. The system:
+
+- Requires driver monitoring via the driver-facing camera
+- Alerts drivers when attention is needed
+- Can be disengaged at any time by the driver
+- Operates within the vehicle's designed capabilities
+
+## Data Collection
+
+By default, sunnypilot uploads driving data to comma servers, accessible through [comma connect](https://connect.comma.ai/). Data collected includes:
+
+- Road-facing camera footage
+- CAN bus data, GPS, IMU, magnetometer
+- Thermal sensors and system logs
+- Driver-facing camera and microphone (only if explicitly opted-in)
+
+<Note>
+  sunnypilot is open source software. You are free to disable data collection if you wish to do so.
+</Note>
+
+## Community & Support
+
+Join the vibrant sunnypilot community:
+
+<CardGroup cols={2}>
+  <Card title="Community Forum" icon="comments" href="https://community.sunnypilot.ai/">
+    Stay up to date with the latest features and help shape the future of sunnypilot
+  </Card>
+  <Card title="Documentation" icon="book" href="https://docs.sunnypilot.ai/">
+    Comprehensive guides, features, installation instructions, and FAQs
+  </Card>
+  <Card title="GitHub" icon="github" href="https://github.com/sunnyhaibin/sunnypilot">
+    Source code, issues, and contributions
+  </Card>
+  <Card title="Support Development" icon="heart" href="https://github.com/sponsors/sunnyhaibin">
+    Become a sponsor to support future development
+  </Card>
+</CardGroup>
+
+## Next Steps
+
+Ready to get started with sunnypilot?
+
+<CardGroup cols={2}>
+  <Card title="Quick Start" icon="rocket" href="/quick-start">
+    Fast path to getting sunnypilot running in your car
+  </Card>
+  <Card title="Installation Guide" icon="download" href="/installation">
+    Detailed installation instructions and troubleshooting
+  </Card>
+</CardGroup>

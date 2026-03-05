@@ -1,0 +1,359 @@
+---
+title: "Your First Drive"
+description: "Complete pre-drive checklist and first engagement guide for sunnypilot"
+---
+
+## Before Your First Drive
+
+Before engaging sunnypilot for the first time, complete these essential preparation steps to ensure a safe and successful experience.
+
+<Warning>
+  **Driver Responsibility**: sunnypilot is a driver assistance system. You must remain alert and ready to take control at all times. Read the [safety guidelines](/guides/safety) before proceeding.
+</Warning>
+
+### Pre-Drive Checklist
+
+<Steps>
+  <Step title="Verify Device Installation">
+    Ensure your comma device is properly installed and connected:
+    
+    - Device is securely mounted to windshield
+    - OBD-C cable is firmly connected to the vehicle's diagnostic port
+    - Cameras have clear, unobstructed views (road-facing and driver-facing)
+    - Device powers on when the vehicle is started
+    
+    <Tip>
+      The device should automatically boot when you turn on your vehicle. If it doesn't, check the OBD-C connection.
+    </Tip>
+  </Step>
+  
+  <Step title="Complete Device Calibration">
+    sunnypilot requires camera calibration before first use:
+    
+    - Drive above **20 mph (32 km/h)** on a straight road
+    - Keep the road markings clearly visible
+    - Calibration progress displays on screen: `Calibrating: X%`
+    - Typically completes within 1-2 miles of highway driving
+    
+    <Info>
+      If you see "Recalibrating" instead of "Calibrating," the device detected a change in mounting position and is re-calibrating automatically.
+    </Info>
+  </Step>
+  
+  <Step title="Check System Status">
+    Before engaging, verify:
+    
+    - No red alerts or warnings on screen
+    - Green engagement button is available
+    - Driver monitoring camera can see your face
+    - GPS signal is acquired (optional for first drive, but recommended)
+  </Step>
+  
+  <Step title="Review Controls">
+    Familiarize yourself with engagement controls:
+    
+    **Engagement Methods:**
+    - Press **SET** or **RESUME** button on steering wheel
+    - For MADS users: Engagement behavior depends on your MADS configuration
+    
+    **Disengagement Methods:**
+    - Press **CANCEL** button on steering wheel
+    - Press brake pedal firmly
+    - Turn the steering wheel to override (lateral control pauses)
+    - Press accelerator (if "Disengage on Accelerator Pedal" is enabled)
+    
+    <Warning>
+      **Always** be ready to take control by braking or steering. These override actions work instantly, even if sunnypilot is engaged.
+    </Warning>
+  </Step>
+</Steps>
+
+---
+
+## Mounting Your Device
+
+Proper mounting is critical for sunnypilot performance and safety.
+
+### Recommended Mount Position
+
+<CardGroup cols={2}>
+  <Card title="Optimal Placement" icon="location-dot">
+    - Behind the rearview mirror (centered)
+    - As close to windshield as possible
+    - Cameras have unobstructed forward and driver views
+    - Does not interfere with airbag deployment zones
+  </Card>
+  
+  <Card title="What to Avoid" icon="triangle-exclamation">
+    - Tinted windshield areas that block cameras
+    - Positions where wipers obstruct the camera
+    - Too low (limits forward visibility)
+    - Off-center positions (affects calibration)
+  </Card>
+</CardGroup>
+
+### Mounting Tips
+
+1. **Clean the windshield** thoroughly before applying the mount
+2. **Position carefully** - once attached, repositioning requires recalibration
+3. **Test the view** - ensure road markings are visible in the camera preview
+4. **Secure cables** - route the OBD-C cable neatly to avoid interference
+
+<Tip>
+  Use the onboard camera preview in **Settings → Device** to verify your camera angles before driving.
+</Tip>
+
+---
+
+## First Engagement
+
+Follow these steps for a controlled first engagement:
+
+### Choose the Right Conditions
+
+For your first drive with sunnypilot engaged, select:
+
+<AccordionGroup>
+  <Accordion title="Road Conditions">
+    - **Highway or major road** with clear lane markings
+    - **Good weather** - avoid rain, fog, or snow for first attempt
+    - **Light traffic** - gives you time to familiarize yourself
+    - **Daylight** - better visibility for you and the cameras
+  </Accordion>
+  
+  <Accordion title="Speed Recommendations">
+    Start at moderate speeds:
+    - Minimum engagement speed varies by vehicle (typically 15-25 mph)
+    - Begin around **45-55 mph** on highway
+    - Increase confidence before trying stop-and-go traffic
+  </Accordion>
+</AccordionGroup>
+
+### Engagement Process
+
+<Steps>
+  <Step title="Accelerate to Cruising Speed">
+    Bring your vehicle up to your desired speed using the accelerator pedal.
+  </Step>
+  
+  <Step title="Engage Cruise Control">
+    Press the **SET** button on your steering wheel. You should:
+    
+    - Hear a chime (depending on your vehicle)
+    - See the green path appear on screen
+    - Feel sunnypilot taking control of steering and/or speed
+    - See engagement status in the UI
+  </Step>
+  
+  <Step title="Monitor System Behavior">
+    During your first minutes engaged:
+    
+    - Keep hands lightly on the wheel (don't grip too tightly)
+    - Watch the path prediction on screen
+    - Observe how sunnypilot handles curves and lane keeping
+    - Check driver monitoring alerts - keep eyes on road
+    
+    <Note>
+      sunnypilot includes driver monitoring. If you look away from the road, you'll receive "Pay Attention" warnings.
+    </Note>
+  </Step>
+  
+  <Step title="Practice Disengagement">
+    Test the override controls:
+    
+    - Lightly brake to disengage
+    - Re-engage with **RESUME** button
+    - Try steering override (lateral control pauses)
+    - Press **CANCEL** button to fully disengage
+    
+    Practice these until they become second nature.
+  </Step>
+</Steps>
+
+---
+
+## What to Expect
+
+### Normal Behavior
+
+During normal operation, you should observe:
+
+<Tabs>
+  <Tab title="Lateral Control">
+    **Steering Assistance:**
+    - Smooth, gentle steering inputs to keep centered in lane
+    - Slight adjustments as road curves
+    - May feel different from stock systems (often smoother)
+    - Blue path indicates laneline mode (if using Dynamic Lane Profile)
+    - Rainbow path available (enable in Visuals settings)
+    
+    **What's Normal:**
+    - Slight wandering while learning your car (first few drives)
+    - Conservative positioning in curves
+    - May ping-pong slightly on poorly marked roads
+  </Tab>
+  
+  <Tab title="Longitudinal Control">
+    **Speed & Following:**
+    - Maintains set cruise speed when no lead vehicle
+    - Follows lead vehicle at safe distance (adjustable via Driving Personality)
+    - Smooth acceleration and braking (personality-dependent)
+    - Stop-and-go capability on supported vehicles
+    
+    **Driving Personality Options:**
+    - **Chill** (openpilot ACC): Stock-like behavior, comfortable following
+    - **Standard**: Balanced performance
+    - **Aggressive**: Tighter following, quicker responses
+    - **Maniac**: Most aggressive (use with caution)
+    
+    <Tip>
+      Adjust Driving Personality with the **DISTANCE** or **FOLLOW DISTANCE** button on your steering wheel (on supported vehicles).
+    </Tip>
+  </Tab>
+  
+  <Tab title="Visual Indicators">
+    **On-Screen Elements:**
+    - **Green path**: System engaged and active
+    - **Orange path**: Driver steering override detected
+    - **Lead vehicle indicator**: Shows detected car ahead with distance/speed
+    - **Speed display**: Current speed (or true speed if enabled)
+    - **Cruise speed**: Target speed setting
+    - **Lane lines**: Detected road markings
+    - **Turn signals**: On-screen when blinker active (if enabled)
+    - **Blindspot indicators**: When vehicles detected (if enabled)
+  </Tab>
+  
+  <Tab title="Audio Alerts">
+    **Chimes and Warnings:**
+    - **Engagement chime**: Confirms activation (vehicle-dependent)
+    - **"Pay Attention"**: Driver monitoring alert - refocus on road
+    - **Disengagement chime**: System has disengaged
+    - **Forward Collision Warning**: Hard chime - risk of collision
+    - **Lane Departure Warning**: Alert when crossing lane lines while disengaged
+    - **Green Light Chime**: Traffic light ahead turned green (if enabled)
+  </Tab>
+</Tabs>
+
+### First Drive Tips
+
+<CardGroup cols={2}>
+  <Card title="Do" icon="circle-check">
+    - Keep hands on or near the wheel at all times
+    - Monitor system behavior and path prediction
+    - Practice engagement and disengagement frequently
+    - Start on familiar roads
+    - Read driver monitoring prompts and respond appropriately
+    - Take control anytime you feel uncertain
+  </Card>
+  
+  <Card title="Don't" icon="circle-xmark">
+    - Don't assume sunnypilot will handle every situation
+    - Don't use your phone or look away from the road
+    - Don't engage in heavy traffic on your first attempt
+    - Don't test limits - be conservative initially
+    - Don't ignore alerts or warnings
+    - Don't use in construction zones until experienced
+  </Card>
+</CardGroup>
+
+---
+
+## Common First-Time Scenarios
+
+<AccordionGroup>
+  <Accordion title="System Won't Engage" icon="circle-exclamation">
+    **Possible Reasons:**
+    - Speed below minimum engagement threshold (check: `Drive above X mph to engage`)
+    - Calibration not complete (check: `Calibrating: X%`)
+    - Safety critical alert active (check screen for red/orange alerts)
+    - Brake pedal pressed
+    - Parking brake engaged
+    - Door open
+    - Seatbelt not fastened (vehicle-dependent)
+    
+    **Solution:** Address the displayed alert, ensure you're above minimum speed, and try again.
+  </Accordion>
+  
+  <Accordion title="Immediate Disengagement" icon="circle-exclamation">
+    **Possible Causes:**
+    - Brake pedal tap
+    - Sudden steering input
+    - Speed dropped below minimum
+    - CAN bus error or communication issue
+    - Safety violation detected
+    
+    **Solution:** Check for alerts on screen. If it's a CAN error, pull over, turn off vehicle for 30 seconds, restart, and try again.
+  </Accordion>
+  
+  <Accordion title="Steering Feels Too Aggressive/Timid" icon="circle-exclamation">
+    This is normal during the first few drives. sunnypilot uses live parameter tuning that adapts to your vehicle over time.
+    
+    **What to do:**
+    - Continue driving for 15-20 minutes to allow paramsd to learn
+    - Check lateral tuning in **Settings → Controls → Lateral Control**
+    - Consider Neural Network Lateral Control (NNLC) if your vehicle is supported
+    - Adjust torque settings if available for your platform
+  </Accordion>
+  
+  <Accordion title="Driver Monitoring Keeps Alerting" icon="circle-exclamation">
+    sunnypilot requires you to keep your eyes on the road at all times.
+    
+    **Tips to avoid alerts:**
+    - Look at the road, not the device screen
+    - Ensure driver camera can see your face (not blocked by sunglasses/hat)
+    - Sit in a natural position facing forward
+    - Don't look down at your lap or phone
+    
+    <Warning>
+      **Do not** attempt to disable or bypass driver monitoring. It's a critical safety feature.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## After Your First Drive
+
+### Evaluate Your Experience
+
+After your first successful drive:
+
+1. **Review system behavior** - Did it meet your expectations?
+2. **Check for any error logs** in **Settings → Software**
+3. **Adjust settings** based on your preferences (see [Settings Guide](/guides/settings))
+4. **Consider enabling additional features** like MADS, custom models, or visual enhancements
+
+### Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Explore Settings" icon="sliders" href="/guides/settings">
+    Customize sunnypilot behavior, UI elements, and advanced features to match your driving style
+  </Card>
+  
+  <Card title="Enable MADS" icon="circle-nodes" href="/features/mads">
+    Learn about Modular Assistive Driving System for enhanced engagement control
+  </Card>
+  
+  <Card title="Troubleshooting" icon="wrench" href="/guides/troubleshooting">
+    Find solutions to common issues and learn diagnostic procedures
+  </Card>
+  
+  <Card title="Advanced Features" icon="star" href="/features/overview">
+    Discover Speed Limit Assist, custom driving models, OSM integration, and more
+  </Card>
+</CardGroup>
+
+---
+
+## Building Confidence
+
+As you gain experience:
+
+- **Gradually expand conditions**: Try different weather, traffic, and road types
+- **Practice interventions**: Regular disengagement practice builds muscle memory
+- **Learn system limits**: Understand when to take control proactively
+- **Join the community**: Share experiences and learn from others at [community.sunnypilot.ai](https://community.sunnypilot.ai)
+
+<Note>
+  Remember: sunnypilot is **always** in beta. Even experienced users must remain vigilant and ready to intervene.
+</Note>

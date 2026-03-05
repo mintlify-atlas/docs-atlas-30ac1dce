@@ -1,0 +1,197 @@
+---
+title: Quick Start
+description: Get sunnypilot running in your vehicle in minutes
+---
+
+# Quick Start Guide
+
+This guide will help you get sunnypilot up and running in your vehicle as quickly as possible.
+
+<Note>
+  If you prefer more detailed instructions, check out the [Installation Guide](/installation).
+</Note>
+
+## Prerequisites
+
+Before you begin, make sure you have:
+
+<Steps>
+  <Step title="Compatible Vehicle">
+    Verify your vehicle is on the [list of 350+ supported cars](https://community.sunnypilot.ai/t/getting-started-using-sunnypilot-in-your-supported-car/251). Your car must have:
+    - Factory adaptive cruise control (ACC) or equivalent
+    - Lane keeping assist (LKAS) or lane centering
+    - Model year typically 2016 or newer (varies by make/model)
+  </Step>
+  
+  <Step title="comma Device">
+    Purchase a comma device from [comma.ai](https://comma.ai/shop):
+    - **comma four** (recommended) - Latest hardware with improved power efficiency
+    - **comma 3/3X** - Previous generation, fully supported
+    
+    <Warning>
+      Make sure to order the correct wiring harness for your specific vehicle when purchasing from comma.ai.
+    </Warning>
+  </Step>
+  
+  <Step title="Installation Hardware">
+    Ensure you have the appropriate hardware for your vehicle:
+    - Vehicle-specific wiring harness (comes with comma device purchase)
+    - Mounting solution (included with comma device)
+    - OBD-C cable (included)
+    - comma power v3 (recommended for most vehicles)
+  </Step>
+</Steps>
+
+## Installation Process
+
+<Steps>
+  <Step title="Physical Installation">
+    Install your comma device in your vehicle:
+    
+    1. Mount the comma device behind your rearview mirror with a clear view of the road
+    2. Connect the vehicle-specific harness between your car's camera connector and the comma device
+    3. Plug the OBD-C cable into your vehicle's OBD-II port
+    4. Route cables neatly to avoid interference with driving controls
+    
+    <Tip>
+      Refer to vehicle-specific installation guides on the [comma.ai shop](https://comma.ai/shop) for your exact model.
+    </Tip>
+  </Step>
+  
+  <Step title="Power On & Setup">
+    When you first power on your comma device:
+    
+    1. Wait for the device to boot (first boot may take a few minutes)
+    2. Connect to WiFi when prompted
+    3. Create or log in to your comma account
+    4. Accept the terms of service
+  </Step>
+  
+  <Step title="Install sunnypilot">
+    Flash sunnypilot to your comma device:
+    
+    1. From the device settings, select **Software**
+    2. Choose **Uninstall openpilot**
+    3. After uninstall completes, you'll see the setup screen
+    4. Enter a custom software URL when prompted:
+    
+    ```bash
+    https://smiskol.com/fork/sunnyhaibin
+    ```
+    
+    5. Select your preferred branch (see [Branch Selection](/installation#branch-selection) for details):
+       - **honda_c_stable** - Stable release (recommended for most users)
+       - **RC** - Release candidate with latest tested features  
+       - **dev** - Development branch (for testing, may be unstable)
+    
+    <Note>
+      The installation process will download and flash sunnypilot. This may take several minutes depending on your internet connection.
+    </Note>
+  </Step>
+  
+  <Step title="Calibration">
+    After installation, sunnypilot needs to calibrate:
+    
+    1. Drive on a straight highway or road
+    2. Keep the lane lines visible to the camera
+    3. Calibration typically completes within 1-2 miles of driving
+    4. The device will notify you when calibration is complete
+    
+    <Warning>
+      Do not attempt to engage sunnypilot until calibration is complete.
+    </Warning>
+  </Step>
+  
+  <Step title="First Drive">
+    Once calibration is complete, you're ready to use sunnypilot:
+    
+    1. Start driving and enable your car's adaptive cruise control
+    2. sunnypilot will automatically engage when conditions are met:
+       - Vehicle speed above minimum threshold (varies by vehicle)
+       - Lane lines clearly visible
+       - Driver monitoring system active
+    3. Keep your hands on the wheel and eyes on the road at all times
+    4. You can disengage at any time by:
+       - Pressing the brake pedal
+       - Turning the steering wheel
+       - Pressing the cancel button on your cruise control stalk
+    
+    <Tip>
+      Start with shorter drives on familiar roads to get comfortable with sunnypilot's behavior.
+    </Tip>
+  </Step>
+</Steps>
+
+## What to Expect
+
+### Driver Monitoring
+
+sunnypilot uses the driver-facing camera to ensure you remain attentive:
+
+- Keep your eyes on the road
+- The system will alert you if it detects distraction or drowsiness
+- Repeated warnings may temporarily disable sunnypilot
+
+### Steering Control
+
+- sunnypilot provides smooth lane centering
+- Always keep your hands on the wheel
+- Be ready to take control at any time
+- The system works best on highways with clear lane markings
+
+### Speed Control
+
+- Adaptive cruise control maintains speed and following distance
+- Some vehicles use stock ACC, others use sunnypilot's longitudinal control
+- You can adjust following distance using your car's controls
+
+## Troubleshooting
+
+If you encounter issues:
+
+<AccordionGroup>
+  <Accordion title="sunnypilot won't engage">
+    Common causes:
+    - Calibration not complete - continue driving on straight roads
+    - Speed below minimum threshold - accelerate to highway speeds
+    - Lane lines not visible - ensure clear road markings
+    - Driver monitoring alerts - keep eyes on road
+  </Accordion>
+  
+  <Accordion title="Device keeps rebooting">
+    Possible solutions:
+    - Check all cable connections are secure
+    - Ensure OBD-II port connection is firm
+    - Verify you have the correct harness for your vehicle
+    - Check for software update availability
+  </Accordion>
+  
+  <Accordion title="Poor lane keeping">
+    Try these steps:
+    - Verify camera lens is clean and unobstructed
+    - Re-check device mounting position and angle
+    - Complete calibration process fully
+    - Ensure windshield is clean
+  </Accordion>
+</AccordionGroup>
+
+For more help, visit the [sunnypilot community forum](https://community.sunnypilot.ai/).
+
+## Next Steps
+
+Now that you have sunnypilot running:
+
+<CardGroup cols={2}>
+  <Card title="Explore Features" icon="compass">
+    Learn about sunnypilot's unique features and customization options
+  </Card>
+  <Card title="Join the Community" icon="users" href="https://community.sunnypilot.ai/">
+    Connect with other sunnypilot users and share your experience
+  </Card>
+  <Card title="Installation Details" icon="book" href="/installation">
+    Deep dive into installation options and branch selection
+  </Card>
+  <Card title="Support Development" icon="heart" href="https://github.com/sponsors/sunnyhaibin">
+    Help support future sunnypilot development
+  </Card>
+</CardGroup>

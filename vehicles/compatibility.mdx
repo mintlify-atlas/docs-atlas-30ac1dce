@@ -1,0 +1,295 @@
+---
+title: Vehicle Compatibility
+description: How to determine if your vehicle is compatible with sunnypilot
+icon: check-circle
+---
+
+Before purchasing hardware for sunnypilot, it's important to verify that your specific vehicle is compatible. While the [supported vehicles list](/vehicles/supported-cars) shows which makes and models work, there are important details to understand about trim levels, packages, and requirements.
+
+## Quick Compatibility Check
+
+<Steps>
+  <Step title="Verify Your Make and Model">
+    Check the [supported vehicles list](/vehicles/supported-cars) to see if your vehicle's make, model, and year are listed.
+  </Step>
+  <Step title="Confirm Required Package">
+    Ensure your vehicle has the specific trim level or package mentioned in the compatibility list.
+  </Step>
+  <Step title="Test Your Vehicle's ACC">
+    Your car must have working Adaptive Cruise Control (ACC) that can maintain distance from vehicles ahead.
+  </Step>
+  <Step title="Test Your Vehicle's Lane Assist">
+    Your car must have Lane Keep Assist (LKAS) or Lane Centering Assist (LCA) that can steer the vehicle.
+  </Step>
+</Steps>
+
+## Required Features
+
+### Adaptive Cruise Control (ACC)
+
+Your vehicle **must** have functional ACC. This system:
+
+- Maintains a set speed
+- Automatically adjusts speed to maintain distance from vehicles ahead
+- Uses radar or camera sensors to detect traffic
+- Can slow down and speed up automatically
+
+<Warning>
+Basic cruise control that only maintains speed is **not sufficient**. The system must be able to detect and respond to vehicles ahead.
+</Warning>
+
+#### Manufacturer-Specific ACC Names
+
+Different manufacturers use various marketing terms for ACC:
+
+| Manufacturer | ACC System Name |
+|--------------|----------------|
+| Hyundai/Kia | Smart Cruise Control (SCC) |
+| Honda/Acura | Adaptive Cruise Control with Low-Speed Follow |
+| Toyota/Lexus | Dynamic Radar Cruise Control (DRCC) or Full-Speed Range Dynamic Radar Cruise Control |
+| Ford | Adaptive Cruise Control with Stop-and-Go |
+| GM | Adaptive Cruise Control |
+| FCA (Chrysler/Dodge/Jeep/Ram) | Adaptive Cruise Control with Stop |
+| Volkswagen/Audi | Adaptive Cruise Control (ACC) |
+| Nissan | Intelligent Cruise Control (ICC) or ProPILOT Assist |
+| Subaru | Adaptive Cruise Control (part of EyeSight) |
+| Mazda | Mazda Radar Cruise Control (MRCC) |
+
+### Lane Keep/Centering Assist
+
+Your vehicle **must** have active lane keeping or lane centering:
+
+- **Lane Keep Assist (LKAS)**: Provides steering inputs to keep the vehicle in its lane
+- **Lane Centering Assist (LCA)**: Actively centers the vehicle in its lane
+
+<Warning>
+Lane Departure Warning (LDW) alone is **not sufficient**. The system must be able to actively steer the vehicle, not just provide warnings.
+</Warning>
+
+#### Manufacturer-Specific Lane Assist Names
+
+| Manufacturer | Lane Assist System Name |
+|--------------|------------------------|
+| Hyundai/Kia | Lane Following Assist (LFA) or Lane Keeping Assist (LKA) |
+| Honda/Acura | Lane Keeping Assist System (LKAS) |
+| Toyota/Lexus | Lane Tracing Assist (LTA) or Lane Keeping Assist (LKA) |
+| Ford | Lane Centering or Lane Keeping System |
+| GM | Lane Keep Assist with Lane Centering |
+| FCA (Chrysler/Dodge/Jeep/Ram) | LaneSense Lane Keep Assist |
+| Volkswagen/Audi | Lane Assist |
+| Nissan | ProPILOT Assist or Intelligent Lane Intervention |
+| Subaru | Lane Keep Assist (part of EyeSight) |
+| Mazda | Lane Keep Assist System (LAS) |
+
+## Understanding Trim Levels and Packages
+
+### Why Trim Level Matters
+
+Many vehicles only include ACC and Lane Assist on higher trim levels or as optional packages. The same model year and model can have different compatibility depending on the trim.
+
+<Accordion title="Example: 2022 Honda Civic">
+  - **Sport Trim**: May not include Honda Sensing as standard
+  - **EX Trim and above**: Honda Sensing is standard (includes ACC + LKAS)
+  - All 2022 Civics with Honda Sensing are compatible
+</Accordion>
+
+<Accordion title="Example: 2020 Hyundai Elantra">
+  - **SE/SEL Trim**: May not include Smart Cruise Control
+  - **SEL with Convenience Package**: Adds Smart Cruise Control + Lane Keeping
+  - **Limited/Ultimate Trim**: Smart Cruise Control is standard
+  - Only Elantras with SCC are compatible
+</Accordion>
+
+### How to Verify Your Trim
+
+<Steps>
+  <Step title="Check Your Owner's Manual">
+    Look for the features section to see if ACC and Lane Assist are listed as equipped.
+  </Step>
+  <Step title="Test the Features">
+    Drive your vehicle and test that both ACC and Lane Assist are functional.
+  </Step>
+  <Step title="Check the Window Sticker">
+    Your vehicle's original window sticker (Monroney label) lists all installed packages and features.
+  </Step>
+  <Step title="VIN Lookup">
+    Use your VIN to look up your vehicle's exact specifications on the manufacturer's website.
+  </Step>
+</Steps>
+
+## Testing Your Vehicle
+
+### Testing ACC Functionality
+
+<Steps>
+  <Step title="Enable ACC">
+    On a highway or road with light traffic, enable your vehicle's ACC system. This is typically done via buttons on the steering wheel.
+  </Step>
+  <Step title="Set Speed and Following Distance">
+    Set your desired speed (e.g., 65 mph) and following distance (usually 3-4 car lengths).
+  </Step>
+  <Step title="Approach Traffic">
+    Drive up behind slower-moving traffic. Your vehicle should automatically slow down to maintain the set following distance.
+  </Step>
+  <Step title="Test Stop-and-Go (if applicable)">
+    In stop-and-go traffic, verify if your ACC can bring the vehicle to a complete stop and resume automatically.
+  </Step>
+</Steps>
+
+<Note>
+Some vehicles have ACC that only works above certain speeds (e.g., 25 mph). This is still compatible with sunnypilot, but may have limitations in stop-and-go traffic.
+</Note>
+
+### Testing Lane Assist Functionality
+
+<Steps>
+  <Step title="Enable Lane Assist">
+    On a highway with clear lane markings, enable your vehicle's lane keeping/centering system.
+  </Step>
+  <Step title="Drive Hands-On">
+    Keep your hands lightly on the steering wheel and drive in your lane.
+  </Step>
+  <Step title="Feel for Steering">
+    You should feel the system making small steering corrections to keep the vehicle centered.
+  </Step>
+  <Step title="Test Lane Centering">
+    Gently move toward a lane line. The system should provide steering input to recenter the vehicle.
+  </Step>
+</Steps>
+
+<Warning>
+During testing, always keep your hands on the wheel and be ready to take control. These are driver assistance systems, not autonomous driving systems.
+</Warning>
+
+## Speed Limitations
+
+### ACC Speed Restrictions
+
+Different vehicles have different minimum and maximum speeds for ACC:
+
+<AccordionGroup>
+  <Accordion title="Low-Speed ACC (0 mph)">
+    These vehicles can use ACC down to a complete stop:
+    - Most 2020+ Honda/Acura vehicles
+    - Most Hyundai/Kia vehicles with SCC
+    - Most Toyota/Lexus vehicles
+    - Ford vehicles with Co-Pilot360
+  </Accordion>
+  
+  <Accordion title="Mid-Speed ACC (19-26 mph minimum)">
+    These vehicles can only use ACC above ~20-25 mph:
+    - Some older Honda vehicles (2016-2019)
+    - Some Lexus vehicles (2016-2018)
+    - Older Hyundai/Kia vehicles
+  </Accordion>
+  
+  <Accordion title="Highway-Only ACC (30+ mph minimum)">
+    These vehicles can only use ACC on highways:
+    - Some older Toyota Camry 4-cylinder models
+    - Some RAM 1500 models (32 mph minimum)
+  </Accordion>
+</AccordionGroup>
+
+### Lane Assist Speed Restrictions
+
+Most lane assist systems also have minimum speed requirements:
+
+- **0 mph**: Most modern systems (2020+)
+- **12-25 mph**: Common on 2016-2019 vehicles
+- **32-37 mph**: Some older systems
+
+Check the [supported vehicles list](/vehicles/supported-cars) for your specific vehicle's speed limitations.
+
+## Regional Differences
+
+<Warning>
+Some vehicles are only supported in specific markets. Always check the notes in the supported vehicles list.
+</Warning>
+
+### Market-Specific Support
+
+- **US Market**: Default reference unless otherwise specified
+- **European Market**: Some Volkswagen, Audi, SEAT, Škoda models
+- **Asian Market**: Some Honda, Hyundai, Kia models
+- **Australian Market**: Some Genesis models
+
+<Accordion title="Example: Ford Focus 2018">
+  The supported Ford Focus 2018 refers only to the Mk4 (C519) available in Europe/China/Taiwan/Australia, **not** the Mk3 (C346) sold in North and South America.
+</Accordion>
+
+## Special Cases and Exceptions
+
+### Vehicles with Multiple Configurations
+
+Some vehicles have different hardware configurations that affect compatibility:
+
+<AccordionGroup>
+  <Accordion title="Hyundai/Kia with Highway Driving Assist II (HDA II)">
+    Newer Hyundai/Kia models come in two configurations:
+    - **Without HDA II**: Uses traditional camera-based system (supported)
+    - **With HDA II**: Uses newer sensor suite (supported with different harness)
+    
+    Examples: Ioniq 5, EV6, Ioniq 6, Genesis GV70 Electrified
+  </Accordion>
+  
+  <Accordion title="Tesla Hardware 3 vs Hardware 4">
+    Some 2023+ Tesla models come with either:
+    - **Hardware 3 (HW3)**: Supported
+    - **Hardware 4 (HW4)**: Check current support status
+    
+    Check your vehicle's settings under Software → Additional Vehicle Information → Autopilot computer
+  </Accordion>
+  
+  <Accordion title="Honda/Acura Nidec vs Bosch">
+    Honda vehicles use different radar suppliers:
+    - **Nidec**: Older vehicles (2016-2019) - requires specific harness
+    - **Bosch**: Newer vehicles (2018+) - requires specific harness
+    
+    The same model year can have different systems depending on production date.
+  </Accordion>
+</AccordionGroup>
+
+### Excluded Trims
+
+Some high-performance or luxury trims are not supported:
+
+- Acura MDX Type S (2025-26)
+- Super Cruise equipped GM vehicles
+- Tesla Model S/X with Hardware 4 (HW4)
+
+## Verifying Compatibility Before Purchase
+
+If you're considering purchasing a vehicle specifically for use with sunnypilot:
+
+<Steps>
+  <Step title="Research the Exact Trim">
+    Look up the specific trim level and option packages needed for your target vehicle.
+  </Step>
+  <Step title="Check VIN Before Buying">
+    For used vehicles, check the VIN to verify the vehicle has the required packages.
+  </Step>
+  <Step title="Test Drive with Features">
+    During your test drive, verify that ACC and Lane Assist work properly.
+  </Step>
+  <Step title="Review Owner Documentation">
+    Check that the owner's manual lists ACC and Lane Assist features.
+  </Step>
+  <Step title="Join the Community">
+    Ask in the [sunnypilot Community Forum](https://community.sunnypilot.ai/) if others have successfully used sunnypilot with your specific configuration.
+  </Step>
+</Steps>
+
+## Still Unsure?
+
+<CardGroup cols={2}>
+  <Card title="Community Forum" icon="comments" href="https://community.sunnypilot.ai/">
+    Ask the community about your specific vehicle
+  </Card>
+  <Card title="Supported Vehicles" icon="list" href="/vehicles/supported-cars">
+    Review the complete list of supported vehicles
+  </Card>
+</CardGroup>
+
+<Info>
+If your vehicle meets all the requirements but isn't on the supported list, it may still be compatible! Check the community forum or consider contributing to add support for your vehicle.
+</Info>

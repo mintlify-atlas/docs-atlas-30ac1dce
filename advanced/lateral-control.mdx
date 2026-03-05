@@ -1,0 +1,387 @@
+---
+title: 'Lateral Control Tuning'
+description: 'Configure steering behavior, torque parameters, and path following'
+icon: 'steering-wheel'
+---
+
+## Overview
+
+Lateral control manages steering to keep your vehicle centered in the lane. sunnypilot offers multiple lateral control methods with extensive tuning capabilities for optimal performance across different vehicles and driving conditions.
+
+<Info>
+Most vehicles work well with default settings. Advanced tuning is optional and should only be attempted if you understand the implications.
+</Info>
+
+## Lateral Control Methods
+
+### Torque Control (Default)
+
+Torque-based lateral control directly commands steering torque for precise path following.
+
+<ParamField path="EnforceTorqueControl" type="boolean" default="false">
+  Force use of Torque lateral control even if other methods are available
+</ParamField>
+
+**Key characteristics:**
+- Direct torque commands to EPS (Electric Power Steering)
+- Faster response time than angle-based control
+- Better handling of dynamic conditions
+- Requires vehicle-specific tuning
+
+**Torque Control Versions:**
+
+<ParamField path="TorqueControlTune" type="select" default="Default">
+  Select torque control algorithm version:
+  
+  - **Default** - Latest production tune (recommended)
+  - **v1.0** - Current stable release
+  - **v0.0** - Legacy tune for compatibility
+</ParamField>
+
+### Neural Network Lateral Control (NNLC)
+
+Formerly known as NNFF, this advanced method uses neural networks trained on vehicle-specific driving data.
+
+<ParamField path="NeuralNetworkLateralControl" type="boolean" default="false">
+  Enable NNLC for enhanced steering accuracy using learned vehicle behavior
+</ParamField>
+
+**Benefits:**
+- Trained on real driving data for each EPS firmware
+- Increased control accuracy
+- Better adaptation to vehicle-specific characteristics
+- Continuously improving with more data
+
+<Note>
+NNLC requires vehicle-specific models. Contact @twilsonco on Discord to contribute data for your vehicle if unsupported.
+</Note>
+
+### Angle Control
+
+Used by some platforms (Ford, Nissan, Tesla) that accept steering angle commands rather than torque.
+
+<Warning>
+Torque control cannot be enforced on angle control platforms and will cause "Controls Unresponsive" errors.
+</Warning>
+
+## Torque Control Tuning
+
+### Self-Tune (Automatic)
+
+The recommended approach for most users:
+
+<ParamField path="LiveTorqueParamsToggle" type="boolean" default="true">
+  Enable automatic self-tuning of torque parameters
+</ParamField>
+
+<ParamField path="LiveTorqueParamsRelaxedToggle" type="boolean" default="false">
+  Use less restrictive settings for self-tune learning (Beta)
+</ParamField>
+
+**How it works:**
+1. Enable **Self-Tune** in Settings → Steering
+2. Drive normally for several hours
+3. Parameters automatically adapt to your vehicle
+4. Monitor `LiveTorqueParameters` for learned values
+
+**Learning process:**
+- Analyzes steering response patterns
+- Adjusts friction compensation
+- Tunes lateral acceleration factors
+- Refines based on road conditions
+
+### Manual Tuning (Advanced)
+
+For experienced users who want direct control:
+
+<ParamField path="CustomTorqueParams" type="boolean" default="false">
+  Enable custom torque parameter tuning interface
+</ParamField>
+
+<ParamField path="TorqueParamsOverrideEnabled" type="boolean" default="false">
+  Allow real-time manual parameter adjustments
+</ParamField>
+
+When enabled, you can adjust:
+
+#### Friction Parameter
+
+<ParamField path="TorqueParamsOverrideFriction" type="float" default="0.01">
+  Friction compensation factor
+  
+  - **Range:** 0.0 - 1.0
+  - **Step:** 0.01
+  - **Effect:** Higher values = more aggressive friction compensation
+</ParamField>
+
+**What it controls:**
+- Steering system mechanical friction
+- Low-speed steering resistance
+- Center position holding force
+
+**Tuning guidance:**
+- **Too low:** Sluggish response, poor centering
+- **Too high:** Twitchy steering, oscillation
+- **Typical range:** 0.01 - 0.05
+
+#### Lateral Acceleration Factor
+
+<ParamField path="TorqueParamsOverrideLatAccelFactor" type="float" default="1.0" unit="m/s²">
+  Lateral acceleration response scaling
+  
+  - **Range:** 0.1 - 5.0  
+  - **Step:** 0.1
+  - **Effect:** Scales torque response to lateral acceleration demands
+</ParamField>
+
+**What it controls:**
+- Steering sensitivity to curves
+- Turn entry aggressiveness
+- Lane change responsiveness
+
+**Tuning guidance:**
+- **Below 1.0:** Gentler steering, slower lane changes
+- **Above 1.0:** More aggressive steering, faster response
+- **Typical range:** 0.8 - 1.5
+
+## Steering Delay Tuning
+
+### Live Learning Steering Delay
+
+<ParamField path="LagdToggle" type="boolean" default="true">
+  Enable automatic learning of vehicle's steering response delay
+</ParamField>
+
+**Benefits:**
+- Adapts to your vehicle's EPS characteristics
+- Compensates for actuator delay
+- Improves path tracking accuracy
+- Reduces lag in steering response
+
+### Manual Delay Override
+
+<ParamField path="LagdToggleDelay" type="float" default="0.15" unit="seconds">
+  Manual software delay when live learning is disabled
+  
+  - **Range:** 0.05 - 0.5 seconds
+  - **Step:** 0.01 seconds
+</ParamField>
+
+**When to adjust:**
+- Steering feels delayed or laggy
+- Path tracking oscillates
+- Lane changes feel imprecise
+
+**Tuning process:**
+1. Disable `LagdToggle`
+2. Start with 0.15s
+3. Decrease if steering lags behind path
+4. Increase if steering oscillates
+5. Test on highway and curves
+
+## Advanced Features
+
+### Camera Offset
+
+<ParamField path="CameraOffset" type="float" default="0.0" unit="meters">
+  Virtually shift camera perspective horizontally
+  
+  - **Range:** -0.35 to 0.35 meters
+  - **Step:** 0.01 meters
+  - **Positive:** Shift left
+  - **Negative:** Shift right
+</ParamField>
+
+**Use cases:**
+- Adjust for off-center camera mounting
+- Compensate for wide vehicles
+- Fine-tune lane positioning
+
+<Warning>
+Camera offset affects model perception. Only adjust if necessary and in small increments.
+</Warning>
+
+### Lane Turn Desire
+
+<ParamField path="LaneTurnDesire" type="boolean" default="false">
+  Force model to plan turn intent based on blinker activation
+</ParamField>
+
+<ParamField path="LaneTurnValue" type="integer" default="10" unit="mph">
+  Maximum speed for lane turn desire activation
+  
+  - **Range:** 0 - 20 mph
+  - **Step:** 1 mph
+</ParamField>
+
+**Behavior:**
+- When blinker is on below threshold speed
+- Model anticipates turn maneuver
+- Adjusts path planning accordingly
+- Useful for complex intersections
+
+### Blinker Lateral Control
+
+<ParamField path="BlinkerPauseLateralControl" type="boolean" default="false">
+  Pause lateral control when turn signal is active
+</ParamField>
+
+<ParamField path="BlinkerMinLateralControlSpeed" type="float" default="32" unit="km/h">
+  Minimum speed to pause lateral control with blinker
+</ParamField>
+
+<ParamField path="BlinkerLateralReengageDelay" type="float" default="0.0" unit="seconds">
+  Delay before lateral control resumes after blinker ends
+  
+  Allows driver to complete maneuver before re-engagement
+</ParamField>
+
+## Internal Tuning Constants
+
+These values are defined in `latcontrol_torque_ext_base.py` and affect NNLC behavior:
+
+```python
+# Friction compensation tuning (source/sunnypilot/selfdrive/controls/lib/latcontrol_torque_ext_base.py)
+friction_look_ahead_v = [1.4, 2.0]      # Lookahead time in seconds
+friction_look_ahead_bp = [9.0, 30.0]    # Corresponding speeds in m/s
+
+lat_jerk_friction_factor = 0.4          # Jerk-based friction scaling
+lat_accel_friction_factor = 0.7         # Accel-based friction scaling (0-3 range)
+```
+
+### PID Constants
+
+```python
+# From latcontrol_torque_ext_base.py:18-21
+KP = 0.8                                 # Proportional gain
+KI = 0.15                                # Integral gain
+INTERP_SPEEDS = [1, 1.5, 2.0, 3.0, 5, 7.5, 10, 15, 30]  # Speed breakpoints (m/s)
+KP_INTERP = [250, 120, 65, 30, 11.5, 5.5, 3.5, 2.0, KP]  # Speed-dependent KP
+```
+
+<Note>
+Internal constants require modifying source code. Most users should use the parameter-based tuning options.
+</Note>
+
+## Monitoring and Diagnostics
+
+### Developer UI
+
+Enable Developer UI to monitor lateral control in real-time:
+
+```
+Settings → Device → Developer UI
+```
+
+**Key metrics:**
+- **E.T.** - EPS Torque (current steering torque)
+- **L.A.** - Lateral Acceleration (m/s²)
+- **FRI.** - Friction compensation value
+- **Desired/Actual curvature** - Path following accuracy
+
+### Parameter Values
+
+Check learned torque parameters:
+
+```python
+from openpilot.common.params import Params
+import json
+
+params = Params()
+live_params = json.loads(params.get("LiveTorqueParameters"))
+print(f"Friction: {live_params.get('friction')}")
+print(f"Lat Accel Factor: {live_params.get('latAccelFactor')}")
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Steering Oscillates">
+    **Causes:**
+    - Friction too high
+    - Lat accel factor too high
+    - Steering delay incorrect
+    
+    **Solutions:**
+    1. Reduce friction by 0.01-0.02
+    2. Decrease lat accel factor by 0.1
+    3. Check tire pressure
+    4. Enable live learning delay
+  </Accordion>
+
+  <Accordion title="Poor Lane Centering">
+    **Causes:**
+    - Friction too low
+    - Camera calibration off
+    - Model confidence low
+    
+    **Solutions:**
+    1. Increase friction by 0.01
+    2. Recalibrate camera
+    3. Enable self-tune for 20+ drives
+    4. Check camera mount stability
+  </Accordion>
+
+  <Accordion title="Delayed Steering Response">
+    **Causes:**
+    - Steering delay too high
+    - Lat accel factor too low
+    - EPS lag
+    
+    **Solutions:**
+    1. Reduce LagdToggleDelay by 0.02s
+    2. Increase lat accel factor by 0.1  
+    3. Enable live learning delay
+    4. Check vehicle-specific tuning
+  </Accordion>
+
+  <Accordion title="Controls Unresponsive Error">
+    **Causes:**
+    - Torque control enforced on angle platform
+    - Parameter value out of range
+    - EPS communication fault
+    
+    **Solutions:**
+    1. Disable EnforceTorqueControl
+    2. Reset custom parameters
+    3. Check panda connection
+    4. Review error logs
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Steps>
+  <Step title="Start with Defaults">
+    Use stock settings for at least 10-20 drives to establish baseline
+  </Step>
+  <Step title="Enable Self-Tune">
+    Let the system learn your vehicle automatically before manual tuning
+  </Step>
+  <Step title="Change One Parameter">
+    Only adjust one parameter at a time to isolate effects
+  </Step>
+  <Step title="Test Thoroughly">
+    Drive in various conditions (highway, curves, city) after changes
+  </Step>
+  <Step title="Document Changes">
+    Keep notes on parameter values and their effects
+  </Step>
+</Steps>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Parameters System" icon="sliders" href="/advanced/parameters">
+    Understanding parameter management
+  </Card>
+  <Card title="Longitudinal Control" icon="gauge" href="/advanced/longitudinal-control">
+    Speed and acceleration tuning
+  </Card>
+  <Card title="NNLC Setup" icon="brain" href="/features/nnlc">
+    Neural network lateral control guide
+  </Card>
+  <Card title="Vehicle Tuning" icon="car" href="/vehicle-specific/tuning">
+    Vehicle-specific tuning tips
+  </Card>
+</CardGroup>

@@ -1,0 +1,346 @@
+---
+title: Contributing Guide
+description: How to contribute to sunnypilot development
+icon: code-pull-request
+---
+
+## Getting Started
+
+sunnypilot welcomes both pull requests and issues on GitHub. Bug fixes are especially encouraged!
+
+<Steps>
+  <Step title="Join the Community">
+    Join the [sunnypilot community forum](https://community.sunnypilot.ai/) to stay up to date with features and development
+  </Step>
+  <Step title="Set Up Development Environment">
+    Follow the [building guide](/development/building) to set up your local development environment
+  </Step>
+  <Step title="Find Something to Work On">
+    Look for issues labeled "good first issue" or browse the community forum for feature requests
+  </Step>
+</Steps>
+
+## What Gets Merged?
+
+The probability of a pull request being merged is a function of its **value to the project** and the **effort required to merge it**.
+
+### Good Pull Requests ✅
+
+<CardGroup cols={2}>
+  <Card title="Bug Fixes" icon="bug">
+    Simple, well-tested fixes that resolve specific issues
+  </Card>
+  <Card title="Code Cleanup" icon="broom">
+    Removing unused code or fixing typos
+  </Card>
+  <Card title="Car Support" icon="car">
+    Adding support for new car models with proper testing
+  </Card>
+  <Card title="Documentation" icon="book">
+    Improving or adding documentation
+  </Card>
+</CardGroup>
+
+### What Won't Be Merged ❌
+
+<Warning>
+  The following types of PRs will likely be closed:
+</Warning>
+
+- **Style changes**: Code style is subjective and up to the maintainer
+- **500+ line PRs**: Break it up into smaller, focused PRs
+- **PRs without a clear goal**: Every PR must have a singular, well-defined purpose
+- **Negative expected value**: Changes where the risk/validation cost exceeds the benefit
+
+## Pull Request Guidelines
+
+Pull requests should be against the **master** branch.
+
+### Required Elements
+
+A good pull request includes:
+
+<AccordionGroup>
+  <Accordion title="Clear Purpose">
+    State exactly what the PR does in the title and description. Example:
+    
+    ```markdown
+    # Fix steering angle calculation for Honda Civic
+    
+    The steering angle was incorrectly scaled by a factor of 2,
+    causing erratic lane keeping. This PR corrects the scaling factor.
+    ```
+  </Accordion>
+  
+  <Accordion title="Focused Changes">
+    Every line changed should directly contribute to the stated purpose. Avoid:
+    - Unrelated refactoring
+    - Style changes in existing code
+    - Feature creep
+  </Accordion>
+  
+  <Accordion title="Verification">
+    Explain how you tested your changes:
+    
+    ```markdown
+    ## Testing
+    - Tested on 2019 Honda Civic for 50 miles of highway driving
+    - Verified steering angle matches vehicle speed in logs
+    - No disengagements or erratic behavior observed
+    ```
+  </Accordion>
+  
+  <Accordion title="Justification">
+    - If optimizing: post benchmarks showing improvement
+    - If improving tuning: post before/after plots
+    - If adding features: explain the user benefit
+  </Accordion>
+  
+  <Accordion title="CI Compliance">
+    All tests must pass:
+    - `pytest` tests
+    - `ruff` linting
+    - `codespell` spell checking
+  </Accordion>
+</AccordionGroup>
+
+## Coding Standards
+
+### Python Style
+
+sunnypilot follows **PEP 8** with some modifications:
+
+<CodeGroup>
+```python Python Code Style
+# Good: 2-space indentation
+def calculate_steering_angle(v_ego, curvature):
+  return curvature * v_ego * STEERING_RATIO
+
+# Good: Clear variable names
+steering_angle_deg = math.degrees(steering_angle_rad)
+
+# Bad: Unclear abbreviations
+sa_d = math.degrees(sa_r)
+```
+
+```python Import Style
+# Good: Absolute imports with openpilot prefix
+from openpilot.selfdrive.car import interfaces
+from openpilot.common.params import Params
+
+# Bad: Relative imports
+from selfdrive.car import interfaces
+from common.params import Params
+```
+</CodeGroup>
+
+### Linting
+
+Run linters before submitting:
+
+```bash
+# Run ruff linter
+ruff check .
+
+# Auto-fix issues
+ruff check --fix .
+
+# Check spelling
+codespell
+```
+
+<Note>
+  Configuration is in `pyproject.toml`. The project uses:
+  - **2-space indentation**
+  - **160 character line length**
+  - **Ruff** for linting and formatting
+</Note>
+
+### C++ Style
+
+```cpp
+// Good: Clear naming and const correctness
+float calculate_lateral_acceleration(const float velocity, const float curvature) {
+  return velocity * velocity * curvature;
+}
+
+// Use C++17 features
+auto get_car_state() -> CarState {
+  // Implementation
+}
+```
+
+## Testing Requirements
+
+### Running Tests
+
+Before submitting a PR, ensure all tests pass:
+
+```bash
+# Run all tests
+pytest
+
+# Run specific test file
+pytest selfdrive/car/tests/test_car_interfaces.py
+
+# Run with verbose output
+pytest -v
+
+# Skip slow tests during development
+pytest -m "not slow"
+```
+
+### Writing Tests
+
+Add tests for new functionality:
+
+```python
+# tests/test_my_feature.py
+import pytest
+from openpilot.sunnypilot.my_module import my_function
+
+def test_my_function():
+  """Test that my_function returns expected value."""
+  result = my_function(input_value=42)
+  assert result == expected_value
+
+@pytest.mark.slow
+def test_integration():
+  """Integration test marked as slow."""
+  # Long-running test
+  pass
+```
+
+## Commit Messages
+
+Write clear, concise commit messages:
+
+<CodeGroup>
+```bash Good Examples
+git commit -m "Fix steering angle scaling for Honda Civic"
+git commit -m "Add support for Toyota RAV4 2024"
+git commit -m "Update longitudinal tuning for smoother acceleration"
+```
+
+```bash Bad Examples
+git commit -m "Fix bug"  # Too vague
+git commit -m "WIP"     # Not descriptive
+git commit -m "asdf"    # Meaningless
+```
+</CodeGroup>
+
+### Commit Message Format
+
+```
+<type>: <subject>
+
+<body>
+
+<footer>
+```
+
+Types:
+- `fix`: Bug fix
+- `feat`: New feature
+- `docs`: Documentation changes
+- `test`: Adding or updating tests
+- `refactor`: Code refactoring
+- `perf`: Performance improvements
+
+## Development Process
+
+### 1. Fork and Clone
+
+```bash
+# Fork the repository on GitHub, then:
+git clone https://github.com/YOUR_USERNAME/sunnypilot.git
+cd sunnypilot
+git remote add upstream https://github.com/sunnyhaibin/sunnypilot.git
+```
+
+### 2. Create a Branch
+
+```bash
+# Create a feature branch
+git checkout -b fix/steering-angle-honda
+
+# Keep your branch up to date
+git fetch upstream
+git rebase upstream/master
+```
+
+### 3. Make Changes
+
+1. Write your code
+2. Add tests
+3. Run linters
+4. Test thoroughly
+
+### 4. Submit PR
+
+```bash
+# Push to your fork
+git push origin fix/steering-angle-honda
+```
+
+Then open a Pull Request on GitHub.
+
+<Tip>
+  Reference related issues in your PR description using `Fixes #123` or `Relates to #456`
+</Tip>
+
+## Code Review Process
+
+<Steps>
+  <Step title="Automated Checks">
+    CI runs tests, linters, and checks automatically
+  </Step>
+  <Step title="Maintainer Review">
+    A maintainer reviews your code and provides feedback
+  </Step>
+  <Step title="Address Feedback">
+    Make requested changes and push updates to your PR branch
+  </Step>
+  <Step title="Merge">
+    Once approved, your PR will be merged into master
+  </Step>
+</Steps>
+
+## Contributing Without Code
+
+You can also help by:
+
+<CardGroup cols={2}>
+  <Card title="Reporting Bugs" icon="bug">
+    Open detailed issue reports on GitHub
+  </Card>
+  <Card title="Testing" icon="vial">
+    Test new features and provide feedback
+  </Card>
+  <Card title="Documentation" icon="book">
+    Improve or add to the documentation
+  </Card>
+  <Card title="Community Support" icon="users">
+    Help other users on the community forum
+  </Card>
+</CardGroup>
+
+## License
+
+sunnypilot is released under the **MIT License**. By contributing, you agree that your contributions will be licensed under the same license.
+
+<Info>
+  See the [LICENSE](https://github.com/sunnyhaibin/sunnypilot/blob/master/LICENSE) file for full license terms.
+</Info>
+
+## Questions?
+
+If you have questions about contributing:
+
+- Ask in the [community forum](https://community.sunnypilot.ai/)
+- Check existing GitHub issues
+- Review this documentation
+
+<Tip>
+  Start small! Your first contribution doesn't have to be a major feature. Bug fixes and documentation improvements are valuable contributions.
+</Tip>

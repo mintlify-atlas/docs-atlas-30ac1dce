@@ -1,0 +1,242 @@
+---
+title: 'Parameters System'
+description: 'Understanding and managing sunnypilot configuration parameters'
+icon: 'sliders'
+---
+
+## Overview
+
+The sunnypilot parameters system is a comprehensive key-value store that manages all configuration settings across the entire platform. Parameters are stored persistently on the device and can be synchronized via sunnylink for backup and remote management.
+
+<Info>
+All parameters are defined in `sunnypilot/sunnylink/params_metadata.json` with metadata including descriptions, valid ranges, units, and available options.
+</Info>
+
+## Parameter Types
+
+The parameter system supports multiple data types:
+
+<CardGroup cols={2}>
+  <Card title="Boolean" icon="toggle-on">
+    Simple on/off toggles for feature flags
+  </Card>
+  <Card title="Integer" icon="hashtag">
+    Numeric values with defined ranges
+  </Card>
+  <Card title="Float" icon="ruler">
+    Decimal values for precise tuning
+  </Card>
+  <Card title="String" icon="font">
+    Text values for identifiers and labels
+  </Card>
+  <Card title="JSON" icon="brackets-curly">
+    Complex structured data objects
+  </Card>
+  <Card title="Bytes" icon="binary">
+    Raw binary data for specialized use
+  </Card>
+</CardGroup>
+
+## Accessing Parameters
+
+Parameters can be accessed and modified through multiple interfaces:
+
+### Device Settings UI
+
+The primary interface for adjusting parameters:
+
+1. Navigate to **Settings** on your comma device
+2. Browse through organized panels:
+   - **Steering** - Lateral control parameters
+   - **Longitudinal** - Speed and following distance
+   - **Visuals** - Display customization
+   - **Device** - System settings
+3. Toggle **Show Advanced Controls** to access additional parameters
+
+### sunnylink Integration
+
+<Note>
+sunnylink provides cloud-based parameter backup, restore, and remote management capabilities.
+</Note>
+
+**Benefits:**
+- **Backup/Restore**: Automatically back up your settings with end-to-end encryption
+- **Remote Management**: Change settings remotely (feature in development)
+- **Model Selection**: Switch driving models remotely (coming soon)
+- **Multi-Device**: Sync settings across multiple comma devices
+
+**How it works:**
+1. Enable sunnylink in **Settings → Device → sunnylink**
+2. Pair your GitHub account via QR code
+3. Parameters are encrypted using AES derived from device's RSA private key
+4. Encrypted data transmitted via HTTPS and stored securely
+
+### SSH/Command Line
+
+For advanced users with SSH access:
+
+```python
+from openpilot.common.params import Params
+
+params = Params()
+
+# Read a parameter
+value = params.get_bool("EnforceTorqueControl")
+
+# Write a parameter  
+params.put_bool("EnforceTorqueControl", True)
+
+# Get parameter metadata
+param_type = params.get_type("EnforceTorqueControl")
+```
+
+## Key Parameter Categories
+
+### Control Parameters
+
+<ParamField path="EnforceTorqueControl" type="boolean" default="false">
+  Enforce Torque lateral control over other control methods
+</ParamField>
+
+<ParamField path="LagdToggle" type="boolean" default="true">
+  Enable live learning of steering delay for improved response
+</ParamField>
+
+<ParamField path="NeuralNetworkLateralControl" type="boolean" default="false">
+  Use neural network-based lateral control (NNLC) trained on vehicle-specific data
+</ParamField>
+
+<ParamField path="DynamicExperimentalControl" type="boolean" default="false">
+  Automatically switch between ACC and E2E longitudinal based on conditions
+</ParamField>
+
+### Visual Parameters
+
+<ParamField path="OnroadScreenOffBrightness" type="integer" default="0">
+  Control screen brightness while driving (0 = Auto Default, 2 = Screen Off, 3-22 = 5%-100%)
+</ParamField>
+
+<ParamField path="ShowTurnSignals" type="boolean" default="true">
+  Display turn signal indicators on HUD when blinker is active
+</ParamField>
+
+<ParamField path="RoadNameToggle" type="boolean" default="false">
+  Show current road name on display (requires OSM database)
+</ParamField>
+
+### System Parameters
+
+<ParamField path="DeviceBootMode" type="integer" default="0">
+  Boot mode: 0 = Standard, 1 = Always Offroad
+</ParamField>
+
+<ParamField path="MaxTimeOffroad" type="integer" default="30" unit="minutes">
+  Maximum time device stays on after car turns off
+</ParamField>
+
+## Parameter Migration
+
+When updating sunnypilot versions, parameters may need migration:
+
+```python
+# Handled automatically by params_migration.py
+# Located at: sunnypilot/system/params_migration.py
+```
+
+The migration system:
+- Detects parameter schema changes
+- Converts old parameter formats to new ones
+- Preserves user settings across updates
+- Logs all migration actions
+
+## Best Practices
+
+<Warning>
+Only modify parameters if you understand their function. Incorrect values can affect vehicle safety and performance.
+</Warning>
+
+<AccordionGroup>
+  <Accordion title="Before Making Changes">
+    1. Note current parameter values
+    2. Make one change at a time
+    3. Test thoroughly in safe conditions
+    4. Create a sunnylink backup before major changes
+  </Accordion>
+
+  <Accordion title="Testing New Values">
+    1. Start with small incremental changes
+    2. Test in low-traffic conditions first
+    3. Monitor behavior over multiple drives
+    4. Revert if unexpected behavior occurs
+  </Accordion>
+
+  <Accordion title="Advanced Tuning">
+    1. Enable **Show Advanced Controls** for full access
+    2. Reference source code for parameter ranges
+    3. Join sunnypilot Discord for community guidance
+    4. Share tuning results to help others
+  </Accordion>
+</AccordionGroup>
+
+## Parameter Metadata
+
+Each parameter includes rich metadata:
+
+```json
+{
+  "EnforceTorqueControl": {
+    "title": "Enforce Torque Control",
+    "description": "Enable this to enforce sunnypilot to steer with Torque lateral control.",
+    "type": "boolean"
+  },
+  "CameraOffset": {
+    "title": "Adjust Camera Offset",
+    "description": "Virtually shift camera's perspective to move model's center to Left(+ values) or Right (- values)",
+    "min": -0.35,
+    "max": 0.35,
+    "step": 0.01,
+    "unit": "meters"
+  }
+}
+```
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Parameter Not Saving">
+    - Check device storage space
+    - Verify parameter name spelling
+    - Ensure value is within valid range
+    - Check for parameter type mismatch
+  </Accordion>
+
+  <Accordion title="Settings Reset After Update">
+    - Use sunnylink backup before updating
+    - Check migration logs in `/data/params`
+    - Some parameters intentionally reset for safety
+  </Accordion>
+
+  <Accordion title="sunnylink Sync Issues">
+    - Verify internet connection
+    - Check sunnylink registration status
+    - Ensure not on metered connection (if restricted)
+    - Review sunnylink panel for error messages
+  </Accordion>
+</AccordionGroup>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Lateral Control" icon="steering-wheel" href="/advanced/lateral-control">
+    Steering and path following parameters
+  </Card>
+  <Card title="Longitudinal Control" icon="gauge" href="/advanced/longitudinal-control">
+    Speed and acceleration parameters
+  </Card>
+  <Card title="Visual Customization" icon="palette" href="/advanced/visual-customization">
+    UI themes and display options
+  </Card>
+  <Card title="sunnylink Setup" icon="cloud" href="/features/sunnylink">
+    Configure cloud parameter sync
+  </Card>
+</CardGroup>

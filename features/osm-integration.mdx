@@ -1,0 +1,595 @@
+---
+title: 'OpenStreetMap Integration'
+description: 'Offline map database for speed limits, road names, and map-based driving features'
+icon: 'map'
+---
+
+## Overview
+
+Sunnypilot integrates OpenStreetMap (OSM) data to provide offline map-based features including speed limit information, road name display, map-based turn speed control, and more. Thanks to [@pfeiferj's mapd](https://github.com/pfeiferj/mapd), you can download regional map databases directly to your device for use without internet connectivity.
+
+<Info>
+OSM integration enables features that depend on map data to work even in areas without cellular coverage, using locally stored databases.
+</Info>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="Offline Map Database" icon="database">
+    Download and store regional OSM data locally on your device
+  </Card>
+  
+  <Card title="Speed Limit Data" icon="gauge">
+    Access speed limit information from OpenStreetMap for Speed Limit Assist
+  </Card>
+  
+  <Card title="Road Name Display" icon="road">
+    Show the current street name on the driving screen
+  </Card>
+  
+  <Card title="Map-based Turn Speed Control" icon="turn-down-right">
+    Slow down for upcoming curves using map curvature data (M-TSC)
+  </Card>
+</CardGroup>
+
+## mapd Integration
+
+### What is mapd?
+
+mapd is an OpenStreetMap database manager created by [@pfeiferj](https://github.com/pfeiferj) that provides:
+
+- **Regional database downloads** - Download only the areas you drive
+- **Weekly map updates** - Stay current with road changes
+- **Efficient storage** - Significantly smaller database sizes
+- **All regions available** - Worldwide coverage
+- **Low resource impact** - Optimized for comma device hardware
+
+**Current version:** v1.9.0 (as of sunnypilot 0.9.7.1)
+
+### How It Works
+
+<Steps>
+  <Step title="Database Selection">
+    Choose which region(s) to download from the available OpenStreetMap databases
+  </Step>
+  
+  <Step title="Local Storage">
+    Map data is stored in `/data/media/0/osm/` on your comma device
+  </Step>
+  
+  <Step title="Real-time Queries">
+    As you drive, your GPS position queries the local database for relevant map data
+  </Step>
+  
+  <Step title="Feature Activation">
+    Map data feeds into Speed Limit Assist, road name display, and turn speed control
+  </Step>
+</Steps>
+
+## Downloading Map Databases
+
+### Available Regions
+
+OSM databases are available for all regions worldwide, including:
+
+**North America:**
+- United States (by state)
+- Canada (by province)
+- Mexico
+
+**Europe:**
+- All European countries
+- Region-specific downloads
+
+**Asia, Australia, and More:**
+- Complete global coverage
+- Country and region-level granularity
+
+### Download Process
+
+<Tabs>
+  <Tab title="First-Time Setup">
+    <Steps>
+      <Step title="Enable OSM Local">
+        Navigate to **Settings → Device → OSM → Enable OSM Offline Database**
+      </Step>
+      
+      <Step title="Select Region">
+        Choose your country/nation from the list
+      </Step>
+      
+      <Step title="Select State/Province (if applicable)">
+        For countries like the US, select specific states or choose "All"
+      </Step>
+      
+      <Step title="Initiate Download">
+        Tap **Download OSM Database**. Progress will be shown on screen.
+      </Step>
+      
+      <Step title="Wait for Completion">
+        Large databases may take time to download. Ensure stable WiFi connection.
+      </Step>
+    </Steps>
+    
+    <Warning>
+    Database downloads can be large (several hundred MB to GB for entire countries). Use WiFi to avoid mobile data charges.
+    </Warning>
+  </Tab>
+  
+  <Tab title="Search Feature">
+    **Find specific locations easily:**
+    
+    The OSM database downloader includes a search feature:
+    
+    1. Navigate to OSM download panel
+    2. Use the search bar to find countries or regions
+    3. Filter results to quickly locate your area
+    4. Select and download
+    
+    **Search tips:**
+    - Search by country name
+    - Search by state/province
+    - Use partial matches (e.g., "calif" finds "California")
+  </Tab>
+  
+  <Tab title="Multiple Regions">
+    **Download multiple databases:**
+    
+    You can download and store multiple regional databases:
+    
+    1. Download first region as normal
+    2. Add additional regions from the same interface
+    3. All databases are stored and queried simultaneously
+    4. Useful for:
+       - Cross-border driving
+       - Road trips across states/countries
+       - Seasonal travel patterns
+    
+    **Storage considerations:**
+    - Monitor available storage space
+    - Remove unused regions to free space
+    - Databases are in `/data/media/0/osm/`
+  </Tab>
+</Tabs>
+
+### Special Handling: United States
+
+<Note>
+For efficiency, the US database is handled differently:
+
+- If you select **specific states**, the full US database is NOT downloaded
+- If you select **"All" states**, only the full US database is downloaded (no individual states)
+- This prevents redundant data storage
+</Note>
+
+## Map Update Management
+
+### Checking for Updates
+
+<Steps>
+  <Step title="Enable Update Check">
+    Settings → Device → OSM → Check for OSM Database Updates
+  </Step>
+  
+  <Step title="Review Available Updates">
+    System checks weekly for new map data from OpenStreetMap
+  </Step>
+  
+  <Step title="Update Notification">
+    If updates are available, you'll see "OSM Update Required" alert
+  </Step>
+  
+  <Step title="Download New Data">
+    Follow the download process again to get updated maps
+  </Step>
+</Steps>
+
+### Update Frequency
+
+OpenStreetMap data is updated regularly:
+
+- **Weekly updates** available for most regions
+- **Automatic checking** when enabled
+- **Manual updates** available anytime
+- **Version tracking** shows when database was downloaded
+
+## Map-Based Features
+
+### Speed Limit Information
+
+**How it works:**
+
+1. GPS position is sent to mapd
+2. mapd queries local OSM database
+3. Speed limit for current road segment returned
+4. Data fed to Speed Limit Assist (SLA) and UI
+
+**Display options:**
+
+<CardGroup cols={2}>
+  <Card title="MUTCD Style" icon="octagon">
+    US-standard white-on-black speed limit signs
+  </Card>
+  
+  <Card title="Vienna Style" icon="circle">
+    European-style circular speed limit signs
+  </Card>
+</CardGroup>
+
+**Additional information shown:**
+- Current speed vs. limit
+- Offset applied (if any)
+- Distance to next speed limit change
+- Color coding (red when speeding)
+
+### Road Name Display
+
+**Current street information on screen:**
+
+- Large, readable font at top of screen
+- Updates automatically as you drive
+- Works completely offline with OSM database
+- Includes highway names and route numbers
+
+**Configuration:**
+
+Settings → Visuals → Display Road Name
+
+**When visible:**
+- Comma three/3X/four devices
+- When OSM database is installed
+- In areas with mapped road names
+
+### Map-based Turn Speed Control (M-TSC)
+
+<Note>
+M-TSC is available in **staging-c3** and **dev-c3** branches. Switch branches to access this feature.
+</Note>
+
+**Intelligent curve speed management:**
+
+M-TSC uses OSM curvature data to predict and slow for upcoming turns:
+
+<Tabs>
+  <Tab title="How It Works">
+    1. **Curvature Prediction:** mapd calculates upcoming road curvature from OSM geometry
+    2. **Speed Calculation:** Determines safe speed for curve based on radius
+    3. **Longitudinal Command:** Sends deceleration command before the turn
+    4. **Smooth Exit:** Accelerates back to set speed after curve
+    
+    **Refactored implementation** thanks to @pfeiferj:
+    - More accurate curvature predictions
+    - Improved speed calculations
+    - Better integration with longitudinal control
+  </Tab>
+  
+  <Tab title="Requirements">
+    **M-TSC requires:**
+    
+    ✅ OSM database installed for your region
+    
+    ✅ openpilot Longitudinal Control OR Custom Stock Longitudinal Control
+    
+    ✅ GPS signal with accurate position
+    
+    ✅ Staging or dev branch installed
+    
+    **Supported platforms:**
+    - All openpilot longitudinal capable cars
+    - Custom Stock Longitudinal Control platforms
+    
+    **Not available:**
+    - Stock cruise control only vehicles
+    - Platforms without longitudinal control
+  </Tab>
+  
+  <Tab title="Configuration">
+    **Enable M-TSC:**
+    
+    Settings → SP - Longitudinal → Map-based Turn Speed Control
+    
+    **Tuning options:**
+    - Curve sensitivity
+    - Maximum deceleration
+    - Look-ahead distance
+    - Speed reduction aggressiveness
+    
+    **Works with:**
+    - Vision-based Turn Speed Control (V-TSC)
+    - Speed Limit Assist
+    - Smart Cruise Control
+  </Tab>
+</Tabs>
+
+### Altitude Display (Developer UI)
+
+**See your elevation:**
+
+When OSM is enabled and Developer UI is active:
+
+- **ALT.** metric shows current altitude
+- Updates in real-time
+- Displayed in bottom row of Developer UI
+- Available on comma three/3X/four
+
+## Advanced Features
+
+### Vision-based Turn Speed Control (V-TSC)
+
+Works alongside M-TSC using the driving model's vision:
+
+**Compared to M-TSC:**
+
+<CardGroup cols={2}>
+  <Card title="M-TSC" icon="map">
+    - Uses map data
+    - Predicts curves ahead
+    - Requires GPS accuracy
+    - Works on mapped roads
+  </Card>
+  
+  <Card title="V-TSC" icon="eye">
+    - Uses camera vision
+    - Sees curves ahead
+    - GPS independent
+    - Works anywhere
+  </Card>
+</CardGroup>
+
+**Combined approach:**
+- M-TSC and V-TSC work together
+- Smoother, more accurate curve handling
+- Redundancy if GPS is inaccurate
+- Best performance with both enabled
+
+### Advisory Speed Limits
+
+**Curve-specific speed recommendations:**
+
+OSM includes advisory speed limit data for curves:
+
+- Yellow warning signs (like "35 MPH" on curve)
+- Used by mapd to refine curve speed calculations
+- Improves M-TSC accuracy
+- Based on road engineering data
+
+## Technical Details
+
+### Database Structure
+
+**Storage location:**
+```
+/data/media/0/osm/
+├── version.json
+├── [country]/
+│   ├── [region].db
+│   └── metadata.json
+```
+
+**Database format:**
+- SQLite databases
+- Spatial indexing for fast queries
+- Compressed geometry data
+- Optimized for embedded systems
+
+### Query Performance
+
+**Optimization techniques:**
+
+- **Spatial indexing:** Fast radius queries around GPS position
+- **Caching:** Recently queried road segments cached in memory
+- **Lazy loading:** Only loads needed data
+- **Efficient geometry:** Simplified road shapes for speed
+
+**Resource usage:**
+- Minimal CPU impact
+- Low memory footprint
+- No network required after download
+- Works on comma three/3X/four hardware
+
+### GPS Integration
+
+**Position tracking:**
+
+```python
+# Live map data queries GPS position
+from openpilot.sunnypilot.mapd.live_map_data.osm_map_data import OsmMapData
+
+live_map_sp = OsmMapData()
+live_map_sp.tick()  # Updates position and queries database
+```
+
+**Data flow:**
+
+1. GPS position from `liveLocationKalman`
+2. Query radius determined by speed
+3. Local database queried for features
+4. Results returned to requesting features
+5. Updates every second (1 Hz)
+
+## Configuration
+
+### Enable OSM Features
+
+<Steps>
+  <Step title="Enable Offline Database">
+    Settings → Device → OSM → Enable OSM Offline Database
+  </Step>
+  
+  <Step title="Download Regional Data">
+    Select and download your region's database
+  </Step>
+  
+  <Step title="Enable Dependent Features">
+    - Speed Limit Assist (uses OSM speed limits)
+    - Road Name Display (Settings → Visuals)
+    - M-TSC (if on compatible branch)
+  </Step>
+  
+  <Step title="Verify Operation">
+    Drive and confirm road names/speed limits appear
+  </Step>
+</Steps>
+
+### OSM Debug UI
+
+**Advanced debugging information:**
+
+Settings → Developer → OSM Debug UI
+
+**Shows:**
+- Current road name at top of screen
+- GPS position accuracy
+- Database query status
+- Speed limit source
+- Map matching quality
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Database won't download">
+    **Possible causes:**
+    
+    - No internet connection
+    - Insufficient storage space
+    - Network timeout
+    - Server unavailable
+    
+    **Solutions:**
+    
+    1. Ensure stable WiFi connection
+    2. Check free space (Settings → Storage)
+    3. Try again later if server is busy
+    4. Check for software updates
+    5. Verify OSM Local is enabled
+  </Accordion>
+  
+  <Accordion title="No road names showing">
+    **Check these:**
+    
+    ✅ OSM database downloaded for your area
+    
+    ✅ GPS has accurate fix (not in tunnel/parking garage)
+    
+    ✅ Road Name Display enabled in Visuals
+    
+    ✅ Driving on mapped roads (new roads may not be in OSM)
+    
+    **Debug:**
+    - Enable OSM Debug UI
+    - Check GPS position accuracy
+    - Verify database file exists in `/data/media/0/osm/`
+  </Accordion>
+  
+  <Accordion title="Speed limits incorrect or missing">
+    **Reasons:**
+    
+    - OSM data incomplete for your road
+    - Database out of date
+    - GPS position inaccurate
+    - Recent road changes not yet in OSM
+    
+    **Solutions:**
+    
+    1. Check for OSM database updates
+    2. Re-download regional database
+    3. Verify GPS accuracy
+    4. Use car-based or vision-based speed limit as fallback
+    5. Consider contributing missing data to OpenStreetMap.org
+  </Accordion>
+  
+  <Accordion title="M-TSC not activating">
+    **Requirements check:**
+    
+    - [ ] OSM database installed
+    - [ ] Longitudinal control enabled
+    - [ ] M-TSC toggle enabled
+    - [ ] On staging/dev branch
+    - [ ] GPS accurate position
+    - [ ] Driving on mapped roads with curves
+    
+    **Verify:**
+    - Check branch (Settings → Software)
+    - Confirm longitudinal control works
+    - Enable M-TSC in settings
+    - Drive on roads with documented curves
+  </Accordion>
+  
+  <Accordion title="Database taking too much space">
+    **Storage management:**
+    
+    - Remove unused regional databases
+    - Download only states/provinces you drive in
+    - Use state-level instead of country-level for large countries
+    
+    **Delete databases:**
+    
+    1. SSH into device
+    2. Navigate to `/data/media/0/osm/`
+    3. Remove unwanted `.db` files
+    4. Or use Settings → OSM → Manage Databases
+  </Accordion>
+</AccordionGroup>
+
+## Performance Optimization
+
+### Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Download Strategy" icon="download">
+    - Download only regions you regularly drive
+    - Update databases quarterly
+    - Remove old/unused regions
+    - Use state-level for large countries
+  </Card>
+  
+  <Card title="Feature Selection" icon="sliders">
+    - Enable only needed map features
+    - Disable OSM Debug UI when not needed
+    - Use vision-based features as backup
+    - Balance features with performance
+  </Card>
+</CardGroup>
+
+### Resource Monitoring
+
+**Check storage usage:**
+
+Settings → Storage → OSM Databases
+
+**Monitor performance:**
+- Developer UI shows query times
+- GPS position update rate
+- Database hit/miss ratio
+
+## Future Enhancements
+
+Planned OSM integration improvements:
+
+- Navigate on openpilot (NoO) integration when feature returns
+- Enhanced curve prediction algorithms
+- Traffic calming feature detection (stop signs, speed bumps)
+- Lane-level map matching
+- Offline navigation routing
+
+## Related Features
+
+- [Speed Limit Assist](/advanced/longitudinal-control#speed-limit-assist) - Uses OSM speed limit data
+- [Custom UI](/features/custom-ui) - Displays road names from OSM
+- [Turn Speed Control](/advanced/longitudinal-control#smart-cruise-control) - Map and vision-based curve handling
+- [Smart Cruise Control](/advanced/longitudinal-control#smart-cruise-control) - Integrates with M-TSC
+
+## Source Code
+
+OSM integration implementation:
+
+- `sunnypilot/mapd/mapd_manager.py` - Database management
+- `sunnypilot/mapd/live_map_data/osm_map_data.py` - Live queries
+- `sunnypilot/mapd/mapd_installer.py` - Download and installation
+- `third_party/mapd_pfeiferj/` - mapd library by @pfeiferj
+
+## Credits
+
+<Info>
+OSM integration powered by [@pfeiferj's mapd](https://github.com/pfeiferj/mapd). Special thanks to the OpenStreetMap community for providing free, open map data worldwide.
+</Info>

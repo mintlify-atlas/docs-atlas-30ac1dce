@@ -1,0 +1,679 @@
+---
+title: "Settings Guide"
+description: "Complete guide to sunnypilot settings, panels, and parameter customization"
+---
+
+## Settings Overview
+
+sunnypilot features a comprehensive settings interface with dedicated panels for different aspects of system configuration. All settings are accessible through the offroad interface.
+
+<Info>
+  **Accessing Settings**: Tap the **Settings** button (gear icon) when your vehicle is parked and the device is in offroad mode.
+</Info>
+
+### Settings Organization
+
+Settings are organized into the following panels:
+
+<CardGroup cols={2}>
+  <Card title="Device" icon="mobile">
+    Device management, connectivity, storage, and system controls
+  </Card>
+  <Card title="Network" icon="wifi">
+    Wi-Fi, hotspot, and connectivity settings
+  </Card>
+  <Card title="Software" icon="download">
+    Branch selection, updates, and driving model management
+  </Card>
+  <Card title="Vehicle" icon="car">
+    Vehicle-specific settings and platform selection
+  </Card>
+  <Card title="Steering" icon="steering-wheel">
+    Lateral control, MADS, and steering behavior
+  </Card>
+  <Card title="Cruise" icon="gauge-high">
+    Longitudinal control, speed management, and cruise settings
+  </Card>
+  <Card title="Visuals" icon="eye">
+    Display elements, on-screen indicators, and UI customization
+  </Card>
+  <Card title="Display" icon="brightness">
+    Screen brightness, timeout, and display behavior
+  </Card>
+  <Card title="Trips" icon="route">
+    Trip statistics and driving history
+  </Card>
+  <Card title="Developer" icon="code">
+    Advanced settings, SSH, logs, and debugging tools
+  </Card>
+</CardGroup>
+
+---
+
+## Core Settings Panels
+
+### Device Panel
+
+Manage device hardware, connectivity, and system functions.
+
+<Tabs>
+  <Tab title="Device Info">
+    **System Information:**
+    - **Dongle ID**: Your device's unique identifier
+    - **Serial Number**: Hardware serial number
+    - **OS Version**: AGNOS version (e.g., AGNOS 9)
+    - **Storage**: Available space and usage
+    - **Temperature**: Current device temperature sensors
+    
+    <Warning>
+      If **Out of Storage** appears, free up space by deleting old drives or connect external storage.
+    </Warning>
+  </Tab>
+  
+  <Tab title="Device Controls">
+    **Key Settings:**
+    
+    - **Driver Camera**: Enable/disable driver monitoring camera recording
+    - **Upload Driver Camera**: Upload driver camera footage to comma servers (requires explicit opt-in)
+    - **Always Offroad Mode**: Force device into offroad state even when car is on (useful for changing settings with car running)
+    - **Reset Calibration**: Clear calibration data (requires recalibration)
+    - **Review Training Guide**: Access the built-in tutorial
+    - **Pair Device**: Connect to comma connect services
+    - **Uninstall sunnypilot**: Factory reset the device
+  </Tab>
+  
+  <Tab title="Power & Storage">
+    **Storage Options:**
+    - **External Storage Support**: Use USB drive for additional storage
+    - **Free Space Alert**: Get warned when storage is low
+    
+    **Power Management:**
+    - **Max Time Offroad**: How long device stays on after car turns off
+    - **QuickBoot**: Faster startup by keeping some processes running
+    
+    <Tip>
+      QuickBoot state is retained across branch switches in recent versions.
+    </Tip>
+  </Tab>
+</Tabs>
+
+---
+
+### Network Panel
+
+Configure internet connectivity and data usage.
+
+<AccordionGroup>
+  <Accordion title="Wi-Fi Settings" icon="wifi">
+    - **Add Network**: Connect to Wi-Fi networks
+    - **Saved Networks**: Manage known networks
+    - **Tethering**: Share your phone's internet via hotspot
+    - **Retain Hotspot/Tethering**: Keep hotspot settings across reboots
+    
+    <Note>
+      Wi-Fi is required for software updates and driving model downloads.
+    </Note>
+  </Accordion>
+  
+  <Accordion title="Data Usage" icon="chart-simple">
+    Monitor and control data consumption:
+    - View current usage statistics
+    - Enable metered connection warning for model downloads
+    - Upload settings to comma servers (opt-in)
+    
+    <Warning>
+      Downloading driving models uses significant data (500MB-1GB per model). Connect to Wi-Fi when possible.
+    </Warning>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### Software Panel
+
+Manage sunnypilot versions, branches, and driving models.
+
+<Tabs>
+  <Tab title="Branch Selection">
+    **Available Branches:**
+    
+    - **release**: Stable releases, recommended for daily driving
+    - **staging**: Release candidates with newer features
+    - **dev**: Development branch with latest changes (may be unstable)
+    - **Custom URLs**: Install specific forks or commits
+    
+    **Switching Branches:**
+    1. Tap **Branch** under Software
+    2. Search or select desired branch
+    3. Tap **Check for Update**
+    4. Confirm and wait for download
+    5. Device will reboot to new branch
+    
+    <Tip>
+      Use the searchable branch selector to quickly find specific versions.
+    </Tip>
+  </Tab>
+  
+  <Tab title="Driving Models">
+    **Model Management:**
+    
+    sunnypilot supports ~86 driving models (as of 2026.001.000) from various releases:
+    
+    - **Current Driving Model**: View active model
+    - **Models Panel**: Dedicated interface for model selection
+      - Download manager with progress tracking
+      - Model folders and organization
+      - Favorites system for quick access
+      - Fuzzy search to find models
+      - Cache refresh button
+    - **Model Caching**: Previously downloaded models remain available offline
+    
+    **Popular Models:**
+    - The Cool People's Models (October 2025)
+    - Certified Herbalist v2 (CHv2)
+    - Los Angeles v2 (LAv2)
+    - Night Strike (NS) - Legacy support
+    
+    <Info>
+      Some features like Dynamic Lane Profile (DLP) are deprecated on newer models but continue to work on legacy models.
+    </Info>
+  </Tab>
+  
+  <Tab title="Updates">
+    **Update Controls:**
+    
+    - **Check for Update**: Manually trigger update check
+    - **Auto Update**: Enable automatic updates (recommended)
+    - **Update Available**: Shows when new version is ready
+    
+    **Update Process:**
+    1. Device checks for updates when connected to Wi-Fi
+    2. Downloads in background
+    3. Prompts to install when ready
+    4. Reboots to apply update
+    
+    <Warning>
+      Don't disconnect power during updates. Keep car on or ensure device has sufficient battery.
+    </Warning>
+  </Tab>
+</Tabs>
+
+---
+
+### Steering Panel
+
+Configure lateral control, MADS, and steering behavior.
+
+<Tabs>
+  <Tab title="MADS (Modular Assistive Driving System)">
+    **Enable MADS**: Toggle on/off
+    
+    When enabled, MADS provides:
+    - **Independent lateral/longitudinal control**: Steering and speed control can engage separately
+    - **Enhanced engagement modes**: More flexible activation
+    - **Custom button behavior**: Configure how buttons engage/disengage
+    
+    **MADS Settings:**
+    - **Allow M.A.D.S. with Main Cruise Allowed**: Require cruise main button on (default behavior)
+    - **Unified Engagement Mode**: Simplified single-button engagement
+    - **Steering Mode on Brake**: Choose behavior when brake is pressed:
+      - **Disengage**: Full disengagement (default)
+      - **Pause**: Pause lateral, resume when brake released
+      - **Continue**: Keep steering active (use carefully)
+    
+    <Card title="Learn More About MADS" icon="book" href="/features/mads">
+      Complete guide to MADS configuration and usage
+    </Card>
+  </Tab>
+  
+  <Tab title="Lateral Control">
+    **Control Methods:**
+    
+    - **Torque Lateral Control**: Default for most vehicles
+      - **Custom Tuning**: Fine-tune friction, kp, ki, kd, kf values
+      - **Less Restrict Self-Tune**: Allow wider parameter ranges
+      - **Live Tuning**: Adjust values in real-time
+    
+    - **Neural Network Lateral Control (NNLC)**: AI-based steering control
+      - Trained on vehicle-specific driving data
+      - Often smoother and more accurate than torque control
+      - Check compatibility for your vehicle/EPS firmware
+    
+    **Other Lateral Settings:**
+    - **Pause Lateral with Blinker**: Temporarily pause steering when turn signal active
+      - **Post-Blinker Delay**: How long to wait after blinker off before resuming
+    - **Auto Lane Change**: Enable/disable automatic lane changes
+    - **Custom Camera Offset**: Adjust lateral positioning (legacy models only)
+    
+    <Tip>
+      Start with default settings. Only adjust lateral tuning if you experience issues or want to fine-tune behavior.
+    </Tip>
+  </Tab>
+  
+  <Tab title="Dynamic Lane Profile (DLP)">
+    Choose lane-keeping strategy:
+    
+    - **Laneless**: Uses model's predicted path (default on newer models)
+    - **Laneline**: Follows visible lane markings (blue borders on path)
+    - **Auto**: Switches between modes based on conditions
+      - Laneless in curves, tight spaces, and during lane changes
+      - Laneline on straight, well-marked roads
+      - Enforces Laneless below 10 mph (16 km/h)
+    
+    <Note>
+      DLP is deprecated on newer driving models (CHv2+) but continues to work on legacy models (NS, FV, BD, ND).
+    </Note>
+  </Tab>
+</Tabs>
+
+---
+
+### Cruise Panel
+
+Manage longitudinal control and speed-related features.
+
+<Tabs>
+  <Tab title="Longitudinal Control">
+    **Control Options:**
+    
+    - **sunnypilot Longitudinal Control**: Use sunnypilot for gas/brake
+      - Available on supported platforms
+      - Enables Experimental Mode
+      - Required for advanced features like DEC, SLA
+    
+    - **Custom Stock Longitudinal Control**: Hybrid mode
+      - sunnypilot sends commands to stock ACC system
+      - Available for: Hyundai/Kia/Genesis CAN-FD, Chrysler/Jeep/Ram, Mazda, VW PQ
+    
+    **Longitudinal Tuning:**
+    - **Toyota TSS2 Custom Tuning**: Smoother stop/start for Toyota/Lexus
+    - **Hyundai CAN Tuning**: Platform-specific optimizations
+    
+    <Warning>
+      Some vehicles (Tesla with sunnypilot long, Rivian in all branches) have Speed Limit Assist disabled.
+    </Warning>
+  </Tab>
+  
+  <Tab title="Dynamic Experimental Control (DEC)">
+    Automatically switches between openpilot ACC (Chill) and End-to-End longitudinal (Experimental) based on driving conditions.
+    
+    **When Active:**
+    - Only works when Experimental Mode is enabled
+    - Initially sets cruise to current vehicle speed
+    - Switches modes automatically for natural driving feel
+    
+    **Configuration:**
+    - Enable/disable DEC
+    - View status on onroad display (DEC indicator)
+    - Toggle via Onroad Settings Panel
+    
+    <Info>
+      DEC provides a more natural driving experience by choosing the best longitudinal mode for current conditions.
+    </Info>
+  </Tab>
+  
+  <Tab title="Speed Limit Assist (SLA)">
+    Comprehensive speed limit integration:
+    
+    **Features:**
+    - **Speed Limit Source**: Choose from Car, Map, Combined
+    - **Speed Limit Offset**: Adjust cruise speed relative to limit (+/- X mph/km/h)
+    - **Speed Limit Warning**: Alert when exceeding limit
+      - Warning Offset (independent from SLA offset)
+      - Visual/audio alerts
+    
+    **Engage Modes:**
+    - **Auto**: Automatic speed adjustment on motorways
+    - **User Confirm**: Prompts driver to confirm speed changes
+    
+    **Map Data:**
+    - Uses OpenStreetMap (OSM) offline databases via mapd
+    - Download regional OSM data in OSM panel
+    - Weekly map updates available
+    
+    <Tip>
+      Speed Limit values turn **red** on the display when you're exceeding the posted limit.
+    </Tip>
+  </Tab>
+  
+  <Tab title="Cruise Behavior">
+    **Additional Settings:**
+    
+    - **Disengage on Accelerator Pedal**: Whether gas pedal disengages cruise
+    - **Custom ACC Setpoint Increments**: Configure cruise speed adjustment steps (vehicle-dependent)
+    - **Gap Adjust Cruise**: Now part of Driving Personality (see below)
+    
+    **Driving Personality:**
+    Adjust following behavior:
+    - **Stock**: Default, comfortable following distance
+    - **Aggressive**: Tighter following, quicker responses
+    - **Maniac**: Most aggressive (use caution)
+    
+    **Switch Modes:**
+    - Press **DISTANCE/FOLLOW DISTANCE/GAP** button on steering wheel
+    - Hold **DISTANCE** button (0.5s+) to toggle Chill ↔ Experimental on supported vehicles
+    
+    <Note>
+      Driving Personality on-screen status shows current mode (GAP indicator).
+    </Note>
+  </Tab>
+</Tabs>
+
+---
+
+### Visuals Panel
+
+Customize on-screen display elements and UI appearance.
+
+<AccordionGroup>
+  <Accordion title="Path & Lane Display" icon="road">
+    - **Rainbow Path**: Tesla-like multicolor path display
+    - **Steering Arc**: Visual arc showing steering angle
+    - **Lane Lines**: Show detected lane markings
+    - **Lead Chevron Info**: Display metrics below lead vehicle chevron
+      - Distance and Speed simultaneously
+      - Configurable units
+  </Accordion>
+  
+  <Accordion title="Speed & Status Elements" icon="gauge">
+    - **Display True Speed**: Show actual speed from wheel sensors (vs GPS speed)
+    - **Hide vEgo**: Hide current speed display
+    - **Hide True vEgo**: Hide true speed display
+    - **Speedometer Position**: Customize location
+    - **Speed Limit Display**: Show detected/mapped speed limits
+    - **Road Name**: Display current street name (requires OSM data)
+  </Accordion>
+  
+  <Accordion title="Indicators & Alerts" icon="bell">
+    - **Turn Signals on Screen**: Display blinker status
+      - Green: Blinker active
+      - Red: Blinker + blind spot detection or road edge
+    - **Blindspot Indicators**: MICI-style side indicators
+    - **Lead Vehicle Departure Alert**: Chime when lead car moves
+    - **Green Light Chime**: Alert when traffic light turns green (Beta)
+    - **Standstill Timer**: Show time stopped
+  </Accordion>
+  
+  <Accordion title="Developer Metrics" icon="chart-line">
+    - **Developer UI**: Enhanced metrics display
+      - Acceleration (ACC.)
+      - Lead Speed (L.S.)
+      - EPS Torque (E.T.)
+      - Bearing Degree (B.D.)
+      - Friction (FRI.)
+      - Lateral Acceleration (L.A.)
+      - Altitude (ALT.) - requires OSM data
+    - **Chevron Metrics**: Additional lead vehicle info
+    - **Rocket Fuel**: Visual effect (device-dependent)
+  </Accordion>
+  
+  <Accordion title="Feature Status Display" icon="display">
+    Show real-time feature status on driving screen:
+    - **GAP**: Driving Personality
+    - **DLP**: Dynamic Lane Profile mode
+    - **DEC**: Dynamic Experimental Control
+    - **SLC**: Speed Limit Control
+    
+    <Info>
+      Enable "Display Feature Status" to see these indicators while driving.
+    </Info>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+### Display Panel
+
+Control screen brightness, timeout, and power management.
+
+<Tabs>
+  <Tab title="Brightness">
+    **Brightness Controls:**
+    
+    - **Auto Brightness**: Adjust based on ambient light
+    - **Global Brightness Override**: Manual brightness control (overrides auto)
+    - **Customizable Onroad Brightness**: Set specific brightness while driving
+    - **Brightness Slider**: Fine-tune levels
+    
+    <Tip>
+      Use Global Brightness Override for consistent brightness in varying light conditions.
+    </Tip>
+  </Tab>
+  
+  <Tab title="Screen Timeout">
+    **Driving Screen Off:**
+    
+    Turn off display while driving to reduce distraction:
+    - **Timer Options**: 10s, 30s, 1min, 3min, 5min, Always On
+    - **Wake Behavior**:
+      - **Critical Events Only**: Screen wakes for important alerts
+      - **All Events**: Screen wakes for any notification
+    
+    **Interactivity Timeout:**
+    - **Customizable Interactive Timeout**: How long screen stays responsive to touch
+    - Tap screen anytime to wake
+    
+    <Note>
+      Screen off mode doesn't affect system operation - sunnypilot continues running normally.
+    </Note>
+  </Tab>
+  
+  <Tab title="Advanced Display">
+    - **Quiet Mode**: Reduce audio alerts and notifications
+    - **Auto-Hide UI Buttons**: Hide DLP/GAC buttons after 30s timeout
+    - **Wake Mode Support**: Better wake behavior for C3/C3X devices
+    - **Display DM Camera in Reverse**: Show driver camera when backing up
+  </Tab>
+</Tabs>
+
+---
+
+## Advanced Settings
+
+### Advanced Controls Toggle
+
+Sunnypilot includes an **Advanced Controls** toggle that reveals additional settings for experienced users.
+
+**To Enable:**
+1. Go to **Settings → Controls**
+2. Toggle on **Advanced Controls**
+3. Additional settings appear throughout the interface
+
+<Warning>
+  Advanced settings can significantly change system behavior. Only modify these if you understand the implications.
+</Warning>
+
+---
+
+### sunnylink Integration
+
+sunnylink provides cloud connectivity and remote management.
+
+<Tabs>
+  <Tab title="Setup">
+    **Register Device:**
+    1. Navigate to **Settings → sunnylink**
+    2. Scan QR code to pair GitHub account
+    3. Complete registration
+    4. Grant necessary permissions
+    
+    **Sponsorship Benefits:**
+    - Pairing inherits GitHub Sponsor status
+    - Access to exclusive features and early releases
+    - Remote settings management (infrastructure ready, feature pending)
+  </Tab>
+  
+  <Tab title="Features">
+    **Config/Settings Backup:**
+    - Remotely back up sunnypilot settings
+    - Restore after device resets
+    - End-to-end AES encryption (derived from device RSA key)
+    - Settings encrypted on-device, transmitted via HTTPS
+    
+    **Security:**
+    - Device registration required
+    - Elliptic curve key support
+    - Blocked remote modification of SSH parameters
+    - All data encrypted at rest and in transit
+    
+    <Info>
+      sunnylink status indicator appears on sidebar when connected.
+    </Info>
+  </Tab>
+  
+  <Tab title="Remote Management">
+    **Planned Features (Infrastructure Ready):**
+    - Remote driving model switching
+    - Parameter adjustments from web/mobile
+    - Units included in parameter metadata
+    
+    <Note>
+      Remote settings management infrastructure is complete. Feature activation will be announced in future releases.
+    </Note>
+  </Tab>
+</Tabs>
+
+---
+
+## Vehicle-Specific Settings
+
+Some settings are only available for certain vehicle platforms:
+
+<AccordionGroup>
+  <Accordion title="Toyota/Lexus" icon="car">
+    - **Enforce Factory Longitudinal Control**: Use stock ACC system
+    - **Enforce Stock Longitudinal Control**: Platform-specific long control
+    - **Allow M.A.D.S. with LKAS Button**: Toggle MADS with LKAS button (Beta)
+    - **smartDSU/CAN Filter Detection**: Radar not disabled when detected
+    - **ZSS Support**: Zorro Steering Sensor integration
+  </Accordion>
+  
+  <Accordion title="Hyundai/Kia/Genesis" icon="car">
+    - **CAN Longitudinal Support**: openpilot long control for CAN platforms
+    - **Camera-based SCC**: Parse lead info for camera SCC platforms
+    - **Radar Track Parsing**: Enable radar on applicable platforms
+    - **smartMDPS Detection**: Automatic detection of smartMDPS firmware
+    - **Smoother Stopping Performance**: Beta feature for CAN platforms
+    - **Speed Limit from Nav**: Use built-in navigation speed limits (select trims)
+  </Accordion>
+  
+  <Accordion title="Honda/Acura" icon="car">
+    - **Nidec Hybrid Baseline Brake Support**: Enhanced braking for Nidec hybrids
+    - **Serial Steering Support**: For vehicles with serial steering hardware
+    - **Gas Interceptor**: Fixed accel constants for interceptor-equipped vehicles
+  </Accordion>
+  
+  <Accordion title="Tesla" icon="car">
+    - **Cooperative Steering**: Coop steering mode
+    - **Parse Speed Limit from CAN**: Read speed limits from vehicle CAN
+    - **Traffic-Aware Cruise Control**: Required for engagement
+  </Accordion>
+  
+  <Accordion title="GM" icon="car">
+    - **Gap Adjust Cruise**: Chill, Normal, Aggressive modes
+    - **Regen Paddle Logic**: Include regen paddle in MADS logic
+    - **Non-ACC Platform Support**: Steering-only support for select models
+  </Accordion>
+  
+  <Accordion title="Subaru" icon="car">
+    - **Stop and Go Auto-Resume**: Auto resume from standstill (Global/Pre-Global, excludes Gen 2 Hybrid)
+    - **Steering Limits**: Increased limits for Global Gen2
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Parameter Customization
+
+### Live Parameters
+
+sunnypilot includes live parameter tuning for advanced users.
+
+**paramsd** (Parameter Self-Diagnostics):
+- Learns vehicle-specific characteristics over time
+- Automatically tunes:
+  - Angle offset
+  - Steer ratio
+  - Tire stiffness factor
+
+**Manual Tuning:**
+- Access via **Settings → Controls → Lateral Control**
+- Adjust in real-time while driving (use caution)
+- Live delay adjustments and software delay controls
+
+<Warning>
+  Incorrect parameter tuning can cause poor lateral performance or safety issues. Only modify if you understand the parameters.
+</Warning>
+
+---
+
+## Settings Tips
+
+<CardGroup cols={2}>
+  <Card title="Start Conservative" icon="shield">
+    Begin with default settings. Only adjust after understanding system behavior on your vehicle.
+  </Card>
+  
+  <Card title="One Change at a Time" icon="1">
+    When tuning, change one parameter at a time to understand its effect.
+  </Card>
+  
+  <Card title="Document Changes" icon="file-lines">
+    Note what you change and why. Makes it easier to revert if needed.
+  </Card>
+  
+  <Card title="Use Presets" icon="bookmark">
+    Leverage community-shared tuning presets for your vehicle (forum/Discord).
+  </Card>
+</CardGroup>
+
+---
+
+## Resetting Settings
+
+### Reset Individual Settings
+
+Most toggles can be reset to default by toggling off.
+
+### Reset All Settings
+
+**Reset all sunnypilot settings:**
+1. Go to **Settings → Device**
+2. Scroll to bottom
+3. Tap **Reset all sunnypilot settings**
+4. Confirm
+5. Device reboots with factory defaults
+
+<Warning>
+  This resets ALL sunnypilot-specific settings but preserves device pairing and core openpilot settings.
+</Warning>
+
+### Factory Reset
+
+**Complete device reset:**
+1. Go to **Settings → Device**
+2. Tap **Uninstall sunnypilot**
+3. Confirm
+4. Device completely wipes and returns to factory state
+
+---
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Troubleshooting" icon="wrench" href="/guides/troubleshooting">
+    Find solutions to common configuration issues
+  </Card>
+  
+  <Card title="Feature Guides" icon="book" href="/features/overview">
+    Deep dives into MADS, DEC, SLA, and other advanced features
+  </Card>
+  
+  <Card title="Safety Guidelines" icon="shield-halved" href="/guides/safety">
+    Review critical safety information and best practices
+  </Card>
+  
+  <Card title="Community" icon="users" href="/community/forum">
+    Ask questions and share your configuration
+  </Card>
+</CardGroup>

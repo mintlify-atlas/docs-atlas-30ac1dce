@@ -1,0 +1,444 @@
+---
+title: Building sunnypilot
+description: Build requirements and procedures for developing sunnypilot
+icon: hammer
+---
+
+## Overview
+
+sunnypilot uses **SCons** as its build system. The build process compiles C++ components, Cython extensions, and prepares Python modules for execution.
+
+## System Requirements
+
+### Supported Platforms
+
+<CardGroup cols={2}>
+  <Card title="larch64" icon="microchip">
+    comma 3/3X device (ARM64 Linux)
+  </Card>
+  <Card title="x86_64" icon="laptop">
+    Linux PC (Ubuntu 22.04+ recommended)
+  </Card>
+  <Card title="aarch64" icon="server">
+    ARM64 Linux (non-device)
+  </Card>
+  <Card title="Darwin" icon="apple">
+    macOS (Apple Silicon only)
+  </Card>
+</CardGroup>
+
+### Python Requirements
+
+<Note>
+  sunnypilot requires **Python 3.12.3** (but less than 3.13)
+</Note>
+
+```bash
+# Check Python version
+python3 --version
+# Should output: Python 3.12.x
+```
+
+## Development Setup
+
+### 1. Clone the Repository
+
+```bash
+git clone https://github.com/sunnyhaibin/sunnypilot.git
+cd sunnypilot
+```
+
+### 2. Install Dependencies
+
+sunnypilot uses **uv** or **pip** for Python dependency management:
+
+<Tabs>
+  <Tab title="Using uv (Recommended)">
+    ```bash
+    # Install uv if not already installed
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    
+    # Install dependencies
+    uv pip install -e .
+    ```
+  </Tab>
+  <Tab title="Using pip">
+    ```bash
+    # Create virtual environment
+    python3 -m venv venv
+    source venv/bin/activate
+    
+    # Install dependencies
+    pip install -e .
+    ```
+  </Tab>
+</Tabs>
+
+### 3. Install Development Tools
+
+For development with testing and linting tools:
+
+```bash
+# Install with testing dependencies
+pip install -e ".[testing]"
+
+# Install with development tools
+pip install -e ".[dev]"
+
+# Install everything
+pip install -e ".[testing,dev,tools]"
+```
+
+### Core Dependencies
+
+Key dependencies from `pyproject.toml`:
+
+<AccordionGroup>
+  <Accordion title="Build Tools">
+    - **scons**: Build system
+    - **Cython**: Python to C compiler
+    - **cffi**: C Foreign Function Interface
+    - **setuptools**: Package management
+  </Accordion>
+  
+  <Accordion title="Core Libraries">
+    - **numpy >= 2.0**: Numerical computing
+    - **pycapnp**: Cap'n Proto serialization
+    - **pyzmq**: ZeroMQ messaging
+    - **sympy**: Symbolic mathematics
+  </Accordion>
+  
+  <Accordion title="Native Dependencies">
+    Vendored native libraries (auto-installed on non-device platforms):
+    - **capnproto**: Serialization
+    - **eigen**: Linear algebra
+    - **ffmpeg**: Video processing
+    - **openssl3**: Cryptography
+    - **zeromq**: Messaging
+  </Accordion>
+</AccordionGroup>
+
+## Building the Project
+
+### Basic Build
+
+```bash
+# Build entire project (uses half of CPU cores by default)
+scons
+
+# Build with all CPU cores
+scons -j$(nproc)
+
+# Build minimal (no tests, tools)
+scons --minimal
+```
+
+<Tip>
+  The first build takes 10-30 minutes depending on your system. Subsequent builds are much faster due to caching.
+</Tip>
+
+### Build Options
+
+<ParamField path="--asan" type="flag">
+  Enable AddressSanitizer for memory error detection
+  ```bash
+  scons --asan
+  ```
+</ParamField>
+
+<ParamField path="--ubsan" type="flag">
+  Enable UndefinedBehaviorSanitizer
+  ```bash
+  scons --ubsan
+  ```
+</ParamField>
+
+<ParamField path="--verbose" type="flag">
+  Show full build commands instead of brief output
+  ```bash
+  scons --verbose
+  ```
+</ParamField>
+
+<ParamField path="--ccflags" type="string">
+  Pass arbitrary compiler flags
+  ```bash
+  scons --ccflags="-O3 -march=native"
+  ```
+</ParamField>
+
+<ParamField path="cache_dir" type="path">
+  Set custom cache directory (default: `/tmp/scons_cache` or `/data/scons_cache` on device)
+  ```bash
+  scons cache_dir=/custom/cache/path
+  ```
+</ParamField>
+
+### Build Targets
+
+Build specific components:
+
+```bash
+# Build only common libraries
+scons common/
+
+# Build selfdrive components
+scons selfdrive/
+
+# Build sunnypilot extensions
+scons sunnypilot/
+
+# Build specific module
+scons selfdrive/controls/
+```
+
+## Build System Architecture
+
+### SCons Configuration
+
+The build is configured via:
+
+- **SConstruct**: Main build configuration at repository root
+- **SConscript**: Component-specific build rules in subdirectories
+
+```python
+# Example SConscript structure
+Import('env', 'arch')
+
+# Define source files
+sources = ['module.cc', 'helper.cc']
+
+# Build library
+my_lib = env.Library('mylib', sources, LIBS=['zmq'])
+
+# Build executable
+env.Program('myprogram', ['main.cc'], LIBS=[my_lib, 'pthread'])
+```
+
+### Architecture Detection
+
+The build system automatically detects and configures for your architecture:
+
+<CodeGroup>
+```python larch64 (comma device)
+# SConstruct detects:
+arch = "larch64"  # if /TICI file exists
+
+# Sets device-specific flags:
+- Compiler: clang/clang++
+- Flags: -D__TICI__ -mcpu=cortex-a57 -DQCOM2
+- Paths: /system/vendor/lib64, etc.
+```
+
+```python x86_64 (Linux PC)
+# SConstruct detects:
+arch = "x86_64"
+
+# Uses system compiler (gcc/g++)
+# Loads vendored dependencies
+```
+
+```python Darwin (macOS)
+# SConstruct detects:
+arch = "Darwin"
+
+# Applies macOS-specific settings:
+- OpenGL silence deprecation warnings
+- Framework library paths
+```
+</CodeGroup>
+
+### Compiler Flags
+
+Default compiler flags (from `SConstruct:68-80`):
+
+```python
+CCFLAGS = [
+  "-g",              # Debug symbols
+  "-fPIC",           # Position independent code
+  "-O2",             # Optimization level 2
+  "-Wunused",        # Warn on unused variables
+  "-Werror",         # Treat warnings as errors
+  "-Wshadow",        # Warn on variable shadowing
+  # ... additional warnings
+]
+
+CFLAGS = ["-std=gnu11"]      # C standard
+CXXFLAGS = ["-std=c++1z"]    # C++17 standard
+```
+
+## Build Cache
+
+SCons uses a build cache to speed up compilation:
+
+```bash
+# Check cache directory
+ls -lh /tmp/scons_cache
+
+# Clear cache to force full rebuild
+rm -rf /tmp/scons_cache
+
+# Use custom cache location
+scons cache_dir=~/.scons_cache
+```
+
+<Info>
+  The cache stores compiled object files. Sharing a cache across machines can significantly speed up builds.
+</Info>
+
+## Compilation Database
+
+Generate `compile_commands.json` for IDE integration:
+
+```bash
+# Build with compilation database
+scons
+
+# The file compile_commands.json is automatically generated
+# Use it with IDEs like VSCode, CLion, etc.
+```
+
+## Common Build Issues
+
+<AccordionGroup>
+  <Accordion title="Missing Python Version">
+    **Error**: `requires-python = ">= 3.12.3, < 3.13"`
+    
+    **Solution**: Install Python 3.12:
+    ```bash
+    # Ubuntu/Debian
+    sudo add-apt-repository ppa:deadsnakes/ppa
+    sudo apt update
+    sudo apt install python3.12 python3.12-dev
+    ```
+  </Accordion>
+  
+  <Accordion title="Missing Dependencies">
+    **Error**: `ImportError: No module named 'scons'`
+    
+    **Solution**: Reinstall dependencies:
+    ```bash
+    pip install -e ".[testing,dev]"
+    ```
+  </Accordion>
+  
+  <Accordion title="Compiler Errors">
+    **Error**: `error: 'XXX' was not declared in this scope`
+    
+    **Solution**: Ensure you have required development packages:
+    ```bash
+    # Ubuntu/Debian
+    sudo apt install build-essential clang
+    ```
+  </Accordion>
+  
+  <Accordion title="Build Hangs">
+    **Issue**: Build appears to hang during compilation
+    
+    **Solution**: Check if parallel jobs are overwhelming your system:
+    ```bash
+    # Reduce parallelism
+    scons -j4  # Use only 4 cores
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Development Workflow
+
+### Incremental Builds
+
+SCons automatically rebuilds only changed files:
+
+```bash
+# Make code changes
+vim selfdrive/controls/controlsd.py
+
+# Rebuild (only changed files)
+scons
+
+# Run your changes
+./selfdrive/controls/controlsd.py
+```
+
+### Clean Builds
+
+```bash
+# Clean all build artifacts
+scons -c
+
+# Clean and rebuild
+scons -c && scons -j$(nproc)
+```
+
+### Testing After Build
+
+```bash
+# Build and test in one command
+scons && pytest
+
+# Build specific component and test it
+scons selfdrive/controls/ && pytest selfdrive/controls/tests/
+```
+
+## Building for Device
+
+<Warning>
+  Building directly on the comma 3/3X device is supported but slower than cross-compilation.
+</Warning>
+
+```bash
+# SSH into device
+ssh comma@192.168.x.x
+
+# Navigate to openpilot directory
+cd /data/openpilot
+
+# Build (device uses /data/scons_cache)
+scons -j4
+```
+
+### Quick Boot Optimization
+
+For faster device boot during development:
+
+```bash
+# Enable quick boot in device settings
+# This creates a prebuilt marker to skip certain init steps
+```
+
+## IDE Integration
+
+### Visual Studio Code
+
+```json
+// .vscode/settings.json
+{
+  "C_Cpp.default.compileCommands": "${workspaceFolder}/compile_commands.json",
+  "python.defaultInterpreterPath": "${workspaceFolder}/venv/bin/python",
+  "python.linting.enabled": true,
+  "python.linting.ruffEnabled": true
+}
+```
+
+### PyCharm / CLion
+
+1. Open the project
+2. Set Python interpreter to virtual environment
+3. Import `compile_commands.json` for C++ support
+
+## Next Steps
+
+<CardGroup cols={2}>
+  <Card title="Testing" icon="vial" href="/development/testing">
+    Learn how to run and write tests
+  </Card>
+  <Card title="Contributing" icon="code-pull-request" href="/development/contributing">
+    Submit your changes via pull request
+  </Card>
+  <Card title="Architecture" icon="sitemap" href="/development/architecture">
+    Understand the system architecture
+  </Card>
+  <Card title="Community" icon="users" href="https://community.sunnypilot.ai/">
+    Get help from the community
+  </Card>
+</CardGroup>

@@ -1,0 +1,1003 @@
+---
+title: "Troubleshooting"
+description: "Common issues, diagnostic procedures, and solutions for sunnypilot"
+---
+
+## Common Issues
+
+This guide covers the most frequently encountered issues and their solutions. For additional help, visit the [community forum](https://community.sunnypilot.ai) or search error logs.
+
+<Tip>
+  Most issues can be resolved by checking error messages on screen, reviewing logs, and performing a simple reboot.
+</Tip>
+
+---
+
+## Engagement Issues
+
+### System Won't Engage
+
+<AccordionGroup>
+  <Accordion title="'Drive above X mph to engage'" icon="gauge">
+    **Cause:** Vehicle speed is below minimum engagement threshold.
+    
+    **Solution:**
+    - Accelerate above the displayed speed (typically 15-25 mph depending on vehicle)
+    - Minimum speed varies by car make/model
+    - Some vehicles require higher speeds for initial engagement
+    
+    <Note>
+      Check your vehicle's `minEnableSpeed` in car parameters. This is platform-specific and cannot be modified.
+    </Note>
+  </Accordion>
+  
+  <Accordion title="'Calibrating: X%'" icon="camera">
+    **Cause:** Camera calibration incomplete.
+    
+    **Solution:**
+    1. Drive on a straight road with clear lane markings
+    2. Maintain speed above 20 mph (32 km/h)
+    3. Ensure road-facing camera has unobstructed view
+    4. Continue for 1-2 miles until calibration reaches 100%
+    
+    **If calibration stuck:**
+    - Check camera lens for dirt/obstructions
+    - Ensure windshield is clean
+    - Verify device mount hasn't shifted
+    - Try different road with better lane markings
+    
+    <Tip>
+      If seeing "Recalibrating" instead, the device detected a mounting position change. Same process applies.
+    </Tip>
+  </Accordion>
+  
+  <Accordion title="'Invalid LKAS setting'" icon="triangle-exclamation">
+    **Cause:** Vehicle's stock LKAS setting conflicts with sunnypilot requirements.
+    
+    **Solutions by Brand:**
+    - **Tesla**: Switch to Traffic-Aware Cruise Control (not Autosteer)
+    - **Mazda**: Enable your car's LKAS system
+    - **Nissan**: Disable stock LKAS
+    - **Other brands**: Toggle stock LKAS on or off as indicated
+    
+    <Info>
+      This alert is vehicle-specific. Check your car's dashboard settings for LKAS/lane assist options.
+    </Info>
+  </Accordion>
+  
+  <Accordion title="'Controls Unresponsive'" icon="circle-exclamation">
+    **Cause:** Critical control process failure or CAN communication error.
+    
+    **Immediate Actions:**
+    1. Take manual control immediately
+    2. Pull over safely
+    3. Turn off vehicle for 30 seconds
+    4. Restart and check for alerts
+    
+    **Diagnostic Steps:**
+    1. Go to **Settings → Software → Error Logs**
+    2. Check `controlsd` and `carstate` logs
+    3. Look for CAN errors or process crashes
+    4. Share logs on community forum if issue persists
+    
+    **Common Causes:**
+    - CAN bus interference
+    - Incorrect lateral control configuration (e.g., torque control on angle-control platform)
+    - Harness connection issues
+    - Hardware failure
+    
+    <Warning>
+      If this occurs frequently, do not use sunnypilot until resolved. Check harness connections and verify vehicle compatibility.
+    </Warning>
+  </Accordion>
+  
+  <Accordion title="'Process Not Running'" icon="gear">
+    **Cause:** Critical system process failed to start or crashed.
+    
+    **Solution:**
+    1. Note which process is listed (e.g., `modeld`, `controlsd`, `camerad`)
+    2. Reboot device (pull over, turn off car, wait 30s, restart)
+    3. Check error logs: **Settings → Software → Error Logs**
+    4. If persistent, try software update or branch switch
+    
+    **Specific Process Issues:**
+    - `modeld`: Driving model failure - check model download completed
+    - `camerad`: Camera hardware issue - check connections
+    - `controlsd`: Controls failure - check car interface compatibility
+    - `locationd`: GPS/positioning - check GPS antenna connection
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Immediate Disengagement
+
+<AccordionGroup>
+  <Accordion title="Engages Then Immediately Disengages" icon="power-off">
+    **Possible Causes:**
+    
+    1. **Brake Pedal Sensitivity:**
+       - Brake pedal slightly pressed or pedal sensor issue
+       - Solution: Ensure foot completely off brake, check brake switch
+    
+    2. **Steering Intervention:**
+       - Steering wheel moved during engagement
+       - Solution: Keep hands light on wheel, don't grip tightly during engagement
+    
+    3. **Speed Dropped Below Minimum:**
+       - Traffic slowed, dropped below `minSteerSpeed`
+       - Solution: Accelerate above minimum speed, re-engage
+    
+    4. **CAN Bus Error:**
+       - Communication issue with vehicle
+       - Solution: Pull over, restart vehicle, check harness connections
+    
+    5. **Safety Violation:**
+       - Door open, seatbelt unfastened, parking brake on
+       - Solution: Close doors, fasten seatbelt, release parking brake
+    
+    <Tip>
+      Check the alert message that appears during disengagement - it usually indicates the specific cause.
+    </Tip>
+  </Accordion>
+  
+  <Accordion title="Random Disengagements While Driving" icon="shuffle">
+    **Diagnostic Steps:**
+    
+    1. **Check Error Logs:**
+       - Go to **Settings → Software → Error Logs**
+       - Look for events around disengagement time
+       - Common culprits: CAN errors, process crashes, sensor failures
+    
+    2. **Review Driver Monitoring:**
+       - If "Driver Distracted" or "Driver Unresponsive" triggered
+       - Ensure driver camera can see your face
+       - Remove obstructions (sunglasses, hats)
+    
+    3. **Check Hardware:**
+       - Inspect harness connections
+       - Verify OBD-C port firmly connected
+       - Check for damaged cables
+    
+    4. **Verify Calibration:**
+       - Go to **Settings → Device → Calibration**
+       - Ensure RPY (Roll/Pitch/Yaw) values are reasonable
+       - If calibration invalid, reset and recalibrate
+    
+    **Common Solutions:**
+    - Disable custom lateral tuning (return to defaults)
+    - Switch to different driving model
+    - Update to latest sunnypilot version
+    - Check for vehicle-specific known issues on forum
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Steering & Lateral Control
+
+<AccordionGroup>
+  <Accordion title="Steering Too Aggressive or Jerky" icon="steering-wheel">
+    **Possible Causes:**
+    - Live parameters still learning (first few drives)
+    - Incorrect lateral tuning
+    - Wrong lateral control method for your vehicle
+    
+    **Solutions:**
+    
+    1. **Allow Learning Period:**
+       - Drive for 15-20 minutes to let `paramsd` learn
+       - Parameters self-tune over time
+       - Check **Settings → Developer → Live Parameters** for status
+    
+    2. **Verify Control Method:**
+       - Ensure using correct method (torque vs angle)
+       - Angle control platforms (Ford, Nissan, Tesla) cannot use torque lateral control
+       - Go to **Settings → Steering → Lateral Control**
+    
+    3. **Try NNLC (Neural Network Lateral Control):**
+       - If supported for your vehicle
+       - Often smoother than torque control
+       - Enable in **Settings → Steering → Lateral Control**
+    
+    4. **Adjust Torque Tuning (if using torque control):**
+       - **Settings → Steering → Custom Tuning**
+       - Start by adjusting `kp` (proportional gain):
+         - Lower kp = less aggressive corrections
+         - Higher kp = more responsive but potentially jerky
+       - Adjust `friction` threshold:
+         - Recent updates lowered default friction threshold
+         - Fine-tune based on your vehicle's EPS characteristics
+    
+    <Warning>
+      Only adjust tuning parameters if you understand their function. Incorrect values can cause poor control or safety issues.
+    </Warning>
+  </Accordion>
+  
+  <Accordion title="Steering Too Weak or Wandering" icon="wave-pulse">
+    **Symptoms:**
+    - Car drifts within lane
+    - Insufficient correction in curves
+    - Ping-ponging between lane lines
+    
+    **Solutions:**
+    
+    1. **Check Paramsd Status:**
+       - Go to **Settings → Developer → Live Parameters**
+       - Verify `angleOffsetValid`, `steerRatioValid`, `stiffnessFactorValid` all true
+       - If any invalid, see "paramsd Invalid" section below
+    
+    2. **Increase Steering Responsiveness:**
+       - For torque control: Increase `kp` in custom tuning
+       - Try different driving model (some are more aggressive)
+       - Enable NNLC if available
+    
+    3. **Check Road Conditions:**
+       - Poor lane markings can cause wandering
+       - Try Dynamic Lane Profile settings:
+         - Switch between Laneless/Laneline/Auto modes
+         - **Settings → Steering → Dynamic Lane Profile**
+    
+    4. **Verify Calibration:**
+       - **Settings → Device → Calibration**
+       - If pitch/yaw angles are extreme, reset and recalibrate
+  </Accordion>
+  
+  <Accordion title="'Steering Temporarily Unavailable'" icon="triangle-exclamation">
+    **Cause:** Vehicle's EPS (Electronic Power Steering) is in a temporary error state.
+    
+    **This is Normal If:**
+    - Appears briefly during low-speed turns
+    - Clears automatically after a few seconds
+    - Doesn't cause disengagement
+    
+    **Concerning If:**
+    - Appears frequently during highway driving
+    - Causes repeated disengagements
+    - Persists for extended periods
+    
+    **Solutions:**
+    - Often vehicle-specific EPS behavior (not a sunnypilot issue)
+    - Check for vehicle EPS recalls or TSBs
+    - Reduce lateral aggressiveness (lower `kp`)
+    - Try NNLC or different lateral control settings
+    - Report to community forum with vehicle make/model for known solutions
+  </Accordion>
+  
+  <Accordion title="'paramsd Invalid' Alert" icon="wrench">
+    **Full Alert Messages:**
+    - "Steering misalignment detected - Angle offset too high"
+    - "Steer ratio mismatch - Steering rack geometry may be off"
+    - "Abnormal tire stiffness - Check tires, pressure, or alignment"
+    
+    **Causes & Solutions:**
+    
+    **Angle Offset Issues:**
+    - Cause: Steering wheel not centered when driving straight
+    - Solution: 
+      - Check wheel alignment at shop
+      - Reset parameters: **Settings → Device → Reset Parameters**
+      - Allow paramsd to relearn over 15-20 mins driving
+    
+    **Steer Ratio Mismatch:**
+    - Cause: Non-stock steering rack or modified suspension
+    - Solution:
+      - Verify stock steering components
+      - Check if previous owner modified vehicle
+      - May need custom car parameters
+    
+    **Stiffness Factor:**
+    - Cause: Tire pressure incorrect, worn tires, or alignment issue
+    - Solution:
+      - Check tire pressure (match door jamb specs)
+      - Inspect tires for wear
+      - Get alignment checked
+      - Verify correct tire size installed
+    
+    <Note>
+      These alerts indicate sunnypilot's learned parameters are outside expected ranges. Often points to actual vehicle mechanical issues.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Camera & Calibration
+
+<AccordionGroup>
+  <Accordion title="'Camera Malfunction'" icon="camera">
+    **Which Camera?**
+    Alert specifies: `roadCamera`, `driverCamera`, or `wideRoadCamera`
+    
+    **Solutions by Camera:**
+    
+    **Road Camera:**
+    1. Check lens for dirt, moisture, or damage
+    2. Clean gently with microfiber cloth
+    3. Verify windshield is clean
+    4. Check camera ribbon cable connection (requires device disassembly - advanced users only)
+    5. Reboot device
+    
+    **Driver Camera:**
+    1. Clean driver-facing camera lens
+    2. Ensure nothing blocking camera (phone mount, etc.)
+    3. Reboot device
+    4. If persistent, disable driver camera temporarily (see below)
+    
+    **Wide Road Camera (if equipped):**
+    1. Same as road camera procedures
+    2. Fisheye lens may collect dust more easily
+    
+    **Temporary Workaround:**
+    - Driver camera can be disabled (not recommended, disables driver monitoring)
+    - Road camera cannot be disabled (critical for operation)
+    
+    <Warning>
+      Camera malfunctions can indicate hardware failure. If cleaning/rebooting doesn't resolve, contact comma support for RMA.
+    </Warning>
+  </Accordion>
+  
+  <Accordion title="'Calibration Invalid - Remount Device'" icon="arrows-rotate">
+    **Alert Shows:** `Pitch: X.X°, Yaw: X.X°`
+    
+    **Acceptable Ranges:**
+    - Pitch: Typically -5° to +5°
+    - Yaw: Typically -5° to +5°
+    
+    **If Out of Range:**
+    
+    1. **Check Physical Mount:**
+       - Verify device hasn't shifted or tilted
+       - Ensure mount is firmly attached to windshield
+       - Check for windshield angle (some vehicles require adjustment)
+    
+    2. **Reset and Recalibrate:**
+       - Go to **Settings → Device → Reset Calibration**
+       - Drive on straight road above 20 mph
+       - Complete new calibration process
+    
+    3. **Adjust Mounting Position:**
+       - If pitch consistently out of range, mount may need repositioning
+       - Add slight tilt to compensate for windshield angle
+       - Use camera preview to verify view before driving
+    
+    <Tip>
+      Some vehicles (lifted trucks, lowered cars) may require custom mounting solutions to achieve proper calibration angles.
+    </Tip>
+  </Accordion>
+  
+  <Accordion title="Calibration Stuck at X%" icon="spinner">
+    **Common Causes:**
+    
+    1. **Road Conditions:**
+       - Poor or missing lane markings
+       - Solution: Find highway with clear markings
+    
+    2. **Speed Too Low:**
+       - Must maintain 20+ mph consistently
+       - Solution: Use highway or faster road
+    
+    3. **Obstructed View:**
+       - Dirty windshield, rain, fog
+       - Solution: Clean windshield, wait for better weather
+    
+    4. **Frequent Turns:**
+       - Need straight road for calibration
+       - Solution: Find longer straight section (1-2 miles)
+    
+    5. **Direct Sunlight:**
+       - Sun directly in camera can affect calibration
+       - Solution: Try different time of day
+    
+    **Advanced:**
+    - Some users report success by resetting calibration and trying a different road
+    - Check `liveCalibration` data in **Settings → Developer**
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Driver Monitoring
+
+<AccordionGroup>
+  <Accordion title="Frequent 'Pay Attention' Alerts" icon="eye">
+    **Cause:** Driver monitoring system believes you're distracted.
+    
+    **Solutions:**
+    
+    1. **Look at Road, Not Screen:**
+       - Most common cause: looking at device screen
+       - Keep eyes on road, use peripheral vision for screen
+    
+    2. **Ensure Face Visibility:**
+       - Driver camera must see your face
+       - Remove/adjust:
+         - Dark sunglasses (polarized lenses especially)
+         - Hat brims blocking camera view
+         - Face masks
+       - Sit in natural driving position
+    
+    3. **Lighting Conditions:**
+       - Very bright or very dark conditions affect detection
+       - Adjust seat position for better camera view
+       - Consider turning on interior dome light at night
+    
+    4. **Check Camera:**
+       - Clean driver camera lens
+       - Verify camera is working: **Settings → Device → Driver Camera Preview**
+    
+    <Warning>
+      **Do not** attempt to disable or bypass driver monitoring. It's a critical safety feature required by sunnypilot.
+    </Warning>
+  </Accordion>
+  
+  <Accordion title="'Driver Unresponsive' / Disengagement" icon="user-slash">
+    **Escalation Path:**
+    1. "Pay Attention" (normal alert)
+    2. "Pay Attention - Driver Distracted" (more urgent, audible chime)
+    3. "Driver Unresponsive" (critical, causes disengagement)
+    
+    **Prevention:**
+    - Respond to early "Pay Attention" alerts immediately
+    - Look at road, not phone/screen
+    - Keep face visible to camera
+    - Ensure proper lighting
+    
+    **If Happening Frequently:**
+    - Check driver camera is clean and unobstructed
+    - Verify face is in camera view (**Settings → Device → Camera Preview**)
+    - Adjust seating position
+    - Report to community if camera sees face but still alerts (possible model issue)
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Performance Issues
+
+<AccordionGroup>
+  <Accordion title="'System Overheated'" icon="temperature-high">
+    **Alert Shows:** Temperature in °C
+    
+    **Normal Operating Temps:**
+    - comma 3/3X: Up to ~70-75°C normal
+    - comma four: Up to ~65-70°C normal
+    - Over 80°C: Concerning
+    
+    **Causes:**
+    - Direct sunlight on device
+    - High ambient temperature
+    - Poor airflow around device
+    - Heavy processing load (multiple models, recording, etc.)
+    
+    **Solutions:**
+    
+    1. **Reduce Heat Exposure:**
+       - Park in shade when possible
+       - Use sun shade on windshield when parked
+       - Ensure A/C vents not blocked
+    
+    2. **Improve Cooling:**
+       - Point A/C vent toward device (not directly on it)
+       - Remove any cases/covers restricting airflow
+       - Ensure device fans operational (if equipped)
+    
+    3. **Reduce Processing Load:**
+       - Disable driver camera recording if not needed
+       - Use standard models (not experimental/large models)
+       - Disable screen recording features
+    
+    <Warning>
+      Prolonged operation at high temperatures can damage device. If overheating persists, allow device to cool before continuing.
+    </Warning>
+  </Accordion>
+  
+  <Accordion title="'Low Memory' or 'High CPU Usage'" icon="microchip">
+    **Memory Alert:** Shows % used (typically warns above 90%)
+    
+    **CPU Alert:** Shows % used (typically warns above 85%)
+    
+    **Causes:**
+    - Too many background processes
+    - Memory leak in process
+    - Large driving model
+    - Multiple features enabled simultaneously
+    
+    **Solutions:**
+    
+    1. **Reboot Device:**
+       - Clears memory leaks
+       - Restarts all processes fresh
+    
+    2. **Reduce Features:**
+       - Disable screen recording
+       - Disable driver camera upload
+       - Use standard driving model (not experimental)
+       - Disable developer UI if enabled
+    
+    3. **Check for Process Issues:**
+       - **Settings → Software → Error Logs**
+       - Look for crashed processes repeatedly restarting
+       - Report to community/developers
+    
+    4. **Update Software:**
+       - Newer versions may have performance improvements
+       - Check for available updates
+  </Accordion>
+  
+  <Accordion title="'Driving Model Lagging'" icon="hourglass">
+    **Alert Shows:** Percentage of frames dropped
+    
+    **Acceptable:** Less than 5% frame drop
+    **Concerning:** Greater than 10% frame drop
+    
+    **Causes:**
+    - Device overheating (thermal throttling)
+    - Heavy CPU usage
+    - Large/complex driving model
+    - Hardware degradation
+    
+    **Solutions:**
+    
+    1. **Address Overheating:** (See "System Overheated" above)
+    
+    2. **Switch Driving Model:**
+       - Try standard model instead of experimental
+       - Smaller models process faster
+       - **Settings → Software → Models**
+    
+    3. **Reduce Background Load:**
+       - Close SSH sessions
+       - Disable unnecessary features
+       - Reboot device
+    
+    4. **Check Hardware:**
+       - May indicate failing device
+       - If persistent across all conditions, contact comma support
+  </Accordion>
+  
+  <Accordion title="'Out of Storage'" icon="hard-drive">
+    **Alert Shows:** % storage full
+    
+    **Solutions:**
+    
+    1. **Delete Old Drives:**
+       - Drives auto-upload to comma servers (if connected)
+       - Older drives can be safely deleted
+       - Device will prompt when critically low
+    
+    2. **Connect External Storage:**
+       - Enable **Settings → Device → External Storage Support**
+       - Connect USB drive to device
+       - Recordings will overflow to external drive
+    
+    3. **Disable Unnecessary Recording:**
+       - Disable driver camera recording if not needed
+       - Reduce recording quality (if option available)
+    
+    <Note>
+      Device needs ~2GB free space to operate properly. Below this, performance and reliability may be affected.
+    </Note>
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Connectivity Issues
+
+<AccordionGroup>
+  <Accordion title="Can't Connect to Wi-Fi" icon="wifi">
+    **Symptoms:**
+    - Wi-Fi network not appearing
+    - Connection fails
+    - Connected but no internet
+    
+    **Solutions:**
+    
+    1. **Basic Troubleshooting:**
+       - Toggle Wi-Fi off/on in **Settings → Network**
+       - Reboot device
+       - Forget network and re-add
+    
+    2. **Network Requirements:**
+       - 2.4GHz or 5GHz supported
+       - WPA2/WPA3 security supported
+       - Some enterprise networks may not work
+    
+    3. **Signal Strength:**
+       - Ensure strong signal where car is parked
+       - Consider Wi-Fi extender if garage has weak signal
+    
+    4. **Router Compatibility:**
+       - Some routers have issues with comma devices
+       - Try different Wi-Fi network to isolate issue
+       - Update router firmware
+  </Accordion>
+  
+  <Accordion title="Tethering Not Working" icon="mobile">
+    **Setup:**
+    1. Enable hotspot on phone
+    2. Go to **Settings → Network → Tethering**
+    3. Connect to phone's hotspot
+    4. Enable "Retain Hotspot/Tethering" to save settings
+    
+    **Troubleshooting:**
+    - Ensure phone hotspot is active before car starts
+    - Verify phone allows tethering (check carrier restrictions)
+    - Try forgetting and re-adding connection
+    - Some phones require USB tethering instead of Wi-Fi hotspot
+  </Accordion>
+  
+  <Accordion title="sunnylink Won't Connect" icon="link">
+    **Registration Issues:**
+    1. Verify device is registered: **Settings → sunnylink**
+    2. Scan QR code to pair GitHub account
+    3. Ensure internet connection active
+    4. Check firewall/network not blocking sunnylink domains
+    
+    **Connection Status:**
+    - Check sunnylink indicator on sidebar
+    - Green: Connected
+    - Gray/missing: Not connected
+    
+    **Troubleshooting:**
+    - Verify GitHub account pairing successful
+    - Check error logs for sunnylink errors
+    - Ensure device time/date correct (affects encryption)
+    - Try re-registering device
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Software & Updates
+
+<AccordionGroup>
+  <Accordion title="Update Failed / Stuck" icon="download">
+    **Symptoms:**
+    - Update downloads but won't install
+    - Stuck at X% during update
+    - Update fails and reverts
+    
+    **Solutions:**
+    
+    1. **Ensure Stable Power:**
+       - Keep car running during update
+       - Don't disconnect power
+       - Ensure battery not critically low
+    
+    2. **Check Network:**
+       - Ensure Wi-Fi connection stable
+       - Large updates require stable connection
+       - Don't switch networks mid-update
+    
+    3. **Clear Cache and Retry:**
+       - Reboot device
+       - Go to **Settings → Software → Check for Update** again
+       - If persists, try different branch
+    
+    4. **Manual Recovery:**
+       - If device won't boot after failed update:
+       - Hold power button for 10+ seconds (force shutdown)
+       - Boot into recovery mode (power + volume buttons)
+       - Reflash using comma installer URL
+  </Accordion>
+  
+  <Accordion title="Driving Model Won't Download" icon="brain">
+    **Common Issues:**
+    
+    1. **Insufficient Storage:**
+       - Models are 500MB-1GB each
+       - Free up space before downloading
+       - Delete unused models
+    
+    2. **Network Error:**
+       - Ensure stable Wi-Fi connection
+       - Metered connection warning appears on cellular
+       - Download on Wi-Fi for reliability
+    
+    3. **Download Stuck:**
+       - Check **Settings → Software → Models** for progress
+       - If stuck, cancel and retry
+       - Reboot device if cancellation doesn't work
+    
+    4. **Model Not Available:**
+       - Some models only available in specific branches
+       - Switch to appropriate branch (e.g., dev-c3 for experimental models)
+  </Accordion>
+  
+  <Accordion title="Branch Switch Issues" icon="code-branch">
+    **Problem:** Can't switch branches or branch switch fails
+    
+    **Solutions:**
+    
+    1. **Ensure Internet Connection:**
+       - Branch switch requires download
+       - Use Wi-Fi for large downloads
+    
+    2. **Allow Time:**
+       - Branch switches can take 10-30 minutes
+       - Don't interrupt during download
+    
+    3. **Check Compatibility:**
+       - Some branches require specific hardware (e.g., C3X-only features)
+       - Verify branch supports your device
+    
+    4. **Use Custom URL:**
+       - If branch selector fails, try installer URL:
+       - `https://installer.comma.ai/sunnyhaibin/branch-name`
+       - Enter in **Settings → Software → Custom Software**
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Vehicle-Specific Issues
+
+<AccordionGroup>
+  <Accordion title="Toyota: 'Cruise Fault' at Standstill" icon="car">
+    **Cause:** Brake pedal pressed while stopped with cruise engaged.
+    
+    **Solution:**
+    - This is normal Toyota behavior (not sunnypilot issue)
+    - Avoid pressing brake when already stopped
+    - If alert appears, cancel cruise and re-engage
+    
+    **Workarounds:**
+    - Use MADS "Pause" mode for brake behavior
+    - Enable Stop and Go Hack (if available and applicable)
+  </Accordion>
+  
+  <Accordion title="Hyundai/Kia: CAN Error on Engagement" icon="car">
+    **Cause:** Non-ACC platforms or MADS configuration issue.
+    
+    **Solutions:**
+    1. Verify MADS settings: **Settings → Steering → MADS**
+    2. Ensure "Allow M.A.D.S. with Main Cruise Allowed" matches your platform
+    3. Check if your vehicle has LDA button (Hyundai with HAS_LDA_BUTTON flag)
+    4. Try toggling MADS on/off
+    5. Check for CAN-FD vs CAN platform differences
+  </Accordion>
+  
+  <Accordion title="Honda: Longitudinal Status Not Displaying" icon="car">
+    **Cause:** Dashcam mode or missing longitudinal support.
+    
+    **Check:**
+    - Verify vehicle supports openpilot longitudinal
+    - Ensure not in dashcam-only mode
+    - Enable longitudinal if available: **Settings → Cruise**
+  </Accordion>
+  
+  <Accordion title="Volkswagen: Camera Malfunction Frequent" icon="car">
+    **Known Issue:** VW MQB platforms occasionally experience camera errors.
+    
+    **Mitigations:**
+    - Update to latest sunnypilot version (includes VW-specific fixes)
+    - Ensure harness connections secure
+    - Check for CAN gateway compatibility
+    - Report to community for platform-specific solutions
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Diagnostic Procedures
+
+### Checking Error Logs
+
+<Steps>
+  <Step title="Access Error Logs">
+    Go to **Settings → Software → Error Logs**
+  </Step>
+  
+  <Step title="Identify Relevant Logs">
+    Common logs to check:
+    - `controlsd`: Control system errors
+    - `carstate`: Vehicle CAN communication
+    - `modeld`: Driving model errors
+    - `camerad`: Camera errors
+    - `locationd`: GPS/positioning
+  </Step>
+  
+  <Step title="Read Error Messages">
+    Look for:
+    - Timestamps of errors (correlate with driving events)
+    - Repeated errors (indicates persistent issue)
+    - Exception traces (for developers/support)
+  </Step>
+  
+  <Step title="Share Logs for Help">
+    When seeking help:
+    - Copy relevant error messages
+    - Note when error occurred
+    - Include vehicle make/model/year
+    - Post on community forum or Discord
+  </Step>
+</Steps>
+
+### Live Parameter Check
+
+<Steps>
+  <Step title="Access Live Parameters">
+    Go to **Settings → Developer → Live Parameters** (if available in Advanced Controls)
+  </Step>
+  
+  <Step title="Check Validity Flags">
+    Verify all parameters show valid:
+    - `angleOffsetValid`: true
+    - `steerRatioValid`: true
+    - `stiffnessFactorValid`: true
+  </Step>
+  
+  <Step title="Review Values">
+    Check parameter ranges:
+    - `angleOffsetDeg`: Typically -5° to +5°
+    - `steerRatio`: Varies by vehicle, check car params for expected range
+    - `stiffnessFactor`: Typically 0.7-1.3
+  </Step>
+</Steps>
+
+### Calibration Check
+
+<Steps>
+  <Step title="View Calibration Status">
+    Go to **Settings → Device → Calibration**
+  </Step>
+  
+  <Step title="Check RPY Values">
+    - `Roll`: Should be near 0° (typically ±1°)
+    - `Pitch`: Acceptable -5° to +5°, ideally ±2°
+    - `Yaw`: Acceptable -5° to +5°, ideally ±2°
+  </Step>
+  
+  <Step title="Verify Calibration Status">
+    - `Status`: Should be "calibrated"
+    - `calPerc`: Should be 100%
+    - If "recalibrating" or invalid, see calibration troubleshooting above
+  </Step>
+</Steps>
+
+---
+
+## Getting Help
+
+### Community Resources
+
+<CardGroup cols={2}>
+  <Card title="Community Forum" icon="comments" href="https://community.sunnypilot.ai">
+    Search for similar issues or post your problem with logs and vehicle details
+  </Card>
+  
+  <Card title="Discord Server" icon="discord">
+    Real-time chat with community members (link available in forum)
+  </Card>
+  
+  <Card title="GitHub Issues" icon="github" href="https://github.com/sunnyhaibin/sunnypilot/issues">
+    Report bugs or search existing issues for your problem
+  </Card>
+  
+  <Card title="comma Support" icon="life-ring">
+    For hardware issues or device RMA, contact comma.ai support
+  </Card>
+</CardGroup>
+
+### When Posting for Help
+
+Include this information:
+
+<Checklist>
+  - [ ] Vehicle make, model, year, and trim
+  - [ ] sunnypilot version and branch
+  - [ ] Device type (comma 3/3X/four)
+  - [ ] Description of issue and when it occurs
+  - [ ] Error messages or alerts displayed
+  - [ ] Relevant error logs
+  - [ ] Steps you've already tried
+  - [ ] Whether issue is new or has occurred before
+</Checklist>
+
+---
+
+## Advanced Recovery
+
+### Force Reboot
+
+If device is frozen or unresponsive:
+1. Hold power button for 10+ seconds
+2. Device will force shutdown
+3. Release and press power button to restart
+
+### Recovery Mode
+
+For serious boot issues:
+1. Power off device completely
+2. Hold Volume Down + Power simultaneously
+3. Release when recovery menu appears
+4. Options:
+   - Reboot
+   - Factory reset
+   - Sideload update
+
+<Warning>
+  Factory reset erases all data. Use only as last resort.
+</Warning>
+
+### Reflash Device
+
+If device won't boot:
+1. Visit `https://installer.comma.ai/sunnyhaibin/release`
+2. Replace `/release` with your desired branch
+3. Connect device to computer via USB
+4. Boot into fastboot mode (volume up + power)
+5. Follow comma installer instructions
+
+---
+
+## Preventive Maintenance
+
+<CardGroup cols={2}>
+  <Card title="Regular Checks" icon="calendar-check">
+    - Clean cameras monthly
+    - Check harness connections quarterly
+    - Review error logs after long trips
+    - Update software regularly
+  </Card>
+  
+  <Card title="Before Long Trips" icon="map-marked-alt">
+    - Verify calibration valid
+    - Ensure storage space available
+    - Update to stable branch
+    - Test engagement in safe area
+  </Card>
+  
+  <Card title="After Updates" icon="sync">
+    - Test engagement before highway driving
+    - Check for new alerts or behaviors
+    - Review changelog for breaking changes
+    - Allow parameters to relearn if needed
+  </Card>
+  
+  <Card title="Seasonal" icon="snowflake">
+    - Clean windshield regularly (winter)
+    - Check device temperature (summer)
+    - Verify seal around mount (rain/snow)
+    - Update maps for new construction zones
+  </Card>
+</CardGroup>
+
+---
+
+## Still Having Issues?
+
+If you've tried the troubleshooting steps and still experiencing problems:
+
+<Steps>
+  <Step title="Document the Issue">
+    - Record when it occurs
+    - Capture error messages
+    - Export error logs
+    - Note any patterns
+  </Step>
+  
+  <Step title="Search Community">
+    - Check forum for similar issues
+    - Search Discord history
+    - Review GitHub issues
+  </Step>
+  
+  <Step title="Post Detailed Report">
+    - Use checklist above
+    - Include all relevant information
+    - Be specific about symptoms
+  </Step>
+  
+  <Step title="Consider Hardware">
+    - If software steps exhausted, may be hardware issue
+    - Contact comma support for RMA if device defective
+    - Check harness/cables for damage
+  </Step>
+</Steps>
+
+<Info>
+  Most issues are resolved through community support. The sunnypilot community is active and helpful - don't hesitate to ask for assistance.
+</Info>

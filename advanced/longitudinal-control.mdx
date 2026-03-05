@@ -1,0 +1,547 @@
+---
+title: 'Longitudinal Control Tuning'
+description: 'Configure speed control, ACC behavior, and following distance'
+icon: 'gauge'
+---
+
+## Overview
+
+Longitudinal control manages your vehicle's speed, acceleration, and following distance. sunnypilot provides multiple longitudinal systems that work together to deliver smooth, safe, and comfortable driving.
+
+<Info>
+sunnypilot offers both openpilot (E2E) longitudinal and stock longitudinal control depending on your vehicle platform.
+</Info>
+
+## Longitudinal Control Systems
+
+### openpilot Longitudinal Control
+
+Full end-to-end control of gas and brake by sunnypilot.
+
+**Available on:**
+- Most Toyota/Lexus (with supported hardware)
+- Honda/Acura Bosch platforms
+- Hyundai/Kia/Genesis CAN platforms
+- Select GM, Ford, Subaru, and others
+
+**Features:**
+- Smooth acceleration and deceleration
+- Advanced following distance control
+- Vision and map-based speed adjustments
+- Stop-and-go capability
+
+### Stock Longitudinal Control
+
+Vehicle's factory system controls gas and brake, sunnypilot manages steering only.
+
+**Available on:**
+- Tesla (all models)
+- Honda Nidec platforms  
+- Hyundai/Kia CAN-FD with factory SCC
+- Toyota/Lexus with enforced factory long
+
+<ParamField path="ToyotaEnforceStockLongitudinal" type="boolean" default="false">
+  Force Toyota/Lexus to use factory longitudinal control instead of openpilot
+</ParamField>
+
+## Driving Personality
+
+Control following distance and acceleration characteristics.
+
+<ParamField path="LongitudinalPersonality" type="select" default="Standard">
+  Select driving personality profile:
+  
+  - **Relaxed (2)** - Longest following distance, gentlest acceleration
+  - **Standard (1)** - Balanced following distance and acceleration (recommended)
+  - **Aggressive (0)** - Shortest following distance, quickest acceleration
+</ParamField>
+
+### Personality Characteristics
+
+<Tabs>
+  <Tab title="Relaxed">
+    **Following Distance:** ~2.7 seconds at highway speeds
+    
+    **Acceleration:**
+    - Gentle throttle application
+    - Gradual speed adjustments
+    - Smooth stop-and-go behavior
+    
+    **Best for:**
+    - Relaxed highway cruising
+    - Maximum comfort
+    - Conservative driving
+    - Learning sunnypilot behavior
+  </Tab>
+  
+  <Tab title="Standard">
+    **Following Distance:** ~1.8 seconds at highway speeds
+    
+    **Acceleration:**
+    - Moderate throttle response
+    - Natural speed adjustments
+    - Balanced stop-and-go
+    
+    **Best for:**
+    - Daily commuting
+    - Mixed traffic conditions
+    - Most users (recommended)
+    - Good balance of comfort and efficiency
+  </Tab>
+  
+  <Tab title="Aggressive">
+    **Following Distance:** ~1.2 seconds at highway speeds
+    
+    **Acceleration:**
+    - Quick throttle response
+    - Faster speed adjustments
+    - Assertive stop-and-go
+    
+    **Best for:**
+    - Heavy traffic
+    - Short gaps needed
+    - Sporty driving feel
+    - Experienced users
+    
+    <Warning>
+    Aggressive mode requires increased driver attention due to shorter following distances.
+    </Warning>
+  </Tab>
+</Tabs>
+
+### Switching Personalities
+
+For vehicles with openpilot longitudinal control:
+
+**On-the-fly switching:**
+- Press the **DISTANCE/GAP** button on steering wheel
+- Cycles through: Relaxed → Standard → Aggressive
+- Current selection shown on display
+
+**In settings:**
+- Navigate to **Settings → Longitudinal → Driving Personality**
+- Select desired profile
+- Takes effect immediately
+
+## Dynamic Experimental Control (DEC)
+
+Automatically switches between Chill (ACC) and Experimental (E2E) modes based on driving conditions.
+
+<ParamField path="DynamicExperimentalControl" type="boolean" default="false">
+  Enable automatic switching between ACC and E2E longitudinal
+</ParamField>
+
+### How DEC Works
+
+**Blended Mode (E2E Active):**
+- Uses end-to-end neural network predictions
+- Handles complex scenarios (intersections, traffic lights)
+- More natural acceleration/braking
+- Active in urban/suburban environments
+
+**ACC Mode:**
+- Traditional adaptive cruise control
+- Follows lead vehicle based on radar/vision
+- Maintains set speed when no lead
+- Active on highways and simple roads
+
+**Switching Logic:**
+
+From `selfdrive/controls/lib/dec/dec.py`:
+- Analyzes road geometry
+- Detects intersections and traffic controls
+- Evaluates model confidence
+- Considers speed and traffic density
+
+<Note>
+DEC only activates when Experimental Mode is enabled. Initial cruise engagement always sets speed to current vehicle speed when DEC is active.
+</Note>
+
+### Monitoring DEC State
+
+The system publishes its state to `longitudinalPlanSP.dec`:
+
+```python
+DecState.blended  # E2E mode active
+DecState.acc      # ACC mode active  
+```
+
+View current mode in Developer UI or on main display when enabled.
+
+## Speed Limit Assist (SLA)
+
+Automatically adjust cruise speed based on posted speed limits.
+
+<ParamField path="SpeedLimitMode" type="select" default="Off">
+  Speed limit assist operating mode:
+  
+  - **Off (0)** - Disabled
+  - **Information (1)** - Display only, no speed control
+  - **Warning (2)** - Alert when exceeding limit
+  - **Assist (3)** - Automatically adjust cruise speed
+</ParamField>
+
+### Speed Limit Sources
+
+<ParamField path="SpeedLimitPolicy" type="select" default="Combined">
+  Select speed limit data source priority:
+  
+  - **Car State Only (0)** - Use only vehicle's detected limits
+  - **Map Data Only (1)** - Use only OpenStreetMap data  
+  - **Car State Priority (2)** - Prefer car data, fall back to map
+  - **Map Data Priority (3)** - Prefer map data, fall back to car
+  - **Combined (4)** - Use lowest detected limit (most conservative)
+</ParamField>
+
+**Data Sources:**
+
+<Tabs>
+  <Tab title="Car State">
+    Speed limits detected by vehicle's cameras/systems:
+    
+    - **Hyundai/Kia/Genesis:** Parses from SCC camera
+    - **Toyota/Lexus:** TSS camera detection
+    - **Honda/Acura:** LKAS camera (limited support)
+    - **Tesla:** Native speed limit parsing
+    
+    Requires factory speed limit recognition.
+  </Tab>
+  
+  <Tab title="Map Data">
+    OpenStreetMap offline database:
+    
+    - Download regional OSM data in Settings
+    - Speed limits from road tags
+    - Advisory speeds for curves
+    - Regular weekly updates available
+    
+    Benefits: Works anywhere with downloaded maps.
+  </Tab>
+</Tabs>
+
+### Speed Limit Offset
+
+<ParamField path="SpeedLimitOffsetType" type="select" default="Off">
+  How to adjust speed limit target:
+  
+  - **Off (0)** - Use exact speed limit
+  - **Fixed (1)** - Add/subtract constant value
+  - **Percentage (2)** - Scale by percentage
+</ParamField>
+
+<ParamField path="SpeedLimitValueOffset" type="integer" default="0">
+  Offset value to apply (units depend on offset type)
+  
+  - **Range:** -30 to +30
+  - **Fixed:** MPH or km/h added to limit
+  - **Percentage:** % of limit added
+</ParamField>
+
+**Examples:**
+- Fixed offset of +5: 65 MPH limit → 70 MPH target
+- Percentage offset of +10%: 65 MPH limit → 71.5 MPH target
+- Fixed offset of -5: 65 MPH limit → 60 MPH target
+
+### SLA Behavior States
+
+From `speed_limit_assist.py`, SLA operates in these states:
+
+```python
+SpeedLimitAssistState.disabled      # SLA turned off
+SpeedLimitAssistState.inactive      # Long control not engaged  
+SpeedLimitAssistState.preActive     # Long engaged, monitoring
+SpeedLimitAssistState.pending       # Speed limit detected, waiting
+SpeedLimitAssistState.active        # Adjusting cruise speed
+SpeedLimitAssistState.adapting      # Currently changing speed
+```
+
+**Acceleration Limits:**
+- Maximum deceleration: -1.5 m/s²
+- Maximum acceleration: 1.0 m/s² (while active)
+- Minimum speed limit: 8.33 m/s (~18.6 MPH)
+
+## Smart Cruise Control (SCC)
+
+Vision and map-based speed control for curves and turns.
+
+### SCC Vision (SCC-V)
+
+<ParamField path="SmartCruiseControlVision" type="boolean" default="false">
+  Enable vision-based curve speed control
+</ParamField>
+
+**How it works:**
+- Analyzes model's predicted path curvature
+- Calculates safe curve entry speed
+- Adjusts speed before entering turns
+- Resumes cruise speed after curve
+
+**From `smart_cruise_control/vision_controller.py`:**
+```python
+# Uses p97 (97th percentile) of predicted lateral acceleration
+max_pred_lat_acc = self.scc.vision.max_pred_lat_acc
+
+# Calculates target velocity for curve
+v_target = calculate_safe_curve_speed(max_pred_lat_acc)
+```
+
+### SCC Map (SCC-M)
+
+<ParamField path="SmartCruiseControlMap" type="boolean" default="false">
+  Enable map-based curve speed control (requires OSM data)
+</ParamField>
+
+**How it works:**
+- Reads curve data from OpenStreetMap
+- Predicts upcoming turn radius
+- Adjusts speed based on geometry
+- More predictive than vision-only
+
+**Benefits:**
+- Earlier speed adjustments
+- Smoother deceleration curves
+- Works in any weather/lighting
+- Complements vision-based control
+
+<Note>
+SCC-M and SCC-V can be enabled simultaneously. The system uses whichever predicts a lower safe speed.
+</Note>
+
+## Custom ACC Increments
+
+Customize cruise control speed adjustment increments.
+
+<ParamField path="CustomAccIncrementsEnabled" type="boolean" default="false">
+  Enable custom ACC speed increment settings
+</ParamField>
+
+<ParamField path="CustomAccShortPressIncrement" type="integer" default="5">
+  Speed change per short button press
+  
+  - **Range:** 1-10 MPH or km/h
+  - **Default:** 5
+</ParamField>
+
+<ParamField path="CustomAccLongPressIncrement" type="integer" default="10">
+  Speed change per long button press (>0.5s)
+  
+  - **Range:** 1-10 MPH or km/h  
+  - **Default:** 10
+</ParamField>
+
+**Supported Platforms:**
+- Hyundai/Kia/Genesis (most models)
+- Select GM platforms
+- Toyota/Lexus with openpilot longitudinal
+
+## Intelligent Cruise Button Management (ICBM)
+
+Manages vehicle speed by sending cruise button commands to car's ECU.
+
+<ParamField path="IntelligentCruiseButtonManagement" type="boolean" default="false">
+  Enable ICBM for platforms without openpilot longitudinal
+</ParamField>
+
+**How it works:**
+- Monitors desired vs actual set speed
+- Sends appropriate cruise button presses to ECU  
+- Maintains speed based on SLA, SCC, and other systems
+- Integrates with factory cruise control
+
+**Platforms:**
+- Volkswagen MQB (with stock longitudinal)
+- Mazda (with stock longitudinal)
+- Chrysler/Jeep/Ram (with stock longitudinal)
+
+<Warning>
+ICBM requires compatible vehicle platform and cannot provide stop-and-go on platforms that don't support it.
+</Warning>
+
+## Platform-Specific Features
+
+### Toyota/Lexus
+
+<ParamField path="ToyotaStopAndGoHack" type="boolean" default="false">
+  Enable stop-and-go for Toyota/Lexus models without factory support (Alpha)
+</ParamField>
+
+<Warning>
+This is an alpha feature. Use at your own risk. Smart DSU is the recommended solution for Toyota stop-and-go.
+</Warning>
+
+### Hyundai/Kia/Genesis
+
+<ParamField path="HyundaiLongitudinalTuning" type="select" default="Off">
+  Select HKG longitudinal tuning mode:
+  
+  - **Off (0)** - Stock tuning
+  - **Dynamic (1)** - Adaptive tuning based on conditions  
+  - **Predictive (2)** - Enhanced prediction algorithms
+</ParamField>
+
+**Tuning Benefits:**
+- Smoother stops at traffic lights
+- Better speed maintenance on hills
+- Improved stop-and-go behavior
+- Enhanced lead vehicle tracking
+
+### Subaru
+
+<ParamField path="SubaruStopAndGo" type="boolean" default="false">
+  Enable auto-resume from stop for Subaru (Global & Pre-Global)
+</ParamField>
+
+Allows automatic resume after complete stop without driver intervention.
+
+## Advanced Configuration
+
+### Experimental Mode Toggle
+
+Quickly switch between Chill and Experimental:
+
+**Method:** Press and hold DISTANCE button for >0.5 seconds
+
+**Available on:** All openpilot longitudinal platforms
+
+**States:**
+- **Chill Mode:** Traditional ACC behavior
+- **Experimental Mode:** E2E neural network control
+
+### E2E Alerts
+
+<ParamField path="GreenLightAlert" type="boolean" default="false">
+  Alert when traffic light turns green with no lead vehicle (Beta)
+</ParamField>
+
+<ParamField path="LeadDepartAlert" type="boolean" default="false">
+  Alert when stopped lead vehicle starts moving (Beta)
+</ParamField>
+
+From `longitudinal_planner.py`:
+```python
+# E2E alert system integration
+self.e2e_alerts_helper.update(sm, self.events_sp)
+
+# Alerts published to UI
+e2eAlerts.greenLightAlert = self.e2e_alerts_helper.green_light_alert  
+e2eAlerts.leadDepartAlert = self.e2e_alerts_helper.lead_depart_alert
+```
+
+## Monitoring and Diagnostics
+
+### Developer UI Metrics
+
+Enable in Settings → Device → Developer UI:
+
+- **ACC.** - Current acceleration (m/s²)
+- **L.S.** - Lead vehicle speed
+- **v_target** - Target velocity
+- **a_target** - Target acceleration
+
+### Longitudinal Plan Sources
+
+The system publishes which subsystem is controlling speed:
+
+```python
+LongitudinalPlanSource.cruise              # Base cruise control
+LongitudinalPlanSource.sccVision          # SCC-V active
+LongitudinalPlanSource.sccMap             # SCC-M active  
+LongitudinalPlanSource.speedLimitAssist   # SLA active
+```
+
+View active source in `longitudinalPlanSP` message.
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Jerky Acceleration/Braking">
+    **Causes:**
+    - Driving personality too aggressive
+    - Lead vehicle tracking unstable
+    - Radar/vision calibration needed
+    
+    **Solutions:**
+    1. Switch to Standard or Relaxed personality
+    2. Recalibrate camera
+    3. Check for radar blockage
+    4. Update to latest sunnypilot version
+  </Accordion>
+
+  <Accordion title="SLA Not Activating">
+    **Causes:**
+    - Speed limit source not configured
+    - OSM data not downloaded
+    - Vehicle doesn't support car-based limits
+    - Mode set to Information/Warning only
+    
+    **Solutions:**
+    1. Set SpeedLimitMode to "Assist"
+    2. Download OSM data for your region
+    3. Select appropriate SpeedLimitPolicy
+    4. Verify speed limits exist in area
+  </Accordion>
+
+  <Accordion title="SCC Not Slowing for Curves">
+    **Causes:**
+    - SCC-V/SCC-M not enabled
+    - Model confidence low
+    - OSM data missing (SCC-M)
+    - Speed already below curve limit
+    
+    **Solutions:**
+    1. Enable SmartCruiseControlVision
+    2. Enable SmartCruiseControlMap
+    3. Download OSM database
+    4. Check camera calibration
+  </Accordion>
+
+  <Accordion title="DEC Not Switching Modes">
+    **Causes:**
+    - Experimental Mode not enabled
+    - Road conditions don't trigger switch
+    - Model not detecting intersections
+    
+    **Solutions:**
+    1. Enable Experimental Mode first
+    2. Verify DEC toggle is enabled
+    3. Drive in urban areas with intersections
+    4. Check Developer UI for DEC state
+  </Accordion>
+</AccordionGroup>
+
+## Best Practices
+
+<Steps>
+  <Step title="Start Conservative">
+    Begin with Standard personality and gradually adjust based on preference
+  </Step>
+  <Step title="Learn the Systems">
+    Test SLA, SCC-V, SCC-M individually before combining
+  </Step>
+  <Step title="Monitor Performance">
+    Use Developer UI to understand which systems are active
+  </Step>
+  <Step title="Maintain Awareness">
+    Longitudinal control is driver assist, not autonomous - stay alert
+  </Step>
+  <Step title="Report Issues">
+    Share feedback on Discord to help improve longitudinal behavior
+  </Step>
+</Steps>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Parameters System" icon="sliders" href="/advanced/parameters">
+    Understanding parameter management
+  </Card>
+  <Card title="Lateral Control" icon="steering-wheel" href="/advanced/lateral-control">
+    Steering and path following tuning
+  </Card>
+  <Card title="Speed Limit Assist" icon="traffic-light" href="/features/speed-limit-assist">
+    Complete SLA setup guide
+  </Card>
+  <Card title="OSM Setup" icon="map" href="/features/osm">
+    Download and configure map data
+  </Card>
+</CardGroup>

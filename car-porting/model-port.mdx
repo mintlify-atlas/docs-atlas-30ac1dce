@@ -1,0 +1,535 @@
+---
+title: Model Port Guide
+description: Adding a new car model to an existing supported brand in sunnypilot
+---
+
+## What is a Model Port?
+
+A model port is a port of openpilot to a new car model within an already supported brand. Model ports are easier than brand ports because the car's existing CAN bus APIs are already known and the brand-specific infrastructure is already in place.
+
+<Info>
+Example model port: [Honda Civic Hatchback Port PR #30672](https://github.com/commaai/openpilot/pull/30672)
+</Info>
+
+## Prerequisites
+
+Before starting a model port, verify:
+
+<Checklist>
+  - [ ] The car brand is already supported in openpilot
+  - [ ] You have a comma 3X or comma 3 device
+  - [ ] The target vehicle has ACC and LKAS/LCA
+  - [ ] You have comma power for continuous testing (recommended)
+</Checklist>
+
+## Model Port vs Brand Port
+
+<CardGroup cols={2}>
+  <Card title="Model Port" icon="check" color="green">
+    - Brand infrastructure exists
+    - CAN protocols known
+    - Safety code may be reusable
+    - Faster development time
+    - Lower complexity
+  </Card>
+  <Card title="Brand Port" icon="wrench" color="orange">
+    - New brand infrastructure needed
+    - Reverse engineer CAN protocols
+    - New safety code required
+    - Longer development time
+    - Higher complexity
+  </Card>
+</CardGroup>
+
+## Model Port Workflow
+
+<Steps>
+  <Step title="Fingerprint the Vehicle">
+    Collect CAN data to identify the car model uniquely
+  </Step>
+  <Step title="Identify Differences">
+    Determine how this model differs from existing supported models
+  </Step>
+  <Step title="Update Configuration">
+    Modify values.py to include the new model
+  </Step>
+  <Step title="Adjust Parameters">
+    Fine-tune steering, acceleration, and braking parameters
+  </Step>
+  <Step title="Test and Validate">
+    Verify all functionality works correctly
+  </Step>
+</Steps>
+
+## Step 1: Fingerprint the Vehicle
+
+### Collect CAN Data
+
+Connect your comma device to the vehicle and collect CAN data:
+
+<CodeGroup>
+```bash Connect Device
+# Install openpilot on your comma device
+# Connect to vehicle's OBD-II port
+# Drive for at least 30 minutes with various conditions:
+# - Highway and city driving
+# - ACC engaged and disengaged
+# - Lane keep assist active
+# - All buttons pressed at least once
+```
+
+```python Extract Fingerprint
+# Use the fingerprinting tools to extract unique identifiers
+from opendbc.car.fingerprints import FW_VERSIONS
+
+# Your fingerprint will include:
+# - ECU firmware versions
+# - CAN message IDs present
+# - DBC signal characteristics
+```
+</CodeGroup>
+
+### Unique Identification
+
+Your fingerprint should uniquely identify:
+
+- Model year
+- Trim level (if different safety features)
+- Market region (US/EU/etc.)
+- Powertrain (ICE/Hybrid/EV)
+
+<Warning>
+Different trim levels with different ADAS features may need separate fingerprints.
+</Warning>
+
+## Step 2: Identify Differences from Existing Models
+
+Compare your model to existing supported models in the brand:
+
+<AccordionGroup>
+  <Accordion title="CAN Message Differences">
+    - Are message IDs the same?
+    - Are signal names and scaling identical?
+    - Are there new messages not seen in other models?
+    - Are any messages missing compared to other models?
+  </Accordion>
+
+  <Accordion title="Physical Differences">
+    - Different steering rack ratio?
+    - Different wheel base?
+    - Different brake system?
+    - EV vs ICE vs Hybrid?
+    - Different ADAS camera/radar hardware?
+  </Accordion>
+
+  <Accordion title="Feature Differences">
+    - Different ACC implementation?
+    - Different lane keep assist behavior?
+    - Additional safety features?
+    - Different button layouts?
+  </Accordion>
+</AccordionGroup>
+
+## Step 3: Update Configuration Files
+
+### Add to values.py
+
+Update `opendbc/car/[brand]/values.py` to include your model:
+
+```python values.py
+from opendbc.car import dbc_dict, PlatformConfig, Platforms
+from opendbc.car.docs_definitions import CarFootnote, CarHarness, CarInfo, Column
+
+class CAR(Platforms):
+  # Existing models
+  EXISTING_MODEL = PlatformConfig(
+    "BRAND EXISTING MODEL",
+    dbc_dict('brand_model', None),
+  )
+  
+  # Add your new model
+  NEW_MODEL = PlatformConfig(
+    "BRAND NEW MODEL YEAR",
+    dbc_dict('brand_model', None),  # Use same DBC as similar model
+  )
+
+# Add fingerprint
+FINGERPRINTS = {
+  CAR.NEW_MODEL: [{
+    # ECU address: [firmware version, ...]
+    0x7e0: [b'\x01\x02\x03\x04', ],
+    0x7e1: [b'\x05\x06\x07\x08', ],
+  }],
+}
+
+# Add car info for documentation
+CAR_INFO: Dict[str, CarInfo] = {
+  CAR.NEW_MODEL: CarInfo(
+    "Brand New Model Year",
+    "All",  # package
+    car_parts=CarParts.common([CarHarness.brand]),
+    video_link="https://youtu.be/your_video_id",
+  ),
+}
+```
+
+### Adjust Parameters in interface.py
+
+Update `opendbc/car/[brand]/interface.py` if parameters differ:
+
+```python interface.py
+class CarInterface(CarInterfaceBase):
+  @staticmethod
+  def get_params(candidate, fingerprint=None, car_fw=None):
+    ret = CarInterfaceBase.get_std_params(candidate)
+    
+    # Set parameters for your model
+    if candidate == CAR.NEW_MODEL:
+      ret.wheelbase = 2.7  # meters
+      ret.steerRatio = 15.5
+      ret.mass = 1500  # kg
+      
+      # Steering limits
+      ret.steerActuatorDelay = 0.1
+      ret.steerLimitTimer = 0.8
+      
+      # Longitudinal control
+      ret.longitudinalTuning.kpBP = [0., 5., 35.]
+      ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]
+    
+    return ret
+```
+
+## Step 4: Tune Control Parameters
+
+### Lateral (Steering) Tuning
+
+<Accordion title="Key Lateral Parameters">
+
+**Steering Ratio:**
+- Ratio between steering wheel angle and wheel angle
+- Affects how much steering input translates to wheel movement
+- Typical range: 12:1 to 18:1
+
+**Actuator Delay:**
+- Time delay in steering response
+- Usually 0.1 to 0.3 seconds
+- Measure by analyzing step response
+
+**Steer Limit Timer:**
+- How long steering can be at limit before alert
+- Balance between safety and functionality
+- Typical: 0.8 to 4.0 seconds
+
+```python Lateral Tuning Example
+ret.lateralTuning.pid.kiBP = [0.]
+ret.lateralTuning.pid.kpBP = [0.]
+ret.lateralTuning.pid.kpV = [0.2]
+ret.lateralTuning.pid.kiV = [0.05]
+ret.lateralTuning.pid.kf = 0.00006
+```
+</Accordion>
+
+### Longitudinal (Speed) Tuning
+
+<Accordion title="Key Longitudinal Parameters">
+
+**Only needed if using openpilot longitudinal control (not stock ACC):**
+
+```python Longitudinal Tuning Example
+# PID gains at different speeds
+ret.longitudinalTuning.kpBP = [0., 5., 35.]  # speed breakpoints (m/s)
+ret.longitudinalTuning.kpV = [1.2, 0.8, 0.5]  # proportional gains
+ret.longitudinalTuning.kiBP = [0., 35.]
+ret.longitudinalTuning.kiV = [0.18, 0.12]     # integral gains
+
+# Deadzone (helps with stability)
+ret.longitudinalTuning.deadzoneBP = [0., 9.]
+ret.longitudinalTuning.deadzoneV = [0., 0.15]
+```
+</Accordion>
+
+### Physical Parameters
+
+<Accordion title="Vehicle Specifications">
+
+Find these in the vehicle's service manual or measure them:
+
+```python Physical Parameters
+ret.wheelbase = 2.7           # meters (distance between axles)
+ret.steerRatio = 15.5         # steering ratio
+ret.mass = 1500               # kg (curb weight)
+ret.centerToFront = ret.wheelbase * 0.4  # CG to front axle
+ret.rotationalInertia = 2500  # kg*m^2 (estimate)
+ret.tireStiffnessFront = 1000 # N/deg (tire model)
+ret.tireStiffnessRear = 1000  # N/deg (tire model)
+```
+
+<Info>
+Many parameters can be estimated from similar models. Fine-tune based on testing.
+</Info>
+</Accordion>
+
+## Step 5: Testing and Validation
+
+### Initial Testing Checklist
+
+<Checklist>
+  - [ ] Device recognizes the car correctly (check fingerprint)
+  - [ ] No errors on startup
+  - [ ] All CarState signals populate correctly
+  - [ ] Steering engages smoothly
+  - [ ] Driver override (brake/gas) disengages immediately
+  - [ ] ACC controls work (if applicable)
+  - [ ] No excessive hunting or oscillation
+  - [ ] Lane centering is stable on highway
+</Checklist>
+
+### Systematic Testing Protocol
+
+<Steps>
+  <Step title="Parking Lot Testing">
+    Test basic engagement at low speeds:
+    - 5-15 mph
+    - Gentle curves
+    - Stop and go
+    - Verify smooth operation
+  </Step>
+  
+  <Step title="Highway Testing">
+    Test at highway speeds:
+    - 50-70 mph
+    - Lane centering on gentle curves
+    - Lane centering on tighter curves
+    - Verify no oscillation
+  </Step>
+  
+  <Step title="Edge Cases">
+    Test unusual conditions:
+    - Heavy crosswind
+    - Road crown
+    - Poor lane markings
+    - Construction zones
+  </Step>
+  
+  <Step title="Safety Testing">
+    Test safety features:
+    - Driver override response
+    - Fault detection
+    - Maximum steering rate
+    - Dashboard warnings
+  </Step>
+</Steps>
+
+### Tuning Iteration
+
+If you experience issues:
+
+<Tabs>
+  <Tab title="Oscillation">
+    **Steering oscillates or hunts:**
+    - Reduce `kpV` (proportional gain)
+    - Increase `steerActuatorDelay`
+    - Check for correct `steerRatio`
+  </Tab>
+  
+  <Tab title="Lazy Response">
+    **Steering response too slow:**
+    - Increase `kpV` (proportional gain)
+    - Add or increase `kiV` (integral gain)
+    - Decrease `steerActuatorDelay`
+  </Tab>
+  
+  <Tab title="Pulls to One Side">
+    **Car drifts left or right:**
+    - Check for `steeringAngleOffsetDeg` signal
+    - Verify wheel alignment in real car
+    - Check for asymmetric `kf` (feedforward)
+  </Tab>
+  
+  <Tab title="Jerky Control">
+    **Steering feels jerky:**
+    - Increase `steerActuatorDelay`
+    - Add rate limiting
+    - Smooth CAN message timing
+  </Tab>
+</Tabs>
+
+## Step 6: Documentation and PR
+
+### Required Documentation
+
+Before submitting your PR:
+
+<Checklist>
+  - [ ] Update `values.py` with car info
+  - [ ] Add fingerprint data
+  - [ ] Document any trim-specific notes
+  - [ ] Record test video showing operation
+  - [ ] Create PR with clear description
+</Checklist>
+
+### Pull Request Template
+
+```markdown PR Description Template
+## Car Model Port: [Brand] [Model] [Year]
+
+### Vehicle Details
+- Make: [Brand]
+- Model: [Model]
+- Year: [Year]
+- Trim: [Trim Level]
+- Market: [US/EU/etc.]
+
+### Changes
+- Added fingerprint for [Model]
+- Updated values.py with car info
+- Tuned lateral parameters for [specific characteristic]
+- [Any other changes]
+
+### Testing
+- [X] Parking lot testing completed
+- [X] Highway testing completed  
+- [X] Edge cases tested
+- [X] Safety features verified
+
+### Verification
+- Video: https://youtu.be/your_video_id
+- Test routes: [route IDs from comma connect]
+- Total test distance: [X] miles
+
+### Notes
+[Any special notes about this model]
+```
+
+## Example: Simple Model Port
+
+Here's what a minimal model port looks like:
+
+<CodeGroup>
+```python values.py (additions)
+# Add to CAR enum
+class CAR(Platforms):
+  NEW_MODEL_2024 = PlatformConfig(
+    "BRAND NEW MODEL 2024",
+    dbc_dict('brand_model', None),
+  )
+
+# Add fingerprint
+FINGERPRINTS = {
+  CAR.NEW_MODEL_2024: [{
+    0x18DAB0F1: [b'37805-ABC-1234',],
+    0x18DA10F1: [b'57114-XYZ-5678',],
+  }],
+}
+
+# Add documentation
+CAR_INFO = {
+  CAR.NEW_MODEL_2024: CarInfo(
+    "Brand New Model 2024",
+    "Touring",
+    car_parts=CarParts.common([CarHarness.brand]),
+  ),
+}
+```
+
+```python interface.py (additions)
+@staticmethod
+def get_params(candidate, fingerprint=None, car_fw=None):
+  ret = CarInterfaceBase.get_std_params(candidate)
+  
+  # ...
+  
+  if candidate == CAR.NEW_MODEL_2024:
+    # Same as similar model, but different wheelbase
+    ret.wheelbase = 2.75  # vs 2.7 for base model
+  
+  return ret
+```
+</CodeGroup>
+
+<Info>
+If the new model is very similar to an existing model, you may only need to add the fingerprint and car info!
+</Info>
+
+## Common Model Port Scenarios
+
+<AccordionGroup>
+  <Accordion title="Same Model, Different Year">
+    Usually just needs new fingerprint if no major changes:
+    
+    ```python
+    # Often the only changes needed
+    FINGERPRINTS = {
+      CAR.MODEL_2023: [...],  # existing
+      CAR.MODEL_2024: [...],  # add new year
+    }
+    ```
+  </Accordion>
+
+  <Accordion title="Same Model, Different Trim">
+    May need separate entry if ADAS features differ:
+    
+    ```python
+    CAR.MODEL_TOURING = PlatformConfig(...)  # Base ADAS
+    CAR.MODEL_ELITE = PlatformConfig(...)    # Advanced ADAS
+    ```
+  </Accordion>
+
+  <Accordion title="Hybrid/EV Variant">
+    Often needs different parameters:
+    
+    ```python
+    if candidate == CAR.MODEL_HYBRID:
+      ret.mass = 1600  # heavier due to battery
+      # May have different regen braking behavior
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Contribution Guidelines
+
+A good model port PR includes:
+
+<Checklist>
+  - [ ] Clear purpose statement
+  - [ ] Accurate fingerprint data
+  - [ ] Appropriate parameter tuning
+  - [ ] Test video or route IDs
+  - [ ] Passes CI tests
+  - [ ] Concise changes (avoid unnecessary modifications)
+</Checklist>
+
+<Info>
+Reference example: [Honda Civic Hatchback Port PR #30672](https://github.com/commaai/openpilot/pull/30672)
+</Info>
+
+## Next Steps
+
+After your model port is complete:
+
+1. **Submit Pull Request**: Include all required documentation
+2. **Monitor CI Tests**: Ensure all tests pass
+3. **Address Feedback**: Respond to reviewer comments
+4. **Share Results**: Post in Discord #car-ports with video
+
+<Card title="Need Help?" icon="discord" href="https://discord.comma.ai">
+  Join the comma.ai Discord community for support with your model port
+</Card>
+
+## Resources
+
+<CardGroup cols={2}>
+  <Card title="Example Model Port PR" icon="github" href="https://github.com/commaai/openpilot/pull/30672">
+    Honda Civic Hatchback port for reference
+  </Card>
+  <Card title="Contributing Guide" icon="book" href="https://github.com/commaai/openpilot/blob/master/docs/CONTRIBUTING.md">
+    Full contribution guidelines
+  </Card>
+  <Card title="Brand Port Guide" icon="building" href="/car-porting/brand-port">
+    More complex brand porting process
+  </Card>
+  <Card title="Discord Community" icon="discord" href="https://discord.comma.ai">
+    Get help from the community
+  </Card>
+</CardGroup>

@@ -1,0 +1,316 @@
+---
+title: Changelog
+description: View the complete history of sunnypilot releases and changes
+icon: clock-rotate-left
+---
+
+## Latest Releases
+
+Stay up to date with the latest changes, features, and improvements to sunnypilot.
+
+<Tip>
+  For detailed release notes and full changelogs, visit the [GitHub releases page](https://github.com/sunnypilot/sunnypilot/releases)
+</Tip>
+
+## Version 2026.001.000 (2026-03-xx)
+
+### Major Changes
+
+<CardGroup cols={2}>
+  <Card title="UI Rewrite" icon="window-restore">
+    Complete rewrite from Qt C++ to Raylib Python
+  </Card>
+  <Card title="comma four Support" icon="microchip">
+    Full support for the latest comma device
+  </Card>
+  <Card title="Model V2" icon="brain">
+    Support for planplus outputs in modeld_v2
+  </Card>
+  <Card title="Enhanced Controls" icon="steering-wheel">
+    Torque Lateral Control v0 Tune support
+  </Card>
+</CardGroup>
+
+### UI Enhancements
+
+- **sunnypilot toggle style** by @nayan8teen
+- **sunnypilot panels** - new panel organization by @nayan8teen
+- **Platform Selector** by @Discountchubbs
+- **Vehicle brand settings** by @Discountchubbs
+- **sunnylink client-side implementation** by @nayan8teen
+- **Models panel** with download manager by @Discountchubbs
+- **OSM panel** integration by @Discountchubbs
+- **Global Brightness Override** by @nayan8teen
+- **Customizable Interactive Timeout** by @sunnyhaibin
+- **Customizable Onroad Brightness** by @sunnyhaibin
+
+### Visual Features (TIZI/TICI)
+
+- **Developer Metrics** by @rav4kumar
+- **Rainbow path** by @rav4kumar
+- **Chevron metrics** by @rav4kumar
+- **Steering panel** by @nayan8teen
+- **Rocket Fuel** by @rav4kumar
+- **MICI style turn signals** by @rav4kumar
+- **MICI style blindspot indicators** by @sunnyhaibin
+- **Road Name display** by @rav4kumar
+- **Speed Limit display** by @rav4kumar
+- **Steering arc** by @royjr
+- **Smart Cruise Control elements** by @sunnyhaibin
+- **Green Light and Lead Departure elements** by @sunnyhaibin
+- **Standstill timer** by @sunnyhaibin
+- **Driving models selector (MICI)** by @Discountchubbs
+- **Trips panel** by @sunnyhaibin
+- **Cruise panel** by @sunnyhaibin
+- **Visuals panel** by @nayan8teen
+
+### New Features
+
+- **sunnylink Vehicle Selector support** by @sunnyhaibin
+- **Lateral-only and longitudinal-only UI statuses** by @royjr
+- **Configurable camera offset** by @Discountchubbs
+- **Wake mode improvements** by @nayan8teen
+- **Post-Blinker Delay for Pause Lateral** by @CHaucke89
+- **Device Retain QuickBoot state** after op switch by @nayan8teen
+
+### Platform Updates
+
+**Toyota:**
+- Enforce Factory Longitudinal Control by @sunnyhaibin
+
+**Subaru:**
+- Global Gen2: bump steering limits and update tuning
+
+**Honda:**
+- DBC for Accord 9th Generation by @mvl-boston
+- Nidec hybrid baseline brake support by @mvl-boston
+
+**FCA:**
+- Update tire stiffness values for RAM_HD by @dparring
+
+**Nissan:**
+- Use MADS enabled status for LKAS HUD logic by @downquark7
+- Parse cruise control buttons by @downquark7
+
+**Hyundai/Kia:**
+- Add KIA_FORTE_2019_NON_SCC fingerprint by @royjr
+- Longitudinal: refactor tuning by @Discountchubbs
+
+**Tesla:**
+- Remove TESLA_MODEL_X from dashcamOnly by @ssysm
+- Add fingerprint for Model 3 Performance HW4
+
+**GM:**
+- Remove CHEVROLET_EQUINOX_NON_ACC_3RD_GEN from dashcamOnly
+- Remove CHEVROLET_BOLT_NON_ACC_2ND_GEN from dashcamOnly
+
+**Rivian:**
+- Add stalk down ACC behavior to match stock by @lukasloetkolben
+
+### New Contributors
+
+- @TheSecurityDev - UI fixes
+- @zikeji - sunnylink security improvements
+- @Candy0707 - UI alignment fixes
+- @CHaucke89 - Pause Lateral features
+- @yasu-oh - SCC-V improvements
+
+<Info>
+  **Full Changelog**: [v2025.002.000...v2026.001.000](https://github.com/sunnypilot/sunnypilot/compare/v2025.002.000...v2026.001.000)
+</Info>
+
+---
+
+## Version 2025.002.000 (2025-11-06)
+
+### Highlights
+
+- **Model updates**: Bump model json to v8 by @Discountchubbs
+- **Tesla Coop Steering** by @AmyJeanes
+- **sunnylink uploader button logic** updated for novice tier and above
+- **Discord references updated** with forum widget by @devtekve
+- **stats: sunnylink integration** by @devtekve
+
+### Fixes
+
+- Model UI crash fix by @nayan8teen
+- controlsd: add CP_SP to get_pid_accel_limits by @THERoenPR
+- Fix spacing in sunnylink panel by @devtekve
+- Fix initial registration for sunnylink by @devtekve
+
+### Platform Updates
+
+**Honda:**
+- Add brake hold messages for Clarity by @mvl-boston
+- Use fixed accel min/max constants for Gas Interceptor
+
+**Tesla:**
+- Coop Steering implementation
+
+---
+
+## Version 2025.001.000 (2025-10-25)
+
+<Warning>
+  **Major Rewrite**: This release represents a complete rewrite of sunnypilot with significant changes to core systems.
+</Warning>
+
+### Major Systems Rewrite
+
+- Fully adopts upstream comma.ai openpilot, opendbc, and panda test suites
+- Added regression testing for stability
+- Aligns with comma.ai's safety policy
+- Some features temporarily disabled pending reimplementation
+
+### Major Features
+
+<AccordionGroup>
+  <Accordion title="Modular Assistive Driving System (MADS)">
+    Complete driving assistance framework with enhanced engagement modes
+  </Accordion>
+  <Accordion title="Driving Model Manager">
+    Custom driving model selection supporting ~86 models from Night Strike (Oct 2023) to The Cool People's Models (Oct 2025)
+  </Accordion>
+  <Accordion title="Neural Network Lateral Control (NNLC)">
+    Advanced torque-based lateral control (formerly NNFF)
+  </Accordion>
+  <Accordion title="Dynamic Experimental Control (DEC)">
+    Intelligent longitudinal control adaptation between ACC and E2E
+  </Accordion>
+  <Accordion title="Speed Limit Assist (SLA)">
+    Comprehensive speed limit integration featuring:
+    - @pfeiferj's mapd for offline map limits
+    - Speed Limit Resolver (car, map, combined sources)
+    - On-screen UI for Speed Limit Information/Warning
+    - Automatic cruise speed adjustment
+  </Accordion>
+  <Accordion title="Intelligent Cruise Button Management (ICBM)">
+    Manages vehicle speed via cruise control button commands to car ECU
+  </Accordion>
+  <Accordion title="Smart Cruise Control (SCC-M / SCC-V)">
+    Controls turn entry speed using:
+    - SCC-M: Map data
+    - SCC-V: Vision model curve detection
+  </Accordion>
+  <Accordion title="Vehicle Selector">
+    Manual vehicle selection when automatic fingerprinting fails
+  </Accordion>
+  <Accordion title="sunnylink Integration">
+    Cloud connectivity with settings backup/restore. Remote management infrastructure ready for future releases.
+  </Accordion>
+  <Accordion title="mapd Integration">
+    OpenStreetMap database downloads for Speed Limit Assist (thanks to @pfeiferj)
+  </Accordion>
+</AccordionGroup>
+
+### User Interface
+
+- **Complete UI Redesign** from default openpilot experience
+- **New Settings Panels**: Steering, Longitudinal, Vehicle, Models, Visuals, Display, Trips
+- **Advanced Controls Toggle**: Simplified default settings with option for advanced features
+- **Models Panel**: Download manager, folders, favorites, fuzzy search, cache refresh
+- **Branch & Platform Selectors**: Searchable branch selector and platform display
+- **Developer UI**: Better alert positioning and integrated error log viewer
+- **OpenStreetMap Downloader**: Search feature for finding areas
+
+### Visuals & Display
+
+- Brightness controls
+- Custom interactivity timeouts
+- Green light indicator
+- Lead vehicle indicator
+- On-screen turn signals
+- Blind spot indicators
+- Lead chevron info
+- Standstill timer
+- Road name display
+- Rainbow road path (Tesla-like)
+- Screen off while driving with customizable wake behavior
+
+### Control Systems
+
+- **Pause Lateral on Blinker**: Temporary pause when turn signal active
+- **Custom ACC Setpoint Increments**: Configurable speed adjustment increments
+- **Steering on Brake Press**: Customizable steering behavior
+- **Enforce Torque Lateral Control**: Fine-tuning settings
+- **Automatic Lane Change**: Support with disable option
+
+### Technical Infrastructure
+
+- **Custom Cereal**: Dedicated cereal for sunnypilot-specific events
+- **Car Interface Abstractions**: Brand-specific settings support
+- **Param Store Caching**: Reduced startup times
+- **Enhanced Error Handling**: Improved Sentry logging
+- **Docker & CI/CD**: Full automation for testing, building, and releasing
+
+### Removed Features
+
+<Warning>
+  The following features are temporarily removed and may return in future releases:
+</Warning>
+
+- Navigate on openpilot (NoO)
+- Rocket Fuel (Visuals)
+- Displaying Braking Status
+- Toyota - Enforce Stock Longitudinal Control
+- Subaru: Increase Steering Torque
+- Acceleration Personality
+- Display CPU Temperature on Sidebar
+- Block Lane Change with Road Edge Detection
+- Display DM Camera in Reverse Gear
+- Auto-hide Selected UI Elements
+- Display End-to-End Longitudinal Status
+- Toyota: Stop and Go Hack
+- Onroad Settings
+- Honda: Serial Steering Support
+- Volkswagen: Non-ACC Platforms Support
+- Dynamic Personality
+- Honda Nidec: Stock Longitudinal Control
+- Dynamic Lane Profile
+- Laneful Mode
+- Custom Camera and Path Offsets
+- Toyota: Door Controls
+
+### Upstream Sync
+
+<Info>
+  **Synced with comma.ai openpilot v0.10.1** - master commit c9dbf97649a27117be6d5955a49e2d4253337288 (September 12, 2025)
+</Info>
+
+**New driving model:**
+- World Model: removed global localization inputs
+- World Model: 2x the number of parameters
+- World Model: trained on 4x the number of segments
+- Driving Vision Model: trained on 4x the number of segments
+
+**New car support:**
+- Honda City 2023 (thanks to vanillagorillaa and drFritz)
+- Honda N-Box 2018 (thanks to miettal)
+- Honda Odyssey 2021-25 (thanks to csouers and MVL)
+
+---
+
+## Previous Versions
+
+For complete changelog history including versions 0.9.7.1 and earlier, please visit:
+
+<Card title="View Full Changelog" icon="github" href="https://github.com/sunnypilot/sunnypilot/blob/master/CHANGELOG.md">
+  Access the complete changelog on GitHub
+</Card>
+
+## Stay Updated
+
+<CardGroup cols={2}>
+  <Card title="GitHub Releases" icon="github" href="https://github.com/sunnypilot/sunnypilot/releases">
+    Official releases with detailed notes
+  </Card>
+  <Card title="Community Forum" icon="comments" href="https://community.sunnypilot.ai/">
+    Announcements and discussions
+  </Card>
+  <Card title="Release Notes" icon="file-lines" href="https://github.com/sunnypilot/sunnypilot/blob/master/RELEASES.md">
+    Upstream openpilot release notes
+  </Card>
+  <Card title="Compare Versions" icon="code-compare" href="https://github.com/sunnypilot/sunnypilot/compare">
+    Compare changes between versions
+  </Card>
+</CardGroup>

@@ -1,97 +1,158 @@
 ---
-title: "Introduction"
-description: "Welcome to the new home for your documentation"
+title: "sunnypilot - Open Source Driver Assistance"
+mode: custom
 ---
 
-## Setting up
+<div className="relative overflow-hidden bg-gradient-to-br from-[#1a1d27] via-[#0f1117] to-[#1a1d27] dark:bg-gradient-to-br dark:from-[#1a1d27] dark:via-[#0f1117] dark:to-[#1a1d27] py-20">
+  <div className="max-w-6xl mx-auto px-6 lg:px-8">
+    <div className="text-center">
+      <h1 className="text-5xl sm:text-6xl lg:text-7xl font-bold text-white dark:text-white mb-6">
+        Drive Smarter with <span className="text-[#FDB813]">sunnypilot</span>
+      </h1>
+      <p className="text-xl sm:text-2xl text-gray-300 dark:text-gray-300 max-w-3xl mx-auto mb-10">
+        Open source driver assistance system supporting 350+ car makes and models with enhanced features and modified driving behaviors
+      </p>
+      <div className="flex flex-wrap justify-center gap-4">
+        <a 
+          href="/quick-start" 
+          className="px-8 py-4 bg-[#FDB813] text-gray-900 font-semibold rounded-lg hover:bg-[#FFE99A] transition-colors no-underline"
+        >
+          Get Started
+        </a>
+        <a 
+          href="/introduction" 
+          className="px-8 py-4 border border-white/30 bg-white/10 text-white font-semibold rounded-lg hover:bg-white/20 transition-colors no-underline"
+        >
+          Learn More
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
 
-Get your documentation site up and running in minutes.
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Quick Start</h2>
+  <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">Get up and running with sunnypilot in minutes</p>
+  
+  <Steps>
+    <Step title="Check Vehicle Compatibility">
+      Verify your vehicle is among the 350+ supported makes and models. sunnypilot supports vehicles from Honda, Toyota, Hyundai, Kia, Ford, GM, Tesla, and many more.
+      
+      Visit the [supported vehicles page](/vehicles/supported-cars) to confirm compatibility.
+    </Step>
+    
+    <Step title="Get Required Hardware">
+      You'll need a comma four device to run sunnypilot. The comma four provides the computing power and sensor interfaces required for driver assistance.
+      
+      <Note>
+        Additional hardware like a harness box and mount are required. See [hardware requirements](/vehicles/hardware-requirements) for details.
+      </Note>
+    </Step>
+    
+    <Step title="Install sunnypilot">
+      Follow the installation instructions to flash sunnypilot onto your comma four device. Choose from stable, release candidate, or development branches based on your needs.
+      
+      ```bash
+      # Installation URL format
+      https://installer.comma.ai/username/branch
+      ```
+      
+      Check out our [installation guide](/installation) for step-by-step instructions.
+    </Step>
+    
+    <Step title="Configure and Drive">
+      Mount the device, connect to your vehicle's OBD-C port, and configure your preferences. sunnypilot will guide you through the initial setup on first boot.
+      
+      Review [safety guidelines](/guides/safety) before your first drive with sunnypilot engaged.
+    </Step>
+  </Steps>
+</div>
 
-<Card
-  title="Start here"
-  icon="rocket"
-  href="/quickstart"
-  horizontal
->
-  Follow our three step quickstart guide.
-</Card>
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Core Features</h2>
+  <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">Explore what makes sunnypilot unique</p>
+  
+  <CardGroup cols={2}>
+    <Card title="MADS" icon="circle-nodes" href="/features/mads">
+      Modular Assistive Driving System - Enhanced engagement control that allows lateral-only or longitudinal-only operation for maximum flexibility
+    </Card>
+    <Card title="sunnylink" icon="link" href="/features/sunnylink">
+      Remote vehicle management and parameter control. Adjust settings and monitor your vehicle from anywhere
+    </Card>
+    <Card title="Custom UI" icon="paintbrush" href="/features/custom-ui">
+      Raylib Python UI with rainbow paths, steering metrics, turn signals, blindspot indicators, and extensive visual customization
+    </Card>
+    <Card title="OSM Integration" icon="map" href="/features/osm-integration">
+      OpenStreetMap integration for live map data including speed limits, road names, and navigation assistance
+    </Card>
+    <Card title="Custom Models" icon="brain" href="/features/custom-models">
+      Enhanced driving models including modeld_v2 and planplus for improved performance and behavior
+    </Card>
+    <Card title="Vehicle Tuning" icon="sliders" href="/advanced/parameters">
+      Extensive parameter customization for lateral control, longitudinal control, and vehicle-specific tuning
+    </Card>
+  </CardGroup>
+</div>
 
-## Make it yours
-
-Design a docs site that looks great and empowers your users.
-
-<Columns cols={2}>
-  <Card
-    title="Edit locally"
-    icon="pen-to-square"
-    href="/development"
-  >
-    Edit your docs locally and preview them in real time.
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Supported Vehicles</h2>
+  <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">sunnypilot works with 350+ car makes and models</p>
+  
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div className="p-4 rounded-lg bg-gray-50 dark:bg-[#1a1d27] border border-gray-200 dark:border-[#27272a] text-center">
+      <div className="text-2xl font-bold text-[#FDB813] mb-1">Honda</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">Civic, Accord, CR-V</div>
+    </div>
+    <div className="p-4 rounded-lg bg-gray-50 dark:bg-[#1a1d27] border border-gray-200 dark:border-[#27272a] text-center">
+      <div className="text-2xl font-bold text-[#FDB813] mb-1">Toyota</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">Camry, RAV4, Prius</div>
+    </div>
+    <div className="p-4 rounded-lg bg-gray-50 dark:bg-[#1a1d27] border border-gray-200 dark:border-[#27272a] text-center">
+      <div className="text-2xl font-bold text-[#FDB813] mb-1">Hyundai</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">Sonata, Tucson, Ioniq</div>
+    </div>
+    <div className="p-4 rounded-lg bg-gray-50 dark:bg-[#1a1d27] border border-gray-200 dark:border-[#27272a] text-center">
+      <div className="text-2xl font-bold text-[#FDB813] mb-1">Tesla</div>
+      <div className="text-sm text-gray-600 dark:text-gray-400">Model 3, Model Y, Model S</div>
+    </div>
+  </div>
+  
+  <Card title="View Full Vehicle List" icon="car" href="/vehicles/supported-cars" horizontal>
+    Browse the complete list of 350+ supported vehicles including Acura, Audi, Ford, GM, Kia, Lexus, Mazda, Nissan, Volkswagen, and more
   </Card>
-  <Card
-    title="Customize your site"
-    icon="palette"
-    href="/essentials/settings"
-  >
-    Customize the design and colors of your site to match your brand.
-  </Card>
-    <Card
-    title="Set up navigation"
-    icon="map"
-    href="/essentials/navigation"
-  >
-    Organize your docs to help users find what they need and succeed with your product.
-  </Card>
-  <Card
-    title="API documentation"
-    icon="terminal"
-    href="/api-reference/introduction"
-  >
-    Auto-generate API documentation from OpenAPI specifications.
-  </Card>
-</Columns>
+</div>
 
-## Create beautiful pages
+<div className="mt-16 mb-16 max-w-5xl mx-auto px-6">
+  <h2 className="text-3xl font-bold text-gray-900 dark:text-white mb-4">Community & Support</h2>
+  <p className="text-lg text-gray-600 dark:text-gray-400 mb-8">Join the sunnypilot community</p>
+  
+  <CardGroup cols={2}>
+    <Card title="Community Forum" icon="comments" href="/community/forum">
+      Join the official sunnypilot community forum to stay up to date with features and help shape the future
+    </Card>
+    <Card title="Sponsor" icon="heart" href="/community/sponsors">
+      Support sunnypilot development through GitHub Sponsors or PayPal. Get access to exclusive content and early features
+    </Card>
+    <Card title="Changelog" icon="clock-rotate-left" href="/community/changelog">
+      Track the latest features, improvements, and bug fixes in each sunnypilot release
+    </Card>
+    <Card title="FAQ" icon="circle-question" href="/community/faq">
+      Find answers to frequently asked questions about installation, compatibility, and features
+    </Card>
+  </CardGroup>
+</div>
 
-Everything you need to create world-class documentation.
-
-<Columns cols={2}>
-  <Card
-    title="Write with MDX"
-    icon="pen-fancy"
-    href="/essentials/markdown"
-  >
-    Use MDX to style your docs pages.
-  </Card>
-  <Card
-    title="Code samples"
-    icon="code"
-    href="/essentials/code"
-  >
-    Add sample code to demonstrate how to use your product.
-  </Card>
-  <Card
-    title="Images"
-    icon="image"
-    href="/essentials/images"
-  >
-    Display images and other media.
-  </Card>
-  <Card
-    title="Reusable snippets"
-    icon="recycle"
-    href="/essentials/reusable-snippets"
-  >
-    Write once and reuse across your docs.
-  </Card>
-</Columns>
-
-## Need inspiration?
-
-<Card
-  title="See complete examples"
-  icon="stars"
-  href="https://mintlify.com/customers"
->
-  Browse our showcase of exceptional documentation sites.
-</Card>
+<div className="mt-20 mb-16 max-w-5xl mx-auto px-6">
+  <div className="rounded-2xl bg-gradient-to-r from-[#FDB813] to-[#C28E00] p-12 text-center">
+    <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to get started?</h2>
+    <p className="text-lg text-gray-800 mb-6 max-w-2xl mx-auto">
+      Install sunnypilot today and experience enhanced driver assistance with 350+ supported vehicles
+    </p>
+    <a 
+      href="/quick-start" 
+      className="inline-block px-8 py-4 bg-gray-900 text-white font-semibold rounded-lg hover:bg-gray-800 transition-colors no-underline"
+    >
+      Start Your Journey
+    </a>
+  </div>
+</div>

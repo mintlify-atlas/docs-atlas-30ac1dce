@@ -1,0 +1,162 @@
+---
+title: Car Porting Overview
+description: Understanding car porting in sunnypilot and when to port a vehicle
+---
+
+## What is a Car Port?
+
+A car port enables openpilot (and sunnypilot) support on a particular car model. Each car model that openpilot supports needs to be individually ported. The complexity of a car port varies depending on many factors including:
+
+- Existing openpilot support for similar cars
+- Architecture and APIs available in the car
+- Quality of reverse engineering data available
+
+<Info>
+Virtually all car-specific code is contained in two repositories: [opendbc](https://github.com/commaai/opendbc) and [panda](https://github.com/commaai/panda).
+</Info>
+
+## When to Port a Car
+
+### Which Cars Can Be Supported?
+
+openpilot uses the existing steering, gas, and brake interfaces in your car. If your car lacks any one of these interfaces, openpilot will not be able to control the car.
+
+**Your car is a good candidate if it has:**
+- [Adaptive Cruise Control (ACC)](https://en.wikipedia.org/wiki/Adaptive_cruise_control)
+- Any form of [Lane Keep Assist (LKAS)](https://en.wikipedia.org/wiki/Automated_Lane_Keeping_Systems) or [Lane Centering Assist (LCA)](https://en.wikipedia.org/wiki/Lane_centering)
+
+These features generally started shipping on cars around 2016.
+
+<Warning>
+Manufacturers often use their own marketing terms for these features. For example, Hyundai calls their ACC "Smart Cruise Control" (SCC).
+</Warning>
+
+### Required Packages by Make
+
+| Make | Required Package/Features |
+| ---- | ------------------------- |
+| Acura | Any car with AcuraWatch will work |
+| Ford | Any car with Lane Centering will likely work |
+| Honda | Any car with Honda Sensing will work |
+| Subaru | Any car with EyeSight will work |
+| Nissan | Any car with ProPILOT will likely work |
+| Toyota & Lexus | Toyota/Lexus Safety Sense with "Lane Departure Alert with Steering Assist (LDA w/SA)" and/or "Lane Tracing Assist (LTA)" |
+| Hyundai, Kia, & Genesis | Smart Cruise Control (SCC) and Lane Following Assist (LFA) or Lane Keeping Assist (LKAS) |
+| Chrysler, Jeep, & Ram | LaneSense and Adaptive Cruise Control |
+
+<Warning>
+**Note:** LDA without Steering Assist will **not** work for Toyota vehicles.
+</Warning>
+
+### Known Incompatibilities
+
+#### FlexRay Systems
+
+Most vehicles from the following manufacturers use [FlexRay](https://en.wikipedia.org/wiki/FlexRay) instead of a CAN bus:
+
+- BMW
+- Mercedes
+- Audi
+- Land Rover
+- Some Volvo models
+
+<Note>
+These cars may one day be supported, but there are no immediate plans to support FlexRay.
+</Note>
+
+## Structure of a Car Port
+
+### opendbc Repository
+
+Each car brand is supported by a standard interface structure in `opendbc/car/[brand]`:
+
+| File | Purpose |
+|------|--------|
+| `interface.py` | Defines the CarInterface class |
+| `carstate.py` | Reads CAN messages from the car and builds openpilot CarState messages |
+| `carcontroller.py` | Control logic for executing openpilot CarControl actions on the car |
+| `[brand]can.py` | Composes CAN messages for carcontroller to send |
+| `values.py` | Limits for actuation, general constants for cars, and supported car documentation |
+| `radar_interface.py` | Interface for parsing radar points from the car (if applicable) |
+
+### Safety Code
+
+Safety code resides in the opendbc repository:
+
+| File | Purpose |
+|------|--------|
+| `opendbc_repo/opendbc/safety/modes/[brand].h` | Brand-specific safety logic |
+| `opendbc_repo/opendbc/safety/tests/test_[brand].py` | Brand-specific safety CI tests |
+
+<Warning>
+**Critical:** All safety tests must pass. Forks that modify safety code cannot use the openpilot trademark and must preserve the full safety test suite.
+</Warning>
+
+### openpilot Repository
+
+For historical reasons, openpilot still contains a small amount of car-specific logic:
+
+- `selfdrive/car/car_specific.py`: Brand-specific event logic
+
+<Note>
+This car-specific logic will eventually be migrated to opendbc or otherwise removed.
+</Note>
+
+## Types of Car Ports
+
+<CardGroup cols={2}>
+  <Card title="Brand Port" icon="building" href="/car-porting/brand-port">
+    Adding support for a substantially new car brand or platform within a brand
+  </Card>
+  <Card title="Model Port" icon="car" href="/car-porting/model-port">
+    Adding a new car model within an already supported brand
+  </Card>
+</CardGroup>
+
+## Requirements
+
+### Technical Skills
+
+- Understanding of CAN bus protocols
+- Python programming experience
+- C programming (for safety code)
+- Reverse engineering skills
+- Understanding of automotive control systems
+
+### Hardware Requirements
+
+- comma 3X or comma 3 device
+- Target vehicle with ACC and LKAS/LCA
+- [comma power](https://comma.ai/shop/comma-power) (recommended for testing)
+- CAN logging equipment
+
+### Safety Requirements
+
+All car ports must satisfy two main safety requirements:
+
+1. **Driver Override:** The driver must always be capable of immediately retaking manual control of the vehicle by stepping on the brake pedal or pressing the cancel button.
+
+2. **Actuation Limits:** The vehicle must not alter its trajectory too quickly for the driver to safely react. Actuators are constrained to operate within reasonable limits defined by ISO11270 and ISO15622.
+
+<Info>
+For additional safety implementation details, refer to the [panda safety model](https://github.com/commaai/panda#safety-model).
+</Info>
+
+## Learning Resources
+
+<Card title="Jason Young's COMMA_CON Talk" icon="youtube" href="https://www.youtube.com/watch?v=XxPS5TpTUnI">
+  Overview of the car porting process from Jason Young at COMMA_CON
+</Card>
+
+## Next Steps
+
+Choose your porting path:
+
+<Steps>
+  <Step title="Brand Port">
+    If you're adding support for a new car brand, see the [Brand Port Guide](/car-porting/brand-port)
+  </Step>
+  <Step title="Model Port">
+    If you're adding a model to an existing brand, see the [Model Port Guide](/car-porting/model-port)
+  </Step>
+</Steps>

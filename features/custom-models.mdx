@@ -1,0 +1,645 @@
+---
+title: 'Custom Driving Models'
+description: 'Comprehensive model management system supporting 86+ driving models with easy switching and caching'
+icon: 'brain'
+---
+
+## Overview
+
+Sunnypilot's modular model backend (modeld_v2) allows you to select from over 86 different driving models, from Night Strike (October 2023) through The Cool People's Models (October 2025). Switch models instantly without reinstalling branches, download on-demand, and maintain a cache of your favorites.
+
+<Info>
+The model management system represents a complete rewrite of openpilot's model infrastructure, supporting modular runners (SNPE, thneed, tinygrad), dynamic inputs, and enhanced model outputs.
+</Info>
+
+## Key Features
+
+<CardGroup cols={2}>
+  <Card title="86+ Models" icon="layer-group">
+    Access to extensive model library from multiple developers and time periods
+  </Card>
+  
+  <Card title="Instant Switching" icon="arrows-rotate">
+    Change models without reinstalling - just download and switch
+  </Card>
+  
+  <Card title="Model Caching" icon="hard-drive">
+    Downloaded models are cached for offline switching
+  </Card>
+  
+  <Card title="Download Manager" icon="cloud-arrow-down">
+    Real-time progress tracking for model downloads
+  </Card>
+</CardGroup>
+
+## Models Panel UI
+
+The dedicated Models panel (Settings → Models) provides complete model management:
+
+### Features
+
+<Tabs>
+  <Tab title="Browse & Search">
+    **Find models quickly:**
+    
+    - **Fuzzy search:** Type partial names to find models
+    - **Date sorting:** Models sorted by release date (newest first)
+    - **Favorites filter:** Show only your starred models
+    - **Folder organization:** Group models by preference
+    
+    **Search examples:**
+    - "cool" → Finds "The Cool People's Models"
+    - "april" → Shows all April 2024 models
+    - "nicki" → Locates "Nicki Minaj" model
+  </Tab>
+  
+  <Tab title="Download Manager">
+    **Visual download progress:**
+    
+    - Real-time progress bar
+    - Download speed indicator
+    - Estimated time remaining
+    - Pause/resume capability (future)
+    - Error handling and retry
+    
+    **Download behavior:**
+    - Only downloads when needed
+    - Caches for future use
+    - Validates integrity
+    - Warns on metered connections
+  </Tab>
+  
+  <Tab title="Favorites System">
+    **Mark your preferred models:**
+    
+    - Star models you use frequently
+    - Filter to show favorites only
+    - Quick access to preferred models
+    - Sync with sunnylink (future)
+    
+    **Use cases:**
+    - Highway vs. city model switching
+    - Day vs. night preferences
+    - Weather-specific models
+    - Testing comparisons
+  </Tab>
+  
+  <Tab title="Cache Management">
+    **Model storage control:**
+    
+    - **Cache refresh:** Rebuild model index
+    - **View cached models:** See what's stored locally
+    - **Delete models:** Remove unused models to free space
+    - **Storage usage:** Monitor space consumption
+    
+    **Location:**
+    ```
+    /data/models/
+    ├── supercombo.thneed
+    ├── metadata.json
+    └── [cached models]/
+    ```
+  </Tab>
+</Tabs>
+
+## Available Models
+
+### Model Timeline
+
+Sunnypilot supports models spanning over 2 years of development:
+
+<AccordionGroup>
+  <Accordion title="2025 Models (Oct-Nov)">
+    **Latest generation models:**
+    
+    - The Cool People's Models (October 2025)
+    - Various community models
+    - Experimental/unmerged models (dev branch only)
+    
+    **Characteristics:**
+    - Trained on 4x more data
+    - 2x more parameters
+    - Improved night performance
+    - Better curve handling
+  </Accordion>
+  
+  <Accordion title="2024 Models">
+    **Mature, well-tested models:**
+    
+    - **Nicki Minaj** (July 2024)
+    - **Hot Coffee** (July 2024)
+    - **Moonrise** (August 2024)
+    - **North Dakota v2** (April 2024)
+    - **WD40** (April 2024)
+    - **Duck Amigo** (March 2024)
+    - **Certified Herbalist v2** (February 2024)
+    - **Los Angeles v2** (January 2024)
+    
+    **Characteristics:**
+    - Direct curvature output
+    - Improved vision model
+    - Enhanced driver monitoring
+    - Better fuzzy fingerprinting
+  </Accordion>
+  
+  <Accordion title="2023 Models (Legacy)">
+    **Legacy model support:**
+    
+    - **New Delhi** (December 2023)
+    - **Blue Diamond v2** (December 2023)
+    - **Blue Diamond** (November 2023)
+    - **Farmville** (November 2023)
+    - **Night Strike** (October 2023)
+    
+    **Characteristics:**
+    - Some support Dynamic Lane Profile (DLP)
+    - Custom offsets compatible
+    - Navigate on openpilot (NoO) support
+    - Older training methodologies
+  </Accordion>
+</AccordionGroup>
+
+### Model Generations
+
+Models are categorized by generation number:
+
+- **Generation 11+**: mlsim models with advanced simulation training
+- **Generation 10**: Post-FOF (Fall of Freedom) models with smoother curvature
+- **Generation 8-9**: Mid-era models balancing performance and compatibility
+- **Generation 7 and below**: Legacy models with broader feature support
+
+## Switching Models
+
+### From Settings UI
+
+<Steps>
+  <Step title="Open Models Panel">
+    Navigate to Settings → Software → Current Driving Model → Change Model
+    
+    Or: Settings → Models
+  </Step>
+  
+  <Step title="Search or Browse">
+    Use search to find a specific model or browse the complete list
+  </Step>
+  
+  <Step title="Select Model">
+    Tap on the model you want to use
+  </Step>
+  
+  <Step title="Download (if needed)">
+    If not cached, model will download automatically. Progress is shown on screen.
+  </Step>
+  
+  <Step title="Activate Model">
+    Model switches immediately after download. Reboot may be required for some models.
+  </Step>
+</Steps>
+
+<Warning>
+**Internet Connection Required:**
+
+Model downloads require an active internet connection. Each model is 40-100MB. Use WiFi on metered connections to avoid data charges.
+</Warning>
+
+### Current Model Display
+
+**View active model:**
+
+Settings → Software → Current Driving Model
+
+**Shows:**
+- Model name
+- Release date
+- Generation number
+- Training characteristics
+- Special features/notes
+
+## Model Backend (modeld_v2)
+
+### Architecture Rewrite
+
+The complete refactor of `modeld` enables:
+
+<CardGroup cols={2}>
+  <Card title="Modular Runners" icon="puzzle-piece">
+    - SNPE (Qualcomm)
+    - thneed (GPU)
+    - tinygrad (AMD/CPU)
+    - Runtime selection
+  </Card>
+  
+  <Card title="Dynamic Inputs" icon="arrows-split-up-and-left">
+    - Variable input shapes
+    - Temporal history buffers
+    - Policy vs. vision inputs
+    - Shape inference
+  </Card>
+  
+  <Card title="Enhanced Outputs" icon="arrow-up-from-bracket">
+    - Turn desires
+    - Planplus outputs
+    - Hidden state tracking
+    - Desired curvature
+  </Card>
+  
+  <Card title="Live Tuning" icon="sliders">
+    - Camera offset adjustment
+    - Software delay control
+    - Model parameters
+    - Runtime configuration
+  </Card>
+</CardGroup>
+
+### Technical Implementation
+
+**Model execution pipeline:**
+
+```python
+class ModelState(ModelStateBase):
+    def __init__(self):
+        # Initialize model runner (SNPE/thneed/tinygrad)
+        self.model_runner = get_model_runner()
+        self.constants = self.model_runner.constants
+        
+        # Load active model bundle
+        model_bundle = get_active_bundle()
+        self.generation = model_bundle.generation
+        
+        # Setup buffers and inputs
+        self.warp = Warp(buffer_length)
+        self.temporal_buffers = {}
+        self.numpy_inputs = {}
+    
+    def run(self, bufs, transforms, inputs, prepare_only):
+        # Process vision inputs
+        imgs_tensors = self.warp.process(bufs, transforms)
+        
+        # Prepare model inputs
+        self.model_runner.prepare_inputs(self.numpy_inputs)
+        
+        # Run inference
+        outputs = self.model_runner.run_model()
+        
+        # Update temporal buffers
+        # Return model outputs
+        return outputs
+```
+
+### Model Inputs
+
+**Vision inputs:**
+- Road camera (wide or standard)
+- Additional camera streams (big_input)
+- Warped and normalized images
+
+**Policy inputs:**
+- Desire (lane change intent)
+- Traffic convention (LHD/RHD)
+- Lateral control params (v_ego, delay)
+- Features buffer (temporal history)
+- Previous desired curvature
+
+### Model Outputs
+
+**Standard outputs:**
+- Plan (trajectory)
+- Lane lines
+- Road edges  
+- Lead detection
+- Pose estimation
+- Hidden state
+
+**Enhanced outputs (model-dependent):**
+- **Planplus:** Alternative trajectory for blending
+- **Turn desires:** Recommended lane change direction
+- **Desired curvature:** Direct curvature output
+
+## Advanced Features
+
+### Planplus Support
+
+<Accordion title="What is Planplus?">
+  **Alternative trajectory blending:**
+  
+  Some models output both a primary plan and a "planplus" alternative:
+  
+  ```python
+  # Blend plans for smoother control
+  curvature_plan = plan + (PLANPLUS_CONTROL - 1.0) * planplus
+  ```
+  
+  **Configuration:**
+  
+  Settings → Developer → PlanplusControl
+  
+  **Values:**
+  - `0.0`: Use only standard plan
+  - `1.0`: Use blended approach (default)
+  - Custom: Adjust blend ratio
+</Accordion>
+
+### Camera Offset Helper
+
+**Configurable camera positioning:**
+
+```python
+class CameraOffsetHelper:
+    def update(self, model_transform_main, model_transform_extra, sm, main_wide_camera):
+        # Apply user-configured camera offset
+        # Adjusts warp matrix for model input
+        # Compensates for mounting position
+```
+
+**Configuration:**
+
+Settings → Controls → Camera Offset
+
+**Use cases:**
+- Compensate for off-center camera mount
+- Adjust for windshield curvature
+- Fine-tune lane centering
+
+### Live Delay Adjustments
+
+**Latency compensation:**
+
+Models can adjust for system latency in real-time:
+
+- **Lateral delay:** Steering actuation lag
+- **Longitudinal delay:** Acceleration/brake lag
+- **Software delay:** Processing time
+- **Live updates:** Adjust based on measured latency
+
+**Configuration:**
+
+Settings → Developer → Live Delay
+
+## Model Compatibility
+
+### Feature Compatibility Matrix
+
+<Note>
+Not all features work with all models. Newer models may deprecate certain features in favor of improved base performance.
+</Note>
+
+<Table>
+  <thead>
+    <tr>
+      <th>Feature</th>
+      <th>Legacy Models (Gen ≤7)</th>
+      <th>Modern Models (Gen 8-10)</th>
+      <th>Latest Models (Gen 11+)</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Dynamic Lane Profile</td>
+      <td>✅ Supported</td>
+      <td>⚠️ Limited</td>
+      <td>❌ Deprecated</td>
+    </tr>
+    <tr>
+      <td>Custom Offsets</td>
+      <td>✅ Supported</td>
+      <td>⚠️ Limited</td>
+      <td>❌ Deprecated</td>
+    </tr>
+    <tr>
+      <td>Navigate on openpilot</td>
+      <td>✅ Supported</td>
+      <td>❌ Removed</td>
+      <td>❌ Removed</td>
+    </tr>
+    <tr>
+      <td>Turn Desires</td>
+      <td>❌ Not available</td>
+      <td>✅ Supported</td>
+      <td>✅ Enhanced</td>
+    </tr>
+    <tr>
+      <td>Direct Curvature</td>
+      <td>❌ Not available</td>
+      <td>✅ Supported</td>
+      <td>✅ Enhanced</td>
+    </tr>
+    <tr>
+      <td>Planplus</td>
+      <td>❌ Not available</td>
+      <td>⚠️ Some models</td>
+      <td>✅ Most models</td>
+    </tr>
+  </tbody>
+</Table>
+
+### Navigate on openpilot (NoO)
+
+<Warning>
+**NoO Removed in Current Versions:**
+
+Navigate on openpilot was removed as upstream openpilot prioritizes improving base model capabilities. It may return in future releases if upstream reintroduces it.
+
+**Legacy model support:** Models from Duck Amigo (March 2024) and earlier still support NoO if you're on an older branch.
+</Warning>
+
+## Model Selection Guide
+
+### Choosing the Right Model
+
+<Tabs>
+  <Tab title="Highway Driving">
+    **Recommended models:**
+    
+    - **Latest generation models** (Cool People's, etc.)
+    - **Certified Herbalist v2** (February 2024)
+    - **Los Angeles v2** (January 2024)
+    
+    **Characteristics to look for:**
+    - Smooth curvature output
+    - Good high-speed performance
+    - Lane centering accuracy
+    - Minimal oscillation
+  </Tab>
+  
+  <Tab title="City Driving">
+    **Recommended models:**
+    
+    - **Hot Coffee** (July 2024)
+    - **Nicki Minaj** (July 2024)
+    - **WD40** (April 2024)
+    
+    **Characteristics:**
+    - Responsive to tight turns
+    - Good low-speed handling
+    - Better pedestrian/cyclist detection
+    - Frequent stop-and-go performance
+  </Tab>
+  
+  <Tab title="Night Driving">
+    **Recommended models:**
+    
+    - **Latest generation** (trained on more night data)
+    - **Night Strike** (if you prefer legacy feel)
+    - **Moonrise** (August 2024)
+    
+    **Features:**
+    - Enhanced low-light performance
+    - Better lane detection in darkness
+    - Improved headlight glare handling
+  </Tab>
+  
+  <Tab title="Testing & Comparison">
+    **Strategy:**
+    
+    - Download multiple models
+    - Test on same route
+    - Compare lane centering
+    - Evaluate comfort level
+    - Note smoothness and confidence
+    
+    **Favorites workflow:**
+    1. Try several models
+    2. Star the best performers
+    3. Switch between favorites
+    4. Find your ideal model
+  </Tab>
+</Tabs>
+
+### Performance vs. Compatibility
+
+**Trade-offs to consider:**
+
+- **Newer models:** Better performance, fewer legacy features
+- **Older models:** More customization, tested stability
+- **Experimental models:** Cutting-edge, may be unstable
+- **Stable releases:** Proven performance, wider support
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="Model won't download">
+    **Check these:**
+    
+    - Internet connectivity (WiFi recommended)
+    - Available storage space
+    - Network not metered (or bypass warning)
+    - Server availability
+    
+    **Solutions:**
+    
+    1. Verify internet connection
+    2. Free up space (Settings → Storage)
+    3. Retry download
+    4. Check for software updates
+    5. Try different model
+  </Accordion>
+  
+  <Accordion title="Model crashes or errors">
+    **Possible causes:**
+    
+    - Incompatible model for your hardware
+    - Corrupted download
+    - Insufficient resources
+    - Model metadata mismatch
+    
+    **Debugging:**
+    
+    1. Check error logs (Settings → Developer)
+    2. Delete and re-download model
+    3. Try cache refresh
+    4. Reboot device
+    5. Switch to known-good model
+    
+    **Logs to check:**
+    ```bash
+    /data/community/crashes/modeld.log
+    ```
+  </Accordion>
+  
+  <Accordion title="Model switch doesn't take effect">
+    **Verify:**
+    
+    - Download completed to 100%
+    - No error messages
+    - Correct model shown as active
+    - Rebooted if required
+    
+    **Force switch:**
+    
+    1. Note desired model name
+    2. Switch to different model
+    3. Reboot device
+    4. Switch back to desired model
+    5. Confirm activation
+  </Accordion>
+  
+  <Accordion title="Cache refresh not working">
+    **Steps:**
+    
+    1. Navigate to Models panel
+    2. Tap "Refresh Cache"
+    3. Wait for rebuild (may take 30+ seconds)
+    4. Check for completion message
+    5. Browse models to verify
+    
+    **Manual cache clear:**
+    ```bash
+    # SSH to device
+    rm -rf /data/models/cache/
+    reboot
+    ```
+  </Accordion>
+</AccordionGroup>
+
+## Future Features
+
+### Remote Model Management (via sunnylink)
+
+<Note>
+Planned but not yet active. Infrastructure ready, awaiting announcement.
+</Note>
+
+**Capabilities:**
+- Switch models remotely via API
+- Download models from anywhere
+- Scheduled model switches (day/night)
+- Fleet-wide model deployment
+
+### Enhanced Model Metadata
+
+**Coming improvements:**
+- Detailed model characteristics
+- Training data information
+- Performance benchmarks
+- User ratings and reviews
+- Community feedback integration
+
+## Related Features
+
+- [sunnylink](/features/sunnylink) - Remote model switching (planned)
+- [Custom UI](/features/custom-ui) - Model selection interface
+- [Lateral Control](/advanced/lateral-control) - Works with legacy models
+- [Lateral Control Tuning](/advanced/lateral-control) - Neural network lateral control
+
+## Source Code
+
+Model system implementation:
+
+- `sunnypilot/modeld_v2/modeld.py` - Main model runner
+- `sunnypilot/modeld_v2/modeld_base.py` - Base classes
+- `sunnypilot/models/helpers.py` - Model bundle management
+- `sunnypilot/models/runners/helpers.py` - Runner selection
+- `sunnypilot/modeld_v2/fill_model_msg.py` - Output processing
+- `sunnypilot/modeld_v2/constants.py` - Model constants
+- `sunnypilot/modeld_v2/meta_helper.py` - Metadata management
+
+## Credits
+
+<Info>
+The modular model backend is a collaborative effort involving:
+
+- sunnypilot core team (@sunnyhaibin, @Discountchubbs, @nayan8teen)
+- Community model developers
+- comma.ai for upstream model infrastructure
+- All contributors to model training and testing
+</Info>

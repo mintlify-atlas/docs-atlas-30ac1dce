@@ -1,0 +1,619 @@
+---
+title: "Safety Guidelines"
+description: "Critical safety information, limitations, and driver responsibilities for sunnypilot"
+icon: "shield-halved"
+---
+
+<Warning>
+  **IMPORTANT: READ BEFORE USING SUNNYPILOT**
+  
+  sunnypilot is an Adaptive Cruise Control (ACC) and Automated Lane Centering (ALC) system. It is **NOT** a self-driving system. You must remain alert and ready to take control at all times.
+</Warning>
+
+---
+
+## Alpha Quality Software
+
+<Note>
+  **THIS IS ALPHA QUALITY SOFTWARE FOR RESEARCH PURPOSES ONLY. THIS IS NOT A PRODUCT. YOU ARE RESPONSIBLE FOR COMPLYING WITH LOCAL LAWS AND REGULATIONS. NO WARRANTY EXPRESSED OR IMPLIED.**
+</Note>
+
+sunnypilot is based on openpilot and inherits its safety philosophy:
+
+- **Driver alertness is necessary, but not sufficient**, for safe operation
+- Even with an attentive driver, additional safety measures must be observed
+- System is provided with **no warranty of fitness for any purpose**
+- You use sunnypilot entirely at your own risk
+
+---
+
+## Core Safety Requirements
+
+sunnypilot is designed with two fundamental safety requirements:
+
+<AccordionGroup>
+  <Accordion title="1. Driver Must Always Be Capable of Immediate Manual Control" icon="hand">
+    **You can ALWAYS retake control by:**
+    
+    - **Stepping on the brake pedal** - Immediately disengages the system
+    - **Pressing the CANCEL button** - Disengages cruise control
+    - **Turning the steering wheel** - Overrides lateral control
+    - **Pressing accelerator** - Overrides longitudinal control (if "Disengage on Accelerator" enabled)
+    
+    **These override mechanisms work instantly and unconditionally.**
+    
+    <Warning>
+      Never attempt to modify, disable, or interfere with these override mechanisms. They are critical safety features.
+    </Warning>
+  </Accordion>
+  
+  <Accordion title="2. Vehicle Must Not Alter Trajectory Too Quickly" icon="gauge">
+    While engaged, actuators are constrained to operate within reasonable limits:
+    
+    - **Lateral limits**: ISO11270 and ISO15622 compliance
+      - Maximum 0.9 seconds of actuation to achieve 1m lateral deviation
+      - Prevents sudden steering movements
+    
+    - **Longitudinal limits**: Platform-specific acceleration/deceleration constraints
+      - Gradual speed changes
+      - Safe braking distances maintained
+    
+    These limits ensure the driver has time to safely react and intervene.
+    
+    **Additional Safety Details:**
+    - [panda safety model](https://github.com/commaai/panda#safety-model)
+    - [opendbc safety implementation](https://github.com/commaai/opendbc/tree/master/opendbc/safety/safety)
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## Driver Monitoring
+
+sunnypilot includes **mandatory** driver monitoring to enforce driver alertness.
+
+### How It Works
+
+<Tabs>
+  <Tab title="Camera Monitoring">
+    **Driver-Facing Camera:**
+    - Continuously monitors your face and eye position
+    - Detects when you're not looking at the road
+    - Uses AI model to identify distracted or drowsy behavior
+    
+    **What It Detects:**
+    - Eyes not on road
+    - Phone usage
+    - Looking down or away
+    - Eyes closed (drowsiness)
+    - Face not visible
+  </Tab>
+  
+  <Tab title="Alert Escalation">
+    **Warning Levels:**
+    
+    1. **"Pay Attention"** (preDriverDistracted)
+       - Gentle reminder to refocus on road
+       - No audible alert
+       - Brief visual message
+    
+    2. **"Pay Attention - Driver Distracted"** (promptDriverDistracted)
+       - More urgent warning
+       - Audible chime
+       - Larger visual alert
+    
+    3. **"Driver Unresponsive"** (driverUnresponsive)
+       - Critical alert
+       - **System will disengage**
+       - Loud warning chime
+       - Requires immediate attention
+    
+    <Warning>
+      Repeated driver monitoring violations may result in restricted access to sunnypilot features.
+    </Warning>
+  </Tab>
+  
+  <Tab title="Best Practices">
+    **To Avoid Alerts:**
+    - Keep eyes on the road at all times
+    - Don't look at the device screen for extended periods
+    - Face forward in natural driving position
+    - Ensure driver camera can see your face
+    - Remove obstructions (sunglasses, hats that block view)
+    - Don't use phone while system is engaged
+    
+    **What's Acceptable:**
+    - Brief glances at mirrors
+    - Quick checks of speedometer/gauges
+    - Normal head movements while driving
+    
+    **What's Not Acceptable:**
+    - Reading phone or texting
+    - Extended looks at center console
+    - Looking away from road for more than 2-3 seconds
+    - Drowsy driving
+  </Tab>
+</Tabs>
+
+<Warning>
+  **DO NOT attempt to disable, bypass, or defeat driver monitoring.** This violates safety requirements and is extremely dangerous.
+</Warning>
+
+---
+
+## System Capabilities & Limitations
+
+### What sunnypilot CAN Do
+
+<CardGroup cols={2}>
+  <Card title="Adaptive Cruise Control" icon="gauge-high">
+    - Maintain set speed on highways
+    - Follow lead vehicle at safe distance
+    - Adjust speed for traffic
+    - Stop and go in traffic (on supported vehicles)
+  </Card>
+  
+  <Card title="Automated Lane Centering" icon="road">
+    - Keep vehicle centered in lane
+    - Follow gentle curves
+    - Track lane markings
+    - Smooth steering inputs
+  </Card>
+  
+  <Card title="Safety Alerts" icon="bell">
+    - Forward Collision Warning (FCW)
+    - Lane Departure Warning (LDW)
+    - Driver monitoring alerts
+    - Speed limit warnings (if enabled)
+  </Card>
+  
+  <Card title="Enhanced Features" icon="star">
+    - Custom driving models
+    - Speed limit assistance
+    - Lane change assistance (where supported)
+    - Customizable behavior profiles
+  </Card>
+</CardGroup>
+
+### What sunnypilot CANNOT Do
+
+<Warning>
+  **sunnypilot is NOT:**
+  - A self-driving system
+  - Capable of navigating all road types
+  - Able to handle all traffic situations
+  - A replacement for an attentive driver
+</Warning>
+
+**Specific Limitations:**
+
+<AccordionGroup>
+  <Accordion title="Road Conditions" icon="road">
+    **sunnypilot may struggle or fail with:**
+    
+    - Faded, missing, or unclear lane markings
+    - Construction zones with altered lanes
+    - Unpaved or dirt roads
+    - Parking lots and private roads
+    - Sharp curves or hairpin turns
+    - Roads with no lane markings
+    - Confusing intersections
+    - Merging lanes or complex interchanges
+    
+    <Warning>
+      Do not rely on sunnypilot in construction zones or areas with poor lane markings. Take manual control.
+    </Warning>
+  </Accordion>
+  
+  <Accordion title="Weather Conditions" icon="cloud-rain">
+    **Reduced or no functionality in:**
+    
+    - Heavy rain (camera visibility reduced)
+    - Snow or ice (traction issues, covered lanes)
+    - Fog (camera cannot see clearly)
+    - Direct sun glare (camera blinded)
+    - Wet or reflective roads (lane markings unclear)
+    
+    **What to Do:**
+    - Take manual control in adverse weather
+    - System may automatically disengage if conditions too poor
+    - Do not engage in dangerous weather conditions
+  </Accordion>
+  
+  <Accordion title="Traffic Situations" icon="traffic-light">
+    **System CANNOT handle:**
+    
+    - Traffic lights (system will not stop automatically)
+    - Stop signs (system will not stop unless lead car present)
+    - Pedestrians or cyclists (unless leading the vehicle)
+    - Animals crossing road
+    - Emergency vehicles
+    - Complex intersections
+    - Roundabouts (proceed with extreme caution)
+    - Unprotected left turns
+    - Merging into traffic without clear path
+    
+    <Warning>
+      **CRITICAL:** sunnypilot does NOT detect or respond to traffic lights or stop signs. You MUST control the vehicle at intersections.
+    </Warning>
+  </Accordion>
+  
+  <Accordion title="Vehicle Detection Limits" icon="car">
+    **May not detect:**
+    
+    - Stationary vehicles at high speed
+    - Motorcycles or bicycles
+    - Vehicles cutting in suddenly
+    - Vehicles far ahead but slowing
+    - Cross traffic at intersections
+    - Pedestrians or small objects
+    
+    **Detection Affected By:**
+    - Lighting conditions (night, shadows, sun)
+    - Vehicle color/contrast with background
+    - Weather (rain, fog, snow)
+    - Camera obstructions (dirt, ice, condensation)
+  </Accordion>
+</AccordionGroup>
+
+---
+
+## When NOT to Use sunnypilot
+
+<Warning>
+  **DO NOT engage sunnypilot in these situations:**
+</Warning>
+
+<Tabs>
+  <Tab title="Road Conditions">
+    ❌ **Don't Use On:**
+    - Construction zones
+    - Unmarked roads
+    - Parking lots
+    - Private roads or driveways
+    - Gravel or unpaved roads
+    - Roads with temporary lane configurations
+    - Areas with confusing lane markings
+    - Sharp curves or mountain roads (use extreme caution)
+    - Roads under 25 mph speed limit (unless experienced)
+  </Tab>
+  
+  <Tab title="Weather">
+    ❌ **Don't Use During:**
+    - Heavy rain or thunderstorms
+    - Snow or ice (including light snow)
+    - Dense fog
+    - Severe sun glare
+    - High winds affecting steering
+    - Any conditions reducing visibility
+    
+    <Note>
+      Even light weather can significantly reduce system performance. Use conservative judgment.
+    </Note>
+  </Tab>
+  
+  <Tab title="Vehicle State">
+    ❌ **Don't Use When:**
+    - Vehicle has mechanical issues
+    - Tires are worn or underinflated
+    - Alignment is off
+    - Brakes are worn
+    - Any warning lights on dashboard
+    - Towing a trailer (unless tested and verified safe)
+    - Carrying unusual loads affecting vehicle dynamics
+  </Tab>
+  
+  <Tab title="Driver State">
+    ❌ **Don't Use If You Are:**
+    - Drowsy or fatigued
+    - Under influence of drugs, alcohol, or medications
+    - Distracted or unable to focus
+    - Emotionally upset or agitated
+    - Unfamiliar with the system (practice in safe conditions first)
+    - In a hurry (can lead to over-reliance on system)
+  </Tab>
+</Tabs>
+
+---
+
+## Driver Responsibilities
+
+### You MUST:
+
+<Checklist>
+  - [ ] Keep hands on or near the steering wheel at all times
+  - [ ] Keep eyes on the road continuously
+  - [ ] Monitor system behavior and path prediction
+  - [ ] Be prepared to take control instantly at any moment
+  - [ ] Intervene when system makes errors or behaves unexpectedly
+  - [ ] Comply with all traffic laws and regulations
+  - [ ] Maintain your vehicle in good working condition
+  - [ ] Keep device cameras clean and unobstructed
+  - [ ] Respond to all driver monitoring alerts immediately
+  - [ ] Use sunnypilot only in appropriate conditions
+  - [ ] Stay within legal speed limits
+  - [ ] Keep device mounted securely and properly calibrated
+</Checklist>
+
+### You MUST NOT:
+
+<Checklist>
+  - [ ] Treat sunnypilot as autonomous driving
+  - [ ] Use phone or electronic devices while engaged
+  - [ ] Rely on sunnypilot to detect all hazards
+  - [ ] Assume system will handle all situations
+  - [ ] Disable or bypass safety features (driver monitoring, actuation limits)
+  - [ ] Modify safety-critical code or parameters without understanding implications
+  - [ ] Use sunnypilot to facilitate reckless or illegal driving
+  - [ ] Ignore alerts or warnings from the system
+  - [ ] Let anyone else use sunnypilot without proper instruction
+  - [ ] Use sunnypilot in conditions where it's not appropriate
+</Checklist>
+
+---
+
+## Emergency Situations
+
+### How to Take Control Immediately
+
+<Steps>
+  <Step title="Brake Firmly">
+    Press brake pedal firmly. This instantly disengages all sunnypilot control.
+  </Step>
+  
+  <Step title="Steer Manually">
+    Turn steering wheel as needed. Your input overrides sunnypilot lateral control.
+  </Step>
+  
+  <Step title="Accelerate if Needed">
+    Press accelerator if you need to speed up (may disengage depending on settings).
+  </Step>
+  
+  <Step title="Press Cancel">
+    If time permits, press CANCEL button to fully disengage cruise control.
+  </Step>
+</Steps>
+
+### After an Intervention
+
+1. **Assess the situation** - Why did you need to intervene?
+2. **Check system state** - Any alerts or errors on screen?
+3. **Decide whether to re-engage** - Is it safe to do so?
+4. **Report unexpected behavior** - Share on community forum to help improve sunnypilot
+
+<Note>
+  Frequent interventions are normal, especially when learning the system. They demonstrate you're monitoring properly.
+</Note>
+
+---
+
+## Safety Compliance
+
+sunnypilot is developed to be compliant with safety standards:
+
+<Accordion title="Industry Standards" icon="certificate">
+  **Compliance Efforts:**
+  
+  - **FMVSS requirements** for Level 2 Driver Assistance Systems
+  - **ISO26262 guidelines** for automotive safety
+  - **[NHTSA guidelines](https://www.nhtsa.gov/sites/nhtsa.dot.gov/files/documents/13498a_812_573_alcsystemreport.pdf)** for ALC systems
+  - **MISRA C:2012** coding standards for safety-relevant code
+  
+  **Testing:**
+  - Software-in-the-loop testing
+  - Hardware-in-the-loop testing
+  - In-vehicle testing before releases
+  - Comprehensive safety test suite
+</Accordion>
+
+### For Fork Maintainers
+
+<Warning>
+  **If you maintain a sunnypilot fork:**
+</Warning>
+
+Per comma.ai's safety requirements:
+
+- ✅ **Do NOT** disable or nerf [driver monitoring](https://github.com/commaai/openpilot/tree/master/selfdrive/monitoring)
+- ✅ **Do NOT** disable or nerf excessive actuation checks
+- ✅ **If modifying `opendbc/safety/` code:**
+  - Cannot use openpilot trademark
+  - Must preserve full [safety test suite](https://github.com/commaai/opendbc/tree/master/opendbc/safety/tests)
+  - All tests must pass, including new coverage for changes
+
+**Failure to comply will result in bans from comma.ai servers for you and your users.**
+
+<Note>
+  **comma.ai strongly discourages use of forks with safety code missing or not meeting these requirements.**
+</Note>
+
+---
+
+## Legal Considerations
+
+### Terms of Service
+
+By using sunnypilot, you must accept:
+
+1. **sunnypilot Terms of Service** (presented on first boot)
+2. **sunnylink Consent** (if using sunnylink features)
+3. **comma.ai's terms** for device and services
+
+### Data Collection
+
+By default, sunnypilot uploads driving data to comma servers:
+
+**Data Collected:**
+- Road-facing camera footage
+- CAN bus data
+- GPS/IMU/magnetometer data
+- Thermal sensors
+- Crash logs
+- Operating system logs
+
+**Opt-in Only:**
+- Driver-facing camera (must explicitly enable)
+- Microphone (must explicitly enable)
+
+<Info>
+  **You can disable data collection** as sunnypilot is open source. However, this may limit support and features.
+</Info>
+
+### Indemnification
+
+Per the MIT license:
+
+<Note>
+  **Any user of this software shall indemnify and hold harmless Comma.ai, Inc. and its directors, officers, employees, agents, stockholders, affiliates, subcontractors and customers from and against all allegations, claims, actions, suits, demands, damages, liabilities, obligations, losses, settlements, judgments, costs and expenses (including without limitation attorneys' fees and costs) which arise out of, relate to or result from any use of this software by user.**
+</Note>
+
+---
+
+## Best Practices for Safe Use
+
+<CardGroup cols={2}>
+  <Card title="Before Every Drive" icon="list-check">
+    - Verify device is powered on and booted
+    - Check calibration is valid
+    - Ensure cameras are clean
+    - Review weather and road conditions
+    - Plan to take control at complex intersections
+  </Card>
+  
+  <Card title="During Driving" icon="eye">
+    - Keep eyes on road continuously
+    - Hands on or very near steering wheel
+    - Monitor path prediction and lead vehicle
+    - Anticipate when system may struggle
+    - Intervene early if uncomfortable
+  </Card>
+  
+  <Card title="Building Experience" icon="graduation-cap">
+    - Start on highways with clear markings
+    - Gradually expand to more complex roads
+    - Learn system limits through conservative testing
+    - Practice interventions regularly
+    - Share experiences with community
+  </Card>
+  
+  <Card title="Ongoing Maintenance" icon="screwdriver-wrench">
+    - Keep device software updated
+    - Clean cameras monthly
+    - Check harness connections quarterly
+    - Monitor error logs after trips
+    - Report bugs and unexpected behavior
+  </Card>
+</CardGroup>
+
+---
+
+## Red Flags - Seek Help Immediately
+
+<Warning>
+  **Stop using sunnypilot and seek help if:**
+</Warning>
+
+- System frequently disengages without cause
+- Steering becomes erratic or unpredictable
+- System fails to detect obvious obstacles
+- Repeated "Controls Unresponsive" errors
+- Camera malfunctions persist after cleaning
+- Device overheats consistently
+- Calibration repeatedly becomes invalid
+- Any behavior that feels unsafe
+
+<Card title="Get Help" icon="life-ring" href="/guides/troubleshooting">
+  Review troubleshooting guide or post on community forum for assistance
+</Card>
+
+---
+
+## Children and Passengers
+
+### Educating Passengers
+
+**Inform passengers that:**
+- Vehicle is using driver assistance, NOT self-driving
+- You must remain alert and engaged
+- They should alert you to any hazards they see
+- System may disengage unexpectedly
+
+### Children in Vehicle
+
+- All normal child safety rules apply (car seats, seat belts, etc.)
+- Do not allow children to distract you while system is engaged
+- Children should not interact with or touch the device
+- Be extra cautious - children are unpredictable hazards sunnypilot may not detect
+
+---
+
+## Understanding Your Responsibility
+
+sunnypilot is a **driver assistance** system, not a self-driving system.
+
+<Note>
+  **You are ALWAYS responsible for:**
+  
+  - Safe operation of your vehicle
+  - Compliance with all traffic laws
+  - Monitoring road conditions and hazards
+  - Taking control when needed
+  - Consequences of any accidents or violations
+</Note>
+
+**sunnypilot is a tool to assist you, not replace you.**
+
+Think of it like:
+- Power steering (assists steering, doesn't steer for you)
+- Anti-lock brakes (assists braking, doesn't brake for you)
+- Adaptive cruise control (maintains speed/distance, doesn't drive for you)
+
+sunnypilot adds lane centering and enhanced cruise control, but **you remain the driver**.
+
+---
+
+## Final Reminders
+
+<Warning>
+  **CRITICAL SAFETY REMINDERS:**
+</Warning>
+
+1. **You are the driver.** sunnypilot is an assistance system only.
+2. **Keep eyes on road.** Don't stare at the device screen.
+3. **Hands on wheel.** Be ready to take control instantly.
+4. **Don't over-rely.** The system will make mistakes. You must catch them.
+5. **Know the limits.** Don't use in conditions where it's not appropriate.
+6. **Take control proactively.** If you feel uncertain, disengage.
+7. **This is beta software.** It's always improving but never perfect.
+8. **Comply with laws.** Using sunnypilot doesn't exempt you from traffic laws.
+9. **Share responsibility.** Report issues to help improve safety for everyone.
+10. **Stay informed.** Read changelogs and updates for safety-critical changes.
+
+---
+
+## Additional Resources
+
+<CardGroup cols={2}>
+  <Card title="First Drive Guide" icon="flag-checkered" href="/guides/first-drive">
+    Preparation and procedures for your first engagement
+  </Card>
+  
+  <Card title="Troubleshooting" icon="wrench" href="/guides/troubleshooting">
+    Solutions for common issues and errors
+  </Card>
+  
+  <Card title="Settings Guide" icon="sliders" href="/guides/settings">
+    Understanding and configuring sunnypilot safely
+  </Card>
+  
+  <Card title="Community Forum" icon="comments" href="https://community.sunnypilot.ai">
+    Discuss safety topics and learn from experienced users
+  </Card>
+</CardGroup>
+
+<div className="mt-10 p-6 bg-red-50 dark:bg-red-950 border-2 border-red-500 rounded-lg">
+  <h3 className="text-xl font-bold text-red-800 dark:text-red-300 mb-2">⚠️ Acknowledgment</h3>
+  <p className="text-red-900 dark:text-red-200">
+    By using sunnypilot, you acknowledge that you have read, understood, and agree to follow these safety guidelines. You accept full responsibility for the safe operation of your vehicle and understand that sunnypilot is not a self-driving system.
+  </p>
+</div>

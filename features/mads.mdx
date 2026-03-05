@@ -1,0 +1,276 @@
+---
+title: 'MADS (Modular Assistive Driving System)'
+description: 'Advanced driving assistance framework that decouples lateral and longitudinal controls for flexible engagement'
+icon: 'steering-wheel'
+---
+
+## Overview
+
+MADS (Modular Assistive Driving System) is sunnypilot's complete driving assistance framework that revolutionizes how you interact with your ADAS system. Unlike traditional systems that tie steering and acceleration controls together, MADS allows independent control of lateral (steering) and longitudinal (speed/acceleration) functions.
+
+<Info>
+MADS is one of sunnypilot's most popular features, providing a more natural and flexible driving experience while maintaining safety.
+</Info>
+
+## How MADS Works
+
+### Independent Control States
+
+MADS introduces a sophisticated state machine with multiple operational states:
+
+- **Enabled**: Full lateral control is active
+- **Paused**: System temporarily suspended but ready to resume
+- **Soft Disabling**: Gradual transition to disabled state
+- **Overriding**: Driver intervention detected but system remains engaged
+- **Disabled**: System fully disengaged
+
+### State Transitions
+
+The system intelligently manages transitions between states based on:
+
+- Driver inputs (steering wheel, pedals, buttons)
+- Vehicle conditions (gear position, doors, seatbelt)
+- Road conditions and safety events
+- Cruise control availability
+
+## Key Features
+
+### Flexible Engagement Modes
+
+<CardGroup cols={2}>
+  <Card title="Standard Mode" icon="car">
+    Traditional engagement requiring cruise control to be active
+  </Card>
+  <Card title="Unified Engagement Mode" icon="link">
+    Enables MADS with a single button press, even without cruise control
+  </Card>
+</CardGroup>
+
+### Steering Behavior on Brake
+
+MADS offers three configurable behaviors when you press the brake pedal:
+
+<Tabs>
+  <Tab title="Remain Active">
+    Lateral control continues uninterrupted when braking. Best for highway driving where you want steering assist to remain active during speed adjustments.
+  </Tab>
+  <Tab title="Pause">
+    Lateral control temporarily pauses when braking but automatically resumes when conditions are met. Ideal for mixed driving conditions.
+  </Tab>
+  <Tab title="Disengage">
+    Lateral control fully disengages when braking, requiring manual re-engagement. Required for certain platforms like Rivian and some Tesla models.
+  </Tab>
+</Tabs>
+
+### Silent State Management
+
+MADS intelligently handles common scenarios without disengaging:
+
+- **Door opening** at standstill
+- **Seatbelt unlatching** while parked
+- **Wrong gear** events (e.g., reverse gear at low speed)
+- **Brake hold** activation
+- **Park brake** engagement
+
+Instead of disabling completely, MADS transitions to a "paused" state and can resume automatically when conditions normalize.
+
+## Platform Support
+
+### Full Support
+
+<AccordionGroup>
+  <Accordion title="Hyundai/Kia/Genesis">
+    Full MADS support with LDA button integration on applicable models. Vehicles with CAN-FD or LDA buttons can toggle MADS with factory controls.
+  </Accordion>
+  
+  <Accordion title="Honda/Acura">
+    Complete integration with all three steering behavior modes available.
+  </Accordion>
+  
+  <Accordion title="Toyota/Lexus">
+    Full support with LKAS button toggle capability (beta). Press and hold the factory LKAS button to toggle MADS on/off.
+  </Accordion>
+  
+  <Accordion title="GM">
+    Complete MADS integration across supported platforms.
+  </Accordion>
+  
+  <Accordion title="Ford">
+    Full support for all steering behavior modes.
+  </Accordion>
+</AccordionGroup>
+
+### Partial Support
+
+<Warning>
+Rivian and most Tesla models currently support MADS with **Disengage on Brake** mode only due to limited consistent engagement signals. Full support may be added in future releases.
+</Warning>
+
+## Configuration
+
+### Enabling MADS
+
+1. Navigate to **Settings → SP - Controls**
+2. Toggle **Enable MADS**
+3. Select your preferred steering behavior mode
+4. Configure optional features:
+   - Main Cruise Allowed (if applicable)
+   - Unified Engagement Mode
+
+### Toggle Methods
+
+Depending on your vehicle platform:
+
+<Steps>
+  <Step title="Using Factory Buttons">
+    - **Hyundai/Kia/Genesis**: Press the LDA button
+    - **Toyota/Lexus**: Press and hold the LKAS button (beta)
+    - **Other platforms**: Use cruise control buttons
+  </Step>
+  
+  <Step title="Alternative Methods">
+    Some platforms support toggling MADS through:
+    - Cruise main button (when Main Cruise Allowed is enabled)
+    - Set/Resume cruise buttons (Unified Engagement Mode)
+  </Step>
+</Steps>
+
+## Technical Implementation
+
+### Event Handling
+
+MADS replaces standard openpilot events with specialized versions:
+
+```python
+# Standard events become "silent" alerts in paused state
+EventName.doorOpen → EventNameSP.silentDoorOpen
+EventName.wrongGear → EventNameSP.silentWrongGear
+EventName.reverseGear → EventNameSP.silentReverseGear
+```
+
+### Safety Integration
+
+MADS maintains full compatibility with comma.ai's safety policies:
+
+- Driver monitoring requirements remain active
+- All safety checks continue to operate
+- Actuator limits are enforced
+- Alternative experience flags properly set in panda
+
+### State Machine Logic
+
+The MADS state machine (`sunnypilot/mads/state.py`) manages transitions with:
+
+- **Priority handling**: USER_DISABLE and IMMEDIATE_DISABLE events take precedence
+- **Soft disable timer**: Gradual 3-second transition to disabled state
+- **Override detection**: Recognizes driver steering input while maintaining engagement
+- **Enable conditions**: Validates NO_ENTRY events before allowing engagement
+
+## UI Indicators
+
+### Visual Feedback
+
+The driving interface provides clear MADS status indicators:
+
+- **Green path**: MADS enabled and actively controlling
+- **Light orange path**: Driver steering override detected
+- **Blue borders**: Laneline mode active (when using Dynamic Lane Profile)
+- **Status text**: Current MADS state displayed on screen
+
+### Audio Alerts
+
+MADS provides contextual audio feedback:
+
+- Chime on successful engagement
+- Alert when manual intervention required
+- Warning tones for safety-critical events
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Highway Driving" icon="road">
+    Use **Remain Active** mode for seamless operation during long highway drives with minimal braking.
+  </Card>
+  
+  <Card title="City Driving" icon="city">
+    **Pause** mode works well in urban environments with frequent stops, allowing quick resume after braking.
+  </Card>
+  
+  <Card title="Mixed Conditions" icon="traffic-light">
+    **Pause** or **Disengage** modes provide better control when transitioning between highway and city driving.
+  </Card>
+  
+  <Card title="New Users" icon="user">
+    Start with **Disengage** mode to build familiarity before exploring more automated modes.
+  </Card>
+</CardGroup>
+
+## Troubleshooting
+
+<AccordionGroup>
+  <Accordion title="MADS won't enable">
+    **Check these conditions:**
+    
+    - Cruise control is available (unless Unified Engagement Mode is on)
+    - Vehicle is in Drive gear and moving
+    - No active safety alerts
+    - Main cruise switch is on (for applicable platforms)
+    
+    **Solution:** Ensure all engagement conditions are met, then press the LKAS/LDA button or set cruise control.
+  </Accordion>
+  
+  <Accordion title="System disengages unexpectedly">
+    **Common causes:**
+    
+    - Brake pressed with Disengage mode enabled
+    - Safety event triggered (lane departure, low speed, etc.)
+    - Driver monitoring alert
+    
+    **Solution:** Check your steering mode setting and review any active alerts. Consider switching to Pause or Remain Active mode if braking is the cause.
+  </Accordion>
+  
+  <Accordion title="Can't toggle with factory button">
+    **Platform-specific:**
+    
+    - Some vehicles require specific conditions to toggle (e.g., cruise available)
+    - Certain model years may not support factory button integration
+    
+    **Solution:** Verify your vehicle is in the supported list. Use cruise control engagement as an alternative toggle method.
+  </Accordion>
+</AccordionGroup>
+
+## Advanced Features
+
+### Main Cruise Toggleable
+
+On supported Hyundai/Kia/Genesis platforms, you can control whether MADS requires the main cruise switch:
+
+- **Enabled**: MADS activation requires cruise main to be on
+- **Disabled**: MADS can be toggled independently of cruise main state
+
+### Unified Engagement Mode
+
+This mode allows MADS to engage with cruise control buttons even when:
+
+- Main cruise is off
+- Traditional engagement conditions aren't met
+- You want single-button MADS activation
+
+<Warning>
+Unified Engagement Mode changes how your system responds to cruise control inputs. Ensure you understand the behavior before enabling.
+</Warning>
+
+## Related Features
+
+- [Custom UI](/features/custom-ui) - Visual customization for MADS status display
+- [Lateral Control](/advanced/lateral-control) - Advanced lane-keeping that works with MADS
+- [Longitudinal Control](/advanced/longitudinal-control) - Pair with MADS for complete control flexibility
+
+## Source Code
+
+MADS implementation can be found in:
+
+- `sunnypilot/mads/mads.py` - Main MADS controller
+- `sunnypilot/mads/state.py` - State machine logic  
+- `sunnypilot/mads/helpers.py` - Platform-specific helpers
+- `opendbc/sunnypilot/car/*/interface.py` - Brand-specific integrations

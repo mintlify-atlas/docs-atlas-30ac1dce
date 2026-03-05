@@ -1,0 +1,479 @@
+---
+title: 'Visual Customization'
+description: 'Customize UI themes, display elements, path colors, and metrics'
+icon: 'palette'
+---
+
+## Overview
+
+sunnypilot offers extensive visual customization options to personalize your driving interface. From screen brightness to path colors, you can tailor the display to match your preferences and driving conditions.
+
+<Info>
+Most visual customizations are available on TIZI/TICI devices only. Comma 3/3X support varies by feature.
+</Info>
+
+## Screen Brightness Control
+
+### Onroad Brightness
+
+Customize screen brightness while driving:
+
+<ParamField path="OnroadScreenOffBrightness" type="select" default="Auto (Default)">
+  Set brightness level for driving screen:
+  
+  - **Auto (Default) (0)** - Automatic based on ambient light
+  - **Auto (Dark) (1)** - Automatic with darker bias
+  - **Screen Off (2)** - Turn screen completely off
+  - **5% - 100% (3-22)** - Fixed brightness levels
+</ParamField>
+
+<ParamField path="OnroadScreenOffTimer" type="select" default="30s">
+  Delay before brightness change takes effect:
+  
+  Available delays: 15s, 30s, 1m, 2m, 3m, 4m, 5m, 6m, 7m, 8m, 9m, 10m
+</ParamField>
+
+**Screen Off Mode:**
+
+When `OnroadScreenOffBrightness` is set to "Screen Off":
+
+1. Screen dims to black after the configured timer
+2. Tap anywhere on screen to wake
+3. Critical alerts override and wake screen
+4. Customize wake behavior with:
+
+<ParamField path="OnroadScreenOffControl" type="boolean" default="false">
+  Advanced control over screen-off wake conditions
+</ParamField>
+
+### Global Brightness Override
+
+Force specific brightness regardless of automatic adjustments:
+
+<ParamField path="Brightness" type="integer" default="auto">
+  Override brightness for entire system (0-100, or auto)
+</ParamField>
+
+**When to use:**
+- Persistent screen too bright/dim issues
+- Override ambient sensor
+- Testing display visibility
+- Night driving optimization
+
+## Path Visualization
+
+### Rainbow Path
+
+Display a colorful rainbow gradient on the driving path (Tesla/MICI style):
+
+<ParamField path="RainbowMode" type="boolean" default="false">
+  Enable rainbow-colored path visualization [TIZI/TICI only]
+</ParamField>
+
+**Visual Effect:**
+- Multi-color gradient along predicted path
+- Colors shift smoothly from front to back
+- Maintains visibility in various conditions
+- Fun aesthetic while remaining functional
+
+<Note>
+Rainbow path is purely cosmetic and does not affect driving behavior.
+</Note>
+
+### Steering Arc
+
+Display visual arc showing steering angle and limits:
+
+<ParamField path="TorqueBar" type="boolean" default="true">
+  Show steering arc when lateral control is active [TIZI/TICI only]
+</ParamField>
+
+**Information displayed:**
+- Current steering angle (green arc)
+- Maximum allowed steering (arc limits)
+- Real-time torque application
+- Safety limits
+
+**Colors:**
+- **Green:** Normal operation within limits
+- **Yellow:** Approaching steering limits
+- **Red:** At maximum steering angle
+
+## On-Screen Indicators
+
+### Turn Signals
+
+Display turn signal indicators on HUD:
+
+<ParamField path="ShowTurnSignals" type="boolean" default="true">
+  Show visual turn indicators when blinker is active [TIZI/TICI only]
+</ParamField>
+
+**Indicator Colors:**
+- **Green:** Blinker active, path clear
+- **Red:** Blinker active, vehicle detected in blind spot or road edge detected
+
+**Position:** Displayed on left/right sides of screen matching blinker direction
+
+### Blind Spot Detection
+
+Show warnings when vehicles detected in blind spots:
+
+<ParamField path="BlindSpot" type="boolean" default="true">
+  Display blind spot warnings [TIZI/TICI only]
+</ParamField>
+
+**Requirements:**
+- Vehicle must have factory BSM (Blind Spot Monitoring)
+- sunnypilot must support BSM parsing for your platform
+
+**Visual Display:**
+- Icons on left/right edges of screen
+- MICI-style indicators
+- Integrates with turn signal display
+
+### Lead Vehicle Information
+
+<ParamField path="ChevronInfo" type="select" default="Off">
+  Display information below the lead vehicle chevron:
+  
+  - **Off** - No additional info
+  - **Distance** - Following distance in meters/feet
+  - **Speed** - Lead vehicle speed
+  - **Both** - Distance and speed simultaneously
+</ParamField>
+
+**Information Format:**
+- **Distance:** "12.5 m" or "41 ft"
+- **Speed:** "65 MPH" or "105 km/h"
+- **Both:** Stacked display with distance on top
+
+### Road Name Display
+
+Show current road name on driving screen:
+
+<ParamField path="RoadNameToggle" type="boolean" default="false">
+  Display road name from OpenStreetMap [TIZI/TICI only]
+</ParamField>
+
+**Requirements:**
+- OSM database downloaded for region
+- GPS lock with valid location
+- Road data available in OSM
+
+**Display Location:** Top center of screen, non-intrusive text
+
+### Speed Limit Display
+
+Visual speed limit information integrated into UI:
+
+**Display Elements:**
+- Current speed limit sign (MUTCD or Vienna style)
+- Distance to next speed limit change
+- Speed limit offset (if configured)
+- Warning colors when speeding
+
+**Color Coding:**
+- **White:** Driving under speed limit
+- **Red:** Driving over speed limit + offset
+
+## Driving Metrics
+
+### Speedometer Options
+
+<ParamField path="HideVEgoUI" type="boolean" default="false">
+  Hide speedometer from driving screen [TIZI/TICI only]
+</ParamField>
+
+<ParamField path="TrueVEgoUI" type="boolean" default="false">
+  Always display true speed from wheel sensors [TIZI/TICI only]
+</ParamField>
+
+**Speed Sources:**
+- **Standard:** GPS-based speed (default)
+- **True Speed:** Wheel speed sensors (more accurate)
+
+<Note>
+True speed is calculated from wheel rotation sensors and is typically more accurate than GPS, especially during acceleration.
+</Note>
+
+### Standstill Timer
+
+Show elapsed time when vehicle is stopped:
+
+<ParamField path="StandstillTimer" type="boolean" default="false">
+  Display timer counting time at standstill [TIZI/TICI only]
+</ParamField>
+
+**Use Cases:**
+- Track time at red lights
+- Monitor stop-and-go traffic delays  
+- Useful for intersection timing awareness
+
+**Display:** "0:45" format showing minutes:seconds
+
+### Real-time Acceleration Bar
+
+Visual indicator for vehicle acceleration/deceleration:
+
+<ParamField path="RocketFuel" type="boolean" default="false">
+  Show acceleration bar on left side [TIZI/TICI only]
+</ParamField>
+
+**Visual Design:**
+- Vertical bar on left screen edge
+- **Green:** Acceleration
+- **Red:** Braking/deceleration
+- Height indicates intensity
+
+**Displays:**
+- What car is **currently** doing
+- Not what planner is requesting
+- Real-time feedback for smoothness
+
+## Developer UI
+
+Advanced metrics for debugging and monitoring:
+
+<ParamField path="ShowDebugInfo" type="boolean" default="false">
+  Enable Developer UI with detailed metrics
+</ParamField>
+
+<ParamField path="DevUIInfo" type="select" default="Default">
+  Select developer metrics to display
+</ParamField>
+
+### Available Metrics
+
+**Lateral Control:**
+- **E.T.** - EPS Torque (steering motor torque)
+- **L.A.** - Lateral Acceleration (m/s²)
+- **FRI.** - Friction compensation value
+- **B.D.** - Bearing Degree (heading)
+
+**Longitudinal Control:**  
+- **ACC.** - Acceleration (m/s²)
+- **L.S.** - Lead Speed (vehicle ahead)
+- **v_ego** - Current vehicle speed
+
+**Environmental:**
+- **ALT.** - Altitude from GPS (meters)
+- **Temp** - CPU/GPU/Memory temperature
+
+**Display Layout:**
+```
+┌─────────────────────┐
+│  Main Driving View  │
+│                     │
+│  ┌──────────────┐   │
+│  │ Developer UI │   │  ← Bottom section
+│  │ E.T.  | L.A. │   │
+│  │ ACC.  | L.S. │   │
+│  └──────────────┘   │
+└─────────────────────┘
+```
+
+## Interactivity
+
+### UI Timeout
+
+Control how long settings UI stays open:
+
+<ParamField path="InteractivityTimeout" type="select" default="Default">
+  Auto-close settings after inactivity:
+  
+  Available: Default, 10s, 20s, 30s, 40s, 50s, 1m, 2m
+</ParamField>
+
+**Behavior:**
+- Applies to offroad settings UI
+- Screen returns to home after timeout
+- Touch screen to reset timer
+- Default uses system setting (~30s)
+
+## Display Modes
+
+### Always Offroad Mode
+
+<ParamField path="DeviceBootMode" type="select" default="Standard">
+  Device boot behavior:
+  
+  - **Standard (0)** - Normal onroad/offroad detection
+  - **Always Offroad (1)** - Force offroad state
+</ParamField>
+
+**Always Offroad Mode:**
+- Keeps device in offroad state even when car is on
+- Allows changing offroad-only settings while driving
+- Useful for testing and configuration
+- UI shows "Exit Offroad" button
+
+<Warning>
+sunnypilot will not engage while in Always Offroad mode. This is for configuration only.
+</Warning>
+
+### Quiet Mode
+
+<ParamField path="QuietMode" type="boolean" default="false">
+  Reduce audible alerts and chimes
+</ParamField>
+
+**Effects:**
+- Suppresses non-critical alert sounds
+- Warning chimes still play for safety
+- Visual alerts remain unchanged
+- Useful for quiet environments
+
+## Theme Customization
+
+### Path Colors
+
+Path colors change based on driving state:
+
+**Default Color States:**
+- **Blue:** Lateral control active, normal operation
+- **Light Orange:** Driver steering override detected
+- **White:** sunnypilot disengaged
+- **Green:** (With rainbow mode) Multi-color gradient
+
+**MADS Integration:**
+
+With MADS (Modular Assistive Driving System) enabled:
+- Path color reflects MADS engagement state
+- Different colors for lateral-only vs full control
+- Visual feedback for control mode changes
+
+### UI Branding
+
+sunnypilot features custom branding elements:
+
+- sunnypilot logo and fonts
+- Sponsor tier color mapping
+- Custom panel designs
+- Branded settings organization
+
+<Note>
+UI was completely rewritten from Qt C++ to Raylib Python in version 2026.001, providing improved performance and customization.
+</Note>
+
+## Platform-Specific Features
+
+### TIZI/TICI Only Features
+
+These features require comma 3/3X or newer hardware:
+
+- Rainbow Path
+- Turn Signals
+- Blind Spot Indicators
+- Steering Arc
+- Road Name Display
+- Standstill Timer
+- Rocket Fuel
+- Chevron Info
+- True Speed Display
+
+### All Platforms
+
+These work on all comma devices:
+
+- Brightness Control
+- Developer UI
+- Quiet Mode
+- Interactivity Timeout
+- Always Offroad Mode
+
+## Performance Considerations
+
+<AccordionGroup>
+  <Accordion title="High CPU Usage">
+    Some visual features add CPU overhead:
+    
+    **High Impact:**
+    - Developer UI (minimal)
+    - Rainbow Path (minimal)
+    - Road Name (OSM lookups)
+    
+    **Solutions:**
+    1. Disable unused visual features
+    2. Close settings UI while driving
+    3. Reduce interactivity timeout
+  </Accordion>
+
+  <Accordion title="Screen Brightness Issues">
+    **Too Bright:**
+    - Set OnroadScreenOffBrightness to 50% or lower
+    - Use Auto (Dark) mode
+    - Check ambient light sensor
+    
+    **Too Dim:**
+    - Increase brightness to 75-100%
+    - Override with global Brightness setting
+    - Clean screen and sensors
+  </Accordion>
+
+  <Accordion title="Missing Visual Elements">
+    **If features don't appear:**
+    1. Verify device model (TIZI/TICI vs MICI)
+    2. Check feature toggle in settings
+    3. Restart device
+    4. Update to latest sunnypilot
+    5. Check error logs for UI issues
+  </Accordion>
+</AccordionGroup>
+
+## Customization Workflow
+
+<Steps>
+  <Step title="Enable Advanced Controls">
+    Settings → Device → Show Advanced Controls
+  </Step>
+  <Step title="Navigate to Visuals Panel">
+    Settings → Visuals - All visual options
+  </Step>
+  <Step title="Configure Display Panel">
+    Settings → Display - Brightness and screen options
+  </Step>
+  <Step title="Enable Developer UI (Optional)">
+    Settings → Device → Developer UI Info
+  </Step>
+  <Step title="Test While Parked">
+    Use Always Offroad mode to preview changes
+  </Step>
+  <Step title="Save with sunnylink">
+    Backup your visual preferences to cloud
+  </Step>
+</Steps>
+
+## Best Practices
+
+<CardGroup cols={2}>
+  <Card title="Minimize Distractions" icon="eye">
+    Enable only essential visual elements to reduce cognitive load while driving
+  </Card>
+  <Card title="Optimize Brightness" icon="sun">
+    Auto modes work best for most users - manual override for specific needs
+  </Card>
+  <Card title="Use Developer UI Sparingly" icon="code">
+    Enable for troubleshooting, disable for normal driving
+  </Card>
+  <Card title="Test in Daylight" icon="cloud-sun">
+    Verify visibility of indicators in bright sunlight
+  </Card>
+</CardGroup>
+
+## Related Resources
+
+<CardGroup cols={2}>
+  <Card title="Parameters System" icon="sliders" href="/advanced/parameters">
+    Understanding parameter management
+  </Card>
+  <Card title="OSM Setup" icon="map" href="/features/osm">
+    Download maps for road name display
+  </Card>
+  <Card title="MADS" icon="hand" href="/features/mads">
+    Modular driving system visual feedback
+  </Card>
+  <Card title="UI Overview" icon="desktop" href="/getting-started/interface">
+    Introduction to sunnypilot UI
+  </Card>
+</CardGroup>
