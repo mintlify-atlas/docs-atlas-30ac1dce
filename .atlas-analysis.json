@@ -1,7 +1,7 @@
 {
   "projectType": "saas",
   "projectName": "sunnypilot",
-  "projectDescription": "Open source driver assistance system supporting 350+ car makes and models with modified driving behaviors and enhanced features",
+  "projectDescription": "Open source driver assistance system supporting 336+ car makes and models with modified driving behaviors and enhanced features",
   "theme": "aspen",
   "primaryColor": "#FDB813",
   "lightColor": "#FFE99A",
@@ -100,7 +100,7 @@
     "sunnylink - Remote vehicle management and parameter control",
     "Custom Raylib Python UI with enhanced visuals",
     "OSM (OpenStreetMap) integration for map data",
-    "Support for 350+ car makes and models",
+    "Support for 336+ car makes and models",
     "Custom driving models (modeld_v2, planplus)",
     "Configurable lateral and longitudinal control",
     "Enhanced UI features (rainbow path, steering metrics, turn signals)",
